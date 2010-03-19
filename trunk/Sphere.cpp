@@ -16,11 +16,11 @@ Sphere::Sphere(Vector _center, float _radius)
     m_radius = _radius;
 }
 
-Sphere::Sphere(Vector _center, float _radius, Colour _colour)
+Sphere::Sphere(Vector _center, float _radius, Material _material)
 {
     setPosition(_center);
     m_radius = _radius;
-    setMaterial(Material(_colour));
+    setMaterial(_material);
 }
 
 float Sphere::doIntersection(Vector _cam, Vector _ray) // SpherePrimitive::intersect(const Ray& ray, float* t)

@@ -10,7 +10,7 @@ class Sphere: public RenderableObject
 public:
     Sphere();
     Sphere(Vector, float);
-    Sphere(Vector, float, Colour);
+    Sphere(Vector, float, Material);
     float getRadius() const { return m_radius; }
     void SetRadius(float _radius) { m_radius = _radius; }
     float doIntersection(const Vector _cam, const Vector _ray);

@@ -35,6 +35,8 @@ float c_halfWidth;
 const unsigned int c_num_spheres = 50;
 const unsigned int c_num_lights = 2;
 
+const unsigned int c_maxTraceDepth = 1;
+
 
 
 RenderableObject* objects[c_num_spheres];
@@ -46,7 +48,7 @@ Light* lights[c_num_lights];
 
 
 
-int main(int argc, char *argv[])
+int main()//int argc, char *argv[])
 {
     const int start_time = clock();
     
@@ -154,7 +156,10 @@ void SDLRenderer::SceneInit()
         objects[i] = new Sphere(
                 Vector(RandFloat()*10, RandFloat()*10, RandPosFloat()+30),
                 RandPosFloat(),
-                Colour(RandPosFloat(), RandPosFloat(), RandPosFloat())
+                Material(
+                        Colour(RandPosFloat(), RandPosFloat(), RandPosFloat()),
+                        1.0f
+                        )
                 );
     }
 
@@ -172,30 +177,33 @@ void SDLRenderer::SceneInit()
 
 Colour SDLRenderer::RayTracePixel(const unsigned int _x, const unsigned int _y)
 {
-    Ray currentPixel;
-    Fragment pixel_fragment;
     Vector currDirection = Vector(_x*c_divisionSize-c_halfWidth,
                                   _y*c_divisionSize-0.5,
                                   1) - camera;
-
     currDirection.normalise();
 
-    currentPixel = Ray(currDirection);
+    // Ray from camera to somewhere, rather than from an object to somewhere
+    Ray cameraRay = Ray(currDirection);
 
     // Ray pixel_rays[x+y*c_width];
     // currPixel = Ray(currDirection);
 
+    return RaytraceRay(camera, cameraRay, 0);
 
+}
+
+Colour SDLRenderer::RaytraceRay(Vector &_rayOrigin, Ray &_ray, unsigned int _traceDepth)
+{
     bool hit = false;
 
     // for each object in scene
     for(unsigned int j=0; j<c_num_spheres;j++) {
-        float distance = objects[j]->doIntersection(camera, currentPixel.GetVector());
+        float distance = objects[j]->doIntersection(_rayOrigin, _ray.GetVector());
 
         if(distance >= 0) // if there is a hit
         {
             hit = true;
-            currentPixel.Intersection(distance, *objects[j]);
+            _ray.Intersection(distance, *objects[j]);
         }
     }
 
@@ -204,80 +212,124 @@ Colour SDLRenderer::RayTracePixel(const unsigned int _x, const unsigned int _y)
     if(hit)
     {
         // object that this pixel hits
-        RenderableObject* objectIntersected = currentPixel.GetObjectIntersected();//.objects[currentPixel.GetObjectIntersected()];
+        RenderableObject* objectIntersected = _ray.GetObjectIntersected();//.objects[currentPixel.GetObjectIntersected()];
 
         // surface normal, position and material of the point at which the pixel's ray hits the above object
-        Fragment pixel_fragment = objectIntersected->getFragment(camera, currentPixel.GetVector(), currentPixel.GetClosestIntersection());
+        Fragment pixel_fragment = objectIntersected->getFragment(camera, _ray.GetVector(), _ray.GetClosestIntersection());
 
         // its material
-        Colour material_colour = objectIntersected->getMaterial().GetColour();
+        Material objectMaterial = objectIntersected->getMaterial();
+        float objectReflectivity = objectMaterial.GetReflectivity();
 
-        // its normal
-        Vector normal = pixel_fragment.getNormal();
-
-        float light_intensity = 0;
-        // for each light
-        for(unsigned int l=0; l<c_num_lights;l++)
+        if(objectReflectivity == 0.0f || _traceDepth > c_maxTraceDepth)
         {
-            Light* light = lights[l];
-
-            // vector from intersection to light
-            // could be used for light falloff
-            Vector light_vector = light->getPosition()-pixel_fragment.getPosition();
-            float light_attenuation = light_vector.SquareLength();
-
-            light_vector.normalise();
-
-            float dot_product = light_vector.dot(normal);
-            //normal.dot()
-
-            // if dot product > 0 (angle less than 90)
-            if(dot_product > 0)
-            {
-                light_intensity += dot_product*(light->GetMagnitude()/light_attenuation);
-            }
-
-        }        
-
-        /* Normals
-        light_intensity = 1;
-        float r_base = fabs(normal.m_x);
-        float g_base = fabs(normal.m_y);
-        float b_base = fabs(normal.m_z);
-        //*/
-
-        ///* Lambert
-        light_intensity = 1/light_intensity;
-        float pixelColours[4];
-        material_colour.getColour(&pixelColours[0]);
-        float r_base = pixelColours[0];
-        float g_base = pixelColours[1];
-        float b_base = pixelColours[2];
-        //*/
-        
-        /* Lambert Normals
-        light_intensity = 1/light_intensity;
-        float pixelColours[4];
-        material_colour.getColour(&pixelColours[0]);
-        float r_base = pixelColours[0] * fabs(normal.m_x);
-        float g_base = pixelColours[1] * fabs(normal.m_y);
-        float b_base = pixelColours[2] * fabs(normal.m_z);
-        //*/
-        
-
-        float r = std::min(1.0f, (float)r_base/light_intensity);
-        float g = std::min(1.0f, (float)g_base/light_intensity);
-        float b = std::min(1.0f, (float)b_base/light_intensity);
-
-        return pixel_colour = Colour(r, g, b);
+            // If it's not reflective at all, we don't have to bother with recursion
+            float light_intensity = CalculateLighting(pixel_fragment);
+            return CalculateColour(objectMaterial, light_intensity);
+        }
+       // else if(objectReflectivity == 1.0f)
+        //{
 
 
-        //pixel_colour = spheres[pixel_rays[i].get_intersection_object()].getColour();
+            // If it's TOTALLY reflective, we don't care about the colour of this object
+
+
+
+
+       // }
+        //else if(objectReflectivity > 0.0f)
+       // {
+            // If it's partially reflective, we need to multiply the colour of this object by its reflectants
+
+            Vector rayVector = _ray.GetVector();
+            Vector normal = pixel_fragment.GetNormal();
+            Vector reflectionVector = rayVector - normal*(2*rayVector.dot(normal));
+            reflectionVector.printDebug();
+            Ray reflectionray = Ray(reflectionVector);
+            Vector origin = pixel_fragment.GetPosition();
+            return RaytraceRay(origin, reflectionray, _traceDepth+1);
+
+
+
+
+       // }
+
+        // Get the intensity of light which is hitting this object
+
     }
     else // if it didn't hit anything
     {
         // background colour
         return pixel_colour = Colour(0.5f, 0.5f, 0.5f);
     }
+}
 
+
+float SDLRenderer::CalculateLighting(Fragment& _fragment )
+{
+    float light_intensity = 0;
+    // for each light
+    for(unsigned int l=0; l<c_num_lights;l++)
+    {
+        Light* light = lights[l];
+
+        // vector from intersection to light
+        // could be used for light falloff
+        Vector light_vector = light->getPosition()-_fragment.GetPosition();
+        float light_attenuation = light_vector.SquareLength();
+
+        light_vector.normalise();
+
+        float dot_product = light_vector.dot(_fragment.GetNormal());
+        //normal.dot()
+
+        // if dot product > 0 (angle less than 90)
+        if(dot_product > 0)
+        {
+            light_intensity += dot_product*(light->GetMagnitude()/light_attenuation);
+        }
+
+    }
+
+    return light_intensity;
+}
+
+
+Colour SDLRenderer::CalculateColour(Material& _material, float _lightIntensity)
+{
+    // TODO: Pass fragment in so that normal pass is possible
+
+    /* Normals
+    light_intensity = 1;
+    float r_base = fabs(normal.m_x);
+    float g_base = fabs(normal.m_y);
+    float b_base = fabs(normal.m_z);
+    //*/
+
+    ///* Lambert
+    _lightIntensity = 1/_lightIntensity;
+    float pixelColours[4];
+    _material.GetColour().getColour(&pixelColours[0]);
+    float r_base = pixelColours[0];
+    float g_base = pixelColours[1];
+    float b_base = pixelColours[2];
+    float a = pixelColours[3];
+    //*/
+
+    /* Lambert Normals
+    light_intensity = 1/light_intensity;
+    float pixelColours[4];
+    material_colour.getColour(&pixelColours[0]);
+    float r_base = pixelColours[0] * fabs(normal.m_x);
+    float g_base = pixelColours[1] * fabs(normal.m_y);
+    float b_base = pixelColours[2] * fabs(normal.m_z);
+    //*/
+
+
+    float r = std::min(1.0f, (float)r_base/_lightIntensity);
+    float g = std::min(1.0f, (float)g_base/_lightIntensity);
+    float b = std::min(1.0f, (float)b_base/_lightIntensity);
+    // alpha doesn't get modified by light
+
+    return Colour(r, g, b, a);
 }

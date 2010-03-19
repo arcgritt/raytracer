@@ -10,6 +10,7 @@ public:
     //float getColourScalar();
     void getColour256 (unsigned char *_colour);
     void getColour (float *_colour);
+    //void operator*=(Colour _colour);
 private:
     float c_r;
     float c_g;

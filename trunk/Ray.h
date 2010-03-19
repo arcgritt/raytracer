@@ -18,7 +18,7 @@ private:
     Vector m_direction;
     float m_closestIntersection;
     RenderableObject* m_objectIntersected;
-    Ray* m_reflection;
+    //Ray* m_reflection;
 };
 
 #endif // RAY_H
