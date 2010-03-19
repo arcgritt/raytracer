@@ -10,6 +10,9 @@ public:
     void printDebug();
     void normalise();
     float dot(const Vector&);
+    void operator+=(const Vector&);
+    Vector operator+(const Vector&);
+    Vector operator-();
     void operator-=(const Vector&);
     Vector operator-(const Vector&);
     Vector operator*(float _m);

@@ -18,7 +18,7 @@ public:
 
     virtual float getRadius() const =0;
     virtual float doIntersection(const Vector _cam, const Vector _ray) =0;
-    virtual Fragment getFragment(const Vector _cam, const Vector _ray) =0;
+    virtual Fragment getFragment(const Vector _cam, const Vector _ray, const float _distance) =0;
     //virtual
 private:
     Vector m_position;

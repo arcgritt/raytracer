@@ -47,6 +47,26 @@ float Vector::dot(const Vector &_v)
     return m_x * _v.m_x + m_y * _v.m_y + m_z * _v.m_z;
 }
 
+void Vector::operator+=(const Vector &_v)
+{
+    // source Jon Macey
+    m_x+=_v.m_x;
+    m_y+=_v.m_y;
+    m_z+=_v.m_z;
+    m_w=0.0;
+}
+
+Vector Vector::operator+(const Vector &_v)
+{
+    // source Jon Macey
+    return Vector(m_x+_v.m_x, m_y+_v.m_y, m_z+_v.m_z, 0.0f);
+    //m_x-=_v.m_x;
+   // m_y-=_v.m_y;
+   // m_z-=_v.m_z;
+    //m_w=0.0;
+}
+
+
 void Vector::operator-=(const Vector &_v)
 {
     // source Jon Macey
@@ -54,6 +74,11 @@ void Vector::operator-=(const Vector &_v)
     m_y-=_v.m_y;
     m_z-=_v.m_z;
     m_w=0.0;
+}
+
+Vector Vector::operator-()
+{
+    return Vector(-m_x, -m_y, -m_z, m_z);
 }
 
 Vector Vector::operator-(const Vector &_v)
@@ -65,6 +90,8 @@ Vector Vector::operator-(const Vector &_v)
    // m_z-=_v.m_z;
     //m_w=0.0;
 }
+
+
 
 Vector Vector::operator *(const float _m)
 {

@@ -13,7 +13,7 @@ public:
     Sphere(Vector, float, Colour);
     float getRadius() const { return m_radius; }
     float doIntersection(const Vector _cam, const Vector _ray);
-    Fragment getFragment(const Vector _cam, const Vector _ray);
+    Fragment getFragment(const Vector _cam, const Vector _ray, const float _distance);
 private:
     float m_radius;
 };

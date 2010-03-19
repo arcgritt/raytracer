@@ -1,17 +1,20 @@
 #include "sdlrenderer.h"
 #include "SDL/SDL.h"
 
-#include "unistd.h"
-#include "stdlib.h"
+#include <unistd.h>
+#include <stdlib.h>
 
-#include "cmath"
-#include "float.h"
-#include "ctime"
+#include <cmath>
+#include <float.h>
+#include <ctime>
+#include <algorithm>
 
 #include "Colour.h"
 #include "Vector.h"
 #include "Sphere.h"
 #include "Ray.h"
+
+
 
 
 #include "boost/random.hpp"
@@ -21,8 +24,13 @@ const int start_time = clock();
 
 Vector primaryRay;
 
+const int c_verticalFieldOfView = 120;
+
 const int c_width = 1280;
 const int c_height = 720;
+
+const float c_aspectRatio = c_width/c_height;
+
 const int c_bpp = 32;
 
 const int c_num_pixels = c_width*c_height;
@@ -39,7 +47,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-
+    // Set window title
     SDL_WM_SetCaption("Adam Gritt - RayTracer", "Adam Gritt - RayTracer");
 
 
@@ -52,43 +60,53 @@ int main(int argc, char *argv[])
         printf("Unable to set video mode: %s\n", SDL_GetError());
         return 1;
     }
+
+
+
+    //float const c_cameraPosition = (c_width/2)/tan(c_field_of_view/2);
+
+    //printf("aspect ratio: %f\n", c_aspectRatio/2);
+
+
+    //float const c_cameraPositionTest = (c_aspectRatio/2)/tan(c_field_of_view/2);
+
+    float const c_cameraPositionTest = tan(c_verticalFieldOfView/2);
+
+    printf("Camera position should be: %f\n", c_cameraPositionTest);
+
+    Vector camera = Vector(0, 0, -2000);
     
     /* Create ray vector for every pixel */
     for(int y=0; y<c_height; y++)
     {
+        float const c_halfWidth = c_aspectRatio/2;
+        float const c_xDivisionSize = c_aspectRatio/c_width;
+        float const c_yDivisionSize = 1/c_height;
+
+
         for(int x=0; x<c_width; x++)
         {
             //Vector currDirection =
             //Vector &currDirection = direction[x+y*c_width];
 
             // field of view??
-            int field_of_view = 255;
+            //int field_of_view = 0;
 
-            Vector currDirection = Vector(x - (c_width/2), y - (c_height/2), field_of_view);
+            Vector currDirection = Vector(x - (c_width/2), (c_height/2) - y, 0) - camera;
+            //Vector currDirection = Vector((x*c_xDivisionSize) - c_halfWidth,
+                                         // (y*c_yDivisionSize) - 0.5,
+                                     //     0) - camera;
             currDirection.normalise();
+            //currDirection.printDebug();
 
             Ray &currPixel = pixel_rays[x+y*c_width];
             currPixel = Ray(currDirection);
         }
     }
 
-    Ray camera = Ray(Vector(0,0,-800));
-
-
-
-
-
-
-
-    /* create some 'random' spheres to draw */
-    /*Sphere spheres[c_num_spheres];
-    spheres[0] = Sphere(Vector(0,0,500), 100, Colour(0.1f, 0.5f, 0.9f));   // center, small, blue
-    spheres[1] = Sphere(Vector(50,100,1000), 300, Colour(0.6f, 0.2f, 0.9f)); // purple
-    spheres[2] = Sphere(Vector(-500,-100,500), 250, Colour(0.7f, 0.7f, 0.1f));    // left a bit and up a bit
-    spheres[3] = Sphere(Vector(400,20,750), 400, Colour(0.9f, 0.5f, 0.4f));   // right a bit and far back
-    spheres[4] = Sphere(Vector(100,600,-1000), 400, Colour(0.3f, 0.1f, 0.9f));    // up a lot, massive*/
-
-
+    
+    
+    // Random number generator
     boost::mt19937 Generator;
 
     boost::uniform_real<float> distributionPos(0.0f, 1.0f);
@@ -99,7 +117,7 @@ int main(int argc, char *argv[])
 
 
     const int c_num_spheres = 50;
-    const int c_num_lights = 2;
+    const int c_num_lights = 1;
     RenderableObject* objects[c_num_spheres+c_num_lights];
 
    //printf("Random float: %f", RandFloat());
@@ -108,8 +126,8 @@ int main(int argc, char *argv[])
     for(int i=0; i<c_num_spheres;i++)
     {
         objects[i] = new Sphere(
-                        Vector(RandFloat()*3000, RandFloat()*3000, RandPosFloat()*500+1000),
-                        RandPosFloat()*500,
+                        Vector(RandFloat()*300, RandFloat()*300, RandPosFloat()*50+1000),
+                        RandPosFloat()*50,
                         Colour(RandPosFloat(), RandPosFloat(), RandPosFloat())
                         );
     }
@@ -117,9 +135,9 @@ int main(int argc, char *argv[])
     for(int i=0; i<c_num_lights;i++)
     {
         objects[i+c_num_spheres] = new Sphere(
-                                    Vector(RandFloat()*30+10000, 1, 500),
-                                    1,
-                                    Colour()
+                        Vector(-500, RandFloat()*300, 500),
+                        10,
+                        Colour()
                                     );
     }
 
@@ -144,7 +162,7 @@ int main(int argc, char *argv[])
         // pixel_ray = pixel_rays[i];
 
         // for each object in scene
-        for(int j=0; j<c_num_spheres;j++) {
+        for(int j=0; j<c_num_spheres+c_num_lights;j++) {
             /*// RaySphereIntersect
             // source http://www.devmaster.net/wiki/Ray-sphere_intersection
             Vector dst = camera.getVector()-objects[j]->getPosition(); // distance from camera to sphere center
@@ -153,7 +171,7 @@ int main(int argc, char *argv[])
             float c = dst.dot(dst) - objects[j]->getRadius()*objects[j]->getRadius(); // distance from camera to sphere center, squared
             float d = b*b - c;*/
 
-            float distance = objects[j]->doIntersection(camera.getVector(), pixel_rays[i].getVector());
+            float distance = objects[j]->doIntersection(camera, pixel_rays[i].getVector());
             
             if(distance >= 0) // if there is a hit
             {
@@ -171,7 +189,7 @@ int main(int argc, char *argv[])
             RenderableObject* intersected_object = objects[pixel_rays[i].get_intersection_object()];
 
             // surface normal and position of the point at which the pixel's ray hits the above object
-            Fragment pixel_fragment = intersected_object->getFragment(camera.getVector(), pixel_rays[i].getVector());
+            Fragment pixel_fragment = intersected_object->getFragment(camera, pixel_rays[i].getVector(), pixel_rays[i].get_closest_intersection());
 
             // its material
             Colour material_colour = intersected_object->getMaterial().getColour();
@@ -194,30 +212,6 @@ int main(int argc, char *argv[])
                 {
                     light_intensity += dot_product;
                 }
-            /*
-                
-                Primitive* p = m_Scene->GetPrimitive( l );
-                if (p->IsLight())
-                {
-                  Primitive* light = p;
-                  // calculate diffuse shading
-          
-                  vector3 L = ((Sphere*)light)->GetCentre() - pi;
-                  NORMALIZE( L );
-                  vector3 N = prim->GetNormal( pi );
-                  if (prim->GetMaterial()->GetDiffuse() > 0)
-                  {
-                    float dot = DOT( N, L );
-                    if (dot > 0)
-                    {
-                      float diff = dot * prim->GetMaterial()->GetDiffuse();
-                      // add diffuse component to ray color
-          
-                      a_Acc += diff * prim->GetMaterial()->GetColor() * light->GetMaterial()->GetColor();
-                    }
-                  }
-                }*/
-                
 
             }
 
@@ -231,10 +225,26 @@ int main(int argc, char *argv[])
 
             // normal pass
             light_intensity = 1/light_intensity;
+            //light_intensity = 1;
 
-            float r = fabs(normal.m_x)/light_intensity;
-            float g = fabs(normal.m_y)/light_intensity;
-            float b = fabs(normal.m_z)/light_intensity;
+
+            //Normals
+            /*float r_base = fabs(normal.m_x);
+            float g_base = fabs(normal.m_y);
+            float b_base = fabs(normal.m_z);*/
+
+
+            float pixelColours[4];
+            material_colour.getColour(&pixelColours[0]);
+            float r_base = pixelColours[0];
+            float g_base = pixelColours[1];
+            float b_base = pixelColours[2];
+
+            
+
+            float r = std::min(1.0f, (float)r_base/light_intensity);
+            float g = std::min(1.0f, (float)g_base/light_intensity);
+            float b = std::min(1.0f, (float)b_base/light_intensity);
 
             pixel_colour = Colour(r, g, b);
 

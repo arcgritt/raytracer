@@ -3,6 +3,8 @@
 
 #include "cmath"
 
+#include "cstdio"
+
 Sphere::Sphere()
 {
 
@@ -21,54 +23,69 @@ Sphere::Sphere(Vector _center, float _radius, Colour _colour)
     setMaterial(Material(_colour));
 }
 
-/*Fragment Sphere::doIntersection(const Vector _ray, const Vector _cam)
+float Sphere::doIntersection(Vector _cam, Vector _ray) // SpherePrimitive::intersect(const Ray& ray, float* t)
 {
-    Vector dst = _cam-getPosition(); // distance from camera to sphere center
+    // source: http://wiki.cgsociety.org/index.php/Ray_Sphere_Intersection
 
-    float b = dst.dot(_ray); // angle between vector to sphere center and vector to pixel
-    float c = dst.dot(dst) - getRadius()*getRadius(); // distance from camera to sphere center, squared
-    float d = b*b - c;
+    Vector dst = _cam-getPosition();
 
-    if(d >= 0) // if there is a hit
+    //Compute A, B and C coefficients
+    float a = _ray.dot(_ray);
+    float b = 2 * _ray.dot(dst);
+    float c = dst.dot(dst) - (getRadius() * getRadius());
+
+    //Find discriminant
+    float disc = b * b - 4 * a * c;
+
+    // if discriminant is negative there are no real roots, so return
+    // false as ray misses sphere
+    if (disc < 0)
+        return -1;
+
+    // compute q as described above
+    float distSqrt = sqrtf(disc);
+    float q;
+    if (b < 0)
+        q = (-b - distSqrt)/2.0;
+    else
+        q = (-b + distSqrt)/2.0;
+
+    // compute t0 and t1
+    float t0 = q / a;
+    float t1 = c / q;
+
+    // make sure t0 is smaller than t1
+    if (t0 > t1)
     {
-        //hit = true;
-        float intersection_distance = -b - sqrt(d);
-        //pixel_rays[i].intersection(intersection_distance, j);
-
-        Vector position = _ray * intersection_distance;
-        Vector normal = getCenter();
-        //Fragment hit_fragment = Fragment(const Vector &_position, const Vector &_normal, const Material &_material)
-    }
-}
-*/
-
-float Sphere::doIntersection(Vector _cam, Vector _ray)
-{
-    Vector dst = _cam-getPosition(); // distance from camera to sphere center
-
-    float b = dst.dot(_ray); // angle between vector to sphere center and vector to pixel
-    float c = dst.dot(dst) - getRadius()*getRadius(); // distance from camera to sphere center, squared
-    float d = b*b - c;
-
-    if(d >= 0) {
-        return -b - sqrt(d);
+        // if t0 is bigger than t1 swap them around
+        float temp = t0;
+        t0 = t1;
+        t1 = temp;
     }
 
-    return d;
+    // if t1 is less than zero, the object is in the ray's negative direction
+    // and consequently the ray misses the sphere
+    if (t1 < 0)
+        return -1;
+
+    // if t0 is less than zero, the intersection point is at t1
+    if (t0 < 0)
+    {
+        return t1;
+    }
+    // else the intersection point is at t0
+    else
+    {
+        return t0;
+    }
 }
 
-Fragment Sphere::getFragment(Vector _cam, Vector _ray)
+Fragment Sphere::getFragment(Vector _cam, Vector _ray, float _distance)
 {
-    Vector dst = _cam-getPosition(); // distance from camera to sphere center
+    Vector point = _ray * _distance;
+    Vector position = -_cam + getPosition();
 
-    float b = dst.dot(_ray); // angle between vector to sphere center and vector to pixel
-    float c = dst.dot(dst) - getRadius()*getRadius(); // distance from camera to sphere center, squared
-    float d = b*b - c;
-
-    float distance_from_cam = -b - sqrt(d);
-
-    Vector point = _ray * distance_from_cam;
-    Vector normal = point - getPosition();
+    Vector normal = point - position;
     normal.normalise();
 
     return Fragment(point, normal, getMaterial());
