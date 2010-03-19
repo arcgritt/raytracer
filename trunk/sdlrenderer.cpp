@@ -13,6 +13,7 @@
 #include "Vector.h"
 #include "Sphere.h"
 #include "Ray.h"
+#include "Light.h"
 
 
 #include "boost/random.hpp"
@@ -22,7 +23,7 @@
 
 const int start_time = clock();
 
-const int c_verticalFieldOfView = 120;
+const int c_verticalFieldOfView = 90;
 const int c_width = 1280;
 const int c_height = 720;
 const int c_bpp = 32;
@@ -34,8 +35,9 @@ const int c_num_pixels = c_width*c_height;
 const float c_yDivisionSize = 1.0f/(float)c_height;
 
 const int c_num_spheres = 50;
-const int c_num_lights = 1;
-RenderableObject* objects[c_num_spheres+c_num_lights];
+const int c_num_lights = 2;
+RenderableObject* objects[c_num_spheres];
+Light* lights[c_num_lights];
 
 Vector camera;
 
@@ -58,7 +60,7 @@ Colour RayTracePixel(const int _x, const int _y)
     bool hit = false;
 
     // for each object in scene
-    for(int j=0; j<c_num_spheres+c_num_lights;j++) {
+    for(int j=0; j<c_num_spheres;j++) {
         float distance = objects[j]->doIntersection(camera, currentPixel.getVector());
 
         if(distance >= 0) // if there is a hit
@@ -88,11 +90,12 @@ Colour RayTracePixel(const int _x, const int _y)
         // for each light
         for(int l=0; l<c_num_lights;l++)
         {
-            RenderableObject* light = objects[l+c_num_spheres];
+            Light* light = lights[l];
 
             // vector from intersection to light
             // could be used for light falloff
             Vector light_vector = light->getPosition()-pixel_fragment.getPosition();
+            float light_attenuation = light_vector.SquareLength();
 
             light_vector.normalise();
 
@@ -102,7 +105,7 @@ Colour RayTracePixel(const int _x, const int _y)
             // if dot product > 0 (angle less than 90)
             if(dot_product > 0)
             {
-                light_intensity += dot_product;
+                light_intensity += dot_product*(light->GetMagnitude()/light_attenuation);
             }
 
         }        
@@ -122,6 +125,16 @@ Colour RayTracePixel(const int _x, const int _y)
         float g_base = pixelColours[1];
         float b_base = pixelColours[2];
         //*/
+        
+        /* Lambert Normals
+        light_intensity = 1/light_intensity;
+        float pixelColours[4];
+        material_colour.getColour(&pixelColours[0]);
+        float r_base = pixelColours[0] * fabs(normal.m_x);
+        float g_base = pixelColours[1] * fabs(normal.m_y);
+        float b_base = pixelColours[2] * fabs(normal.m_z);
+        //*/
+        
 
         float r = std::min(1.0f, (float)r_base/light_intensity);
         float g = std::min(1.0f, (float)g_base/light_intensity);
@@ -194,10 +207,11 @@ int main(int argc, char *argv[])
 
     for(int i=0; i<c_num_lights;i++)
     {
-        objects[i+c_num_spheres] = new Sphere(
-                Vector(-50, RandFloat(), 30),
+        lights[i] = new Light(
+                Vector(-7, RandFloat(), 30),
                 1,
-                Colour()
+                Colour(),
+                10
                 );
     }
 

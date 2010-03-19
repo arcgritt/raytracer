@@ -7,7 +7,7 @@ class SDLRenderer
 {
 public:
     SDLRenderer();
-    Colour RayTracePixel(const int _x, const int _y);
+    void RayTracePixel(const int _x, const int _y);
 private:
 };
 

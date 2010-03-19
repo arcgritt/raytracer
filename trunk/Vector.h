@@ -9,6 +9,8 @@ public:
     Vector(float, float, float, float);
     void printDebug();
     void normalise();
+    float Length();
+    float SquareLength();
     float dot(const Vector&);
     void operator+=(const Vector&);
     Vector operator+(const Vector&);

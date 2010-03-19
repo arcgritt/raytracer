@@ -40,6 +40,17 @@ void Vector::normalise()
     m_z/=length;
 }
 
+float Vector::Length()
+{
+    return sqrt(SquareLength());
+}
+
+float Vector::SquareLength()
+{
+    return m_x*m_x + m_y*m_y + m_z*m_z;
+}
+
+
 float Vector::dot(const Vector &_v)
 {
     // source Jon Macey
