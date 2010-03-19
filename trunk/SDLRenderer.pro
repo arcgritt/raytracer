@@ -11,15 +11,15 @@ HEADERS += sdlrenderer.h \
     Colour.h \
     Sphere.h \
     Ray.h \
-    Intersect.h \
     RenderableObject.h \
-    Material.h
+    Material.h \
+    Fragment.h
 SOURCES += sdlrenderer.cpp \
     Box.cpp \
     Vector.cpp \
     Colour.cpp \
     Sphere.cpp \
     Ray.cpp \
-    Intersect.cpp \
     RenderableObject.cpp \
-    Material.cpp
+    Material.cpp \
+    Fragment.cpp

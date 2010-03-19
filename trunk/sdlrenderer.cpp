@@ -39,6 +39,10 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+
+    SDL_WM_SetCaption("Adam Gritt - RayTracer", "Adam Gritt - RayTracer");
+
+
     //When this program exits, SDL_Quit must be called
     atexit(SDL_Quit);
 
@@ -72,8 +76,7 @@ int main(int argc, char *argv[])
 
 
 
-    const int c_num_spheres = 50;
-    RenderableObject* objects[c_num_spheres];
+
 
 
 
@@ -88,23 +91,40 @@ int main(int argc, char *argv[])
 
     boost::mt19937 Generator;
 
-    boost::uniform_real<float> distribLength(0.0f, 1.0f);
-    boost::variate_generator<boost::mt19937&, boost::uniform_real<float> > RandPosFloat(Generator, distribLength);
+    boost::uniform_real<float> distributionPos(0.0f, 1.0f);
+    boost::variate_generator<boost::mt19937&, boost::uniform_real<float> > RandPosFloat(Generator, distributionPos);
 
-    boost::uniform_real<float> distribLength2(-1.0f, 1.0f);
-    boost::variate_generator<boost::mt19937&, boost::uniform_real<float> > RandFloat(Generator, distribLength2);
+    boost::uniform_real<float> distribution(-1.0f, 1.0f);
+    boost::variate_generator<boost::mt19937&, boost::uniform_real<float> > RandFloat(Generator, distribution);
 
-    printf("Random float: %f", RandFloat());
+
+    const int c_num_spheres = 50;
+    const int c_num_lights = 2;
+    RenderableObject* objects[c_num_spheres+c_num_lights];
+
+   //printf("Random float: %f", RandFloat());
 
 
     for(int i=0; i<c_num_spheres;i++)
     {
-        objects[i] = new Sphere(Vector(RandFloat()*3000, RandFloat()*3000, RandPosFloat()*500+1000), RandPosFloat()*500, Colour(RandPosFloat(), RandPosFloat(), RandPosFloat()));
+        objects[i] = new Sphere(
+                        Vector(RandFloat()*3000, RandFloat()*3000, RandPosFloat()*500+1000),
+                        RandPosFloat()*500,
+                        Colour(RandPosFloat(), RandPosFloat(), RandPosFloat())
+                        );
+    }
+
+    for(int i=0; i<c_num_lights;i++)
+    {
+        objects[i+c_num_spheres] = new Sphere(
+                                    Vector(RandFloat()*30+10000, 1, 500),
+                                    1,
+                                    Colour()
+                                    );
     }
 
 
-
-    Sphere light = Sphere(Vector(100,100,500), 50);
+    //Sphere light = Sphere(Vector(100,100,500), 50);
 
 
     const int frame_time = clock();
@@ -112,25 +132,34 @@ int main(int argc, char *argv[])
 
     // Draw the scene
     Uint32 *pixels = (Uint32 *)screen->pixels;
+    
+    
+    Fragment pixel_fragment;
+
+    // for each pixel
     for(int i=0; i<c_num_pixels;i++)
     {
 
         bool hit = false;
         // pixel_ray = pixel_rays[i];
+
+        // for each object in scene
         for(int j=0; j<c_num_spheres;j++) {
-            // RaySphereIntersect
+            /*// RaySphereIntersect
             // source http://www.devmaster.net/wiki/Ray-sphere_intersection
             Vector dst = camera.getVector()-objects[j]->getPosition(); // distance from camera to sphere center
 
             float b = dst.dot(pixel_rays[i].getVector()); // angle between vector to sphere center and vector to pixel
             float c = dst.dot(dst) - objects[j]->getRadius()*objects[j]->getRadius(); // distance from camera to sphere center, squared
-            float d = b*b - c;
+            float d = b*b - c;*/
 
-            if(d >= 0) // if there is a hit
+            float distance = objects[j]->doIntersection(camera.getVector(), pixel_rays[i].getVector());
+            
+            if(distance >= 0) // if there is a hit
             {
                 hit = true;
-                float intersection_distance = -b - sqrt(d);
-                pixel_rays[i].intersection(intersection_distance, j);
+                //float intersection_distance = -b - sqrt(d);
+                pixel_rays[i].intersection(distance, j);
             }
         }
 
@@ -138,7 +167,78 @@ int main(int argc, char *argv[])
         Colour pixel_colour;
         if(hit)
         {
-            pixel_colour = objects[pixel_rays[i].get_intersection_object()]->getMaterial().getColour();
+            // object that this pixel hits
+            RenderableObject* intersected_object = objects[pixel_rays[i].get_intersection_object()];
+
+            // surface normal and position of the point at which the pixel's ray hits the above object
+            Fragment pixel_fragment = intersected_object->getFragment(camera.getVector(), pixel_rays[i].getVector());
+
+            // its material
+            Colour material_colour = intersected_object->getMaterial().getColour();
+
+            // its normal
+            Vector normal = pixel_fragment.getNormal();
+
+
+            float light_intensity = 0;
+            
+            for(int l=0; l<c_num_lights;l++)
+            {
+                RenderableObject* light = objects[l+c_num_spheres];
+                Vector light_vector = light->getPosition()-pixel_fragment.getPosition();//intersected_object->getPosition();
+                light_vector.normalise();
+                float dot_product = light_vector.dot(normal);
+                //normal.dot()
+
+                if(dot_product > 0)
+                {
+                    light_intensity += dot_product;
+                }
+            /*
+                
+                Primitive* p = m_Scene->GetPrimitive( l );
+                if (p->IsLight())
+                {
+                  Primitive* light = p;
+                  // calculate diffuse shading
+          
+                  vector3 L = ((Sphere*)light)->GetCentre() - pi;
+                  NORMALIZE( L );
+                  vector3 N = prim->GetNormal( pi );
+                  if (prim->GetMaterial()->GetDiffuse() > 0)
+                  {
+                    float dot = DOT( N, L );
+                    if (dot > 0)
+                    {
+                      float diff = dot * prim->GetMaterial()->GetDiffuse();
+                      // add diffuse component to ray color
+          
+                      a_Acc += diff * prim->GetMaterial()->GetColor() * light->GetMaterial()->GetColor();
+                    }
+                  }
+                }*/
+                
+
+            }
+
+            /*
+            // normal pass comp with material colour
+            float pixelColours[4];
+            material_colour.getColour(&pixelColours[0]);
+            pixel_colour = Colour(fabs(normal.m_x)*pixelColours[0], fabs(normal.m_y)*pixelColours[1], fabs(normal.m_z)*pixelColours[2]);
+            */
+
+
+            // normal pass
+            light_intensity = 1/light_intensity;
+
+            float r = fabs(normal.m_x)/light_intensity;
+            float g = fabs(normal.m_y)/light_intensity;
+            float b = fabs(normal.m_z)/light_intensity;
+
+            pixel_colour = Colour(r, g, b);
+
+
             //pixel_colour = spheres[pixel_rays[i].get_intersection_object()].getColour();
         }
         else

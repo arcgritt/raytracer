@@ -29,3 +29,10 @@ void Colour::getColour256(unsigned char* _colour)
     _colour[2] = 255*c_b;
     _colour[3] = 255*c_a;
 }
+
+void Colour::getColour(float* _colour) {
+    _colour[0] = c_r;
+    _colour[1] = c_g;
+    _colour[2] = c_b;
+    _colour[3] = c_a;
+}

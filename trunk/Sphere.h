@@ -11,13 +11,11 @@ public:
     Sphere();
     Sphere(Vector, float);
     Sphere(Vector, float, Colour);
-    float getRadius();
-    //Vector getCenter();
-    //Colour getColour();
+    float getRadius() const { return m_radius; }
+    float doIntersection(const Vector _cam, const Vector _ray);
+    Fragment getFragment(const Vector _cam, const Vector _ray);
 private:
-    //Vector m_center;
     float m_radius;
-   // Colour m_colour;
 };
 
 #endif // SPHERE_H

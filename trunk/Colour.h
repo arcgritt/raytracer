@@ -8,7 +8,8 @@ public:
     Colour(float, float, float);
     Colour(float, float, float, float);
     //float getColourScalar();
-    void getColour256(unsigned char *_colour);
+    void getColour256 (unsigned char *_colour);
+    void getColour (float *_colour);
 private:
     float c_r;
     float c_g;

@@ -65,3 +65,13 @@ Vector Vector::operator-(const Vector &_v)
    // m_z-=_v.m_z;
     //m_w=0.0;
 }
+
+Vector Vector::operator *(const float _m)
+{
+    return Vector(
+            m_x*_m,
+            m_y*_m,
+            m_z*_m,
+            m_w
+            );
+}

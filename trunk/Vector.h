@@ -4,6 +4,16 @@
 class Vector
 {
 public:
+    Vector();
+    Vector(float, float, float);
+    Vector(float, float, float, float);
+    void printDebug();
+    void normalise();
+    float dot(const Vector&);
+    void operator-=(const Vector&);
+    Vector operator-(const Vector&);
+    Vector operator*(float _m);
+private:
     union
     {
         #pragma pack(push,1)
@@ -28,15 +38,6 @@ public:
 
         float m_vector[4];
     };
-    Vector();
-    Vector(float, float, float);
-    Vector(float, float, float, float);
-    void printDebug();
-    void normalise();
-    float dot(const Vector&);
-    void operator-=(const Vector&);
-    Vector operator-(const Vector&);
-private:
 };
 
 #endif // VECTOR_H

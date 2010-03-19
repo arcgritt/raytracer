@@ -33,13 +33,3 @@ void Ray::intersection(const float &_intersection_distance, const int &_intersec
         m_intersection_object = _intersection_object;
     }
 }
-
-float Ray::get_closest_intersection()
-{
-    return m_closest_intersection;
-}
-
-int Ray::get_intersection_object()
-{
-    return m_intersection_object;
-}

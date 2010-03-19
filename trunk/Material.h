@@ -8,7 +8,7 @@ class Material
 public:
     Material();
     Material(Colour _colour);
-    Colour& getColour() { return m_colour; }
+    Colour getColour() const { return m_colour; }
     void setColour(const Colour &_colour) { m_colour = _colour; }
 private:
     Colour m_colour;
