@@ -7,11 +7,15 @@ class Material
 {
 public:
     Material();
-    Material(Colour _colour);
-    Colour getColour() const { return m_colour; }
-    void setColour(const Colour &_colour) { m_colour = _colour; }
+    Material(const Colour& _colour);
+    Material(const Colour& _colour, const float _reflectivity );
+    Colour GetColour() const { return c_colour; }
+    //void setColour(const Colour &_colour) { m_colour = _colour; }
+    float GetReflectivity() { return c_reflectivity; }
+   // void setReflectivity()
 private:
-    Colour m_colour;
+    Colour c_colour;
+    float c_reflectivity;
 };
 
 #endif // MATERIAL_H

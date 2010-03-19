@@ -210,7 +210,7 @@ Colour SDLRenderer::RayTracePixel(const unsigned int _x, const unsigned int _y)
         Fragment pixel_fragment = objectIntersected->getFragment(camera, currentPixel.GetVector(), currentPixel.GetClosestIntersection());
 
         // its material
-        Colour material_colour = objectIntersected->getMaterial().getColour();
+        Colour material_colour = objectIntersected->getMaterial().GetColour();
 
         // its normal
         Vector normal = pixel_fragment.getNormal();
