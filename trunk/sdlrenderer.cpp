@@ -15,27 +15,31 @@
 #include "Ray.h"
 
 
-
-
 #include "boost/random.hpp"
+//#include <boost/thread/thread.hpp>
 
+#define PI 3.1415926535
 
 const int start_time = clock();
 
-Vector primaryRay;
-
 const int c_verticalFieldOfView = 120;
-
 const int c_width = 1280;
 const int c_height = 720;
-
-const float c_aspectRatio = c_width/c_height;
-
 const int c_bpp = 32;
 
-const int c_num_pixels = c_width*c_height;
 
-Ray pixel_rays[c_num_pixels];
+const float c_aspectRatio = (float)c_width/(float)c_height;
+const float c_halfWidth = c_aspectRatio*0.5;
+const int c_num_pixels = c_width*c_height;
+const float c_yDivisionSize = 1.0f/(float)c_height;
+
+const int c_num_spheres = 50;
+const int c_num_lights = 1;
+RenderableObject* objects[c_num_spheres+c_num_lights];
+
+Vector camera;
+
+//Ray pixel_rays[c_num_pixels];
 
 int main(int argc, char *argv[])
 {
@@ -61,51 +65,20 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+    const float c_cameraPosition = -0.5/tan((c_verticalFieldOfView/2)*(PI/180));
+    camera = Vector(0, 0, c_cameraPosition);
+
+    const bool debug = true;
 
 
-    //float const c_cameraPosition = (c_width/2)/tan(c_field_of_view/2);
-
-    //printf("aspect ratio: %f\n", c_aspectRatio/2);
 
 
-    //float const c_cameraPositionTest = (c_aspectRatio/2)/tan(c_field_of_view/2);
-
-    float const c_cameraPositionTest = tan(c_verticalFieldOfView/2);
-
-    printf("Camera position should be: %f\n", c_cameraPositionTest);
-
-    Vector camera = Vector(0, 0, -2000);
-    
-    /* Create ray vector for every pixel */
-    for(int y=0; y<c_height; y++)
-    {
-        float const c_halfWidth = c_aspectRatio/2;
-        float const c_xDivisionSize = c_aspectRatio/c_width;
-        float const c_yDivisionSize = 1/c_height;
-
-
-        for(int x=0; x<c_width; x++)
-        {
-            //Vector currDirection =
-            //Vector &currDirection = direction[x+y*c_width];
-
-            // field of view??
-            //int field_of_view = 0;
-
-            Vector currDirection = Vector(x - (c_width/2), (c_height/2) - y, 0) - camera;
-            //Vector currDirection = Vector((x*c_xDivisionSize) - c_halfWidth,
-                                         // (y*c_yDivisionSize) - 0.5,
-                                     //     0) - camera;
-            currDirection.normalise();
-            //currDirection.printDebug();
-
-            Ray &currPixel = pixel_rays[x+y*c_width];
-            currPixel = Ray(currDirection);
-        }
+    if(debug) {
+        printf("Camera position: %f\n", c_cameraPosition);
+        printf("Aspect ratio: %f\n", c_aspectRatio);
+        printf("Y Axis Division Size: %f\n", c_yDivisionSize);
     }
 
-    
-    
     // Random number generator
     boost::mt19937 Generator;
 
@@ -116,184 +89,44 @@ int main(int argc, char *argv[])
     boost::variate_generator<boost::mt19937&, boost::uniform_real<float> > RandFloat(Generator, distribution);
 
 
-    const int c_num_spheres = 50;
-    const int c_num_lights = 1;
-    RenderableObject* objects[c_num_spheres+c_num_lights];
 
-   //printf("Random float: %f", RandFloat());
+    //printf("Random float: %f", RandFloat());
 
 
     for(int i=0; i<c_num_spheres;i++)
     {
         objects[i] = new Sphere(
-                        Vector(RandFloat()*300, RandFloat()*300, RandPosFloat()*50+1000),
-                        RandPosFloat()*50,
-                        Colour(RandPosFloat(), RandPosFloat(), RandPosFloat())
-                        );
+                Vector(RandFloat()*10, RandFloat()*10, RandPosFloat()+30),
+                RandPosFloat(),
+                Colour(RandPosFloat(), RandPosFloat(), RandPosFloat())
+                );
     }
 
     for(int i=0; i<c_num_lights;i++)
     {
         objects[i+c_num_spheres] = new Sphere(
-                        Vector(-500, RandFloat()*300, 500),
-                        10,
-                        Colour()
-                                    );
+                Vector(-50, RandFloat(), 30),
+                1,
+                Colour()
+                );
     }
-
-
-    //Sphere light = Sphere(Vector(100,100,500), 50);
-
 
     const int frame_time = clock();
 
+    Uint32 *pixels = (Uint32 *)screen->pixels;
 
     // Draw the scene
-    Uint32 *pixels = (Uint32 *)screen->pixels;
-    
-    
-    Fragment pixel_fragment;
-
-    // for each pixel
-    for(int i=0; i<c_num_pixels;i++)
+    for(int y=0; y<c_height; y++)
     {
-
-        bool hit = false;
-        // pixel_ray = pixel_rays[i];
-
-        // for each object in scene
-        for(int j=0; j<c_num_spheres+c_num_lights;j++) {
-            /*// RaySphereIntersect
-            // source http://www.devmaster.net/wiki/Ray-sphere_intersection
-            Vector dst = camera.getVector()-objects[j]->getPosition(); // distance from camera to sphere center
-
-            float b = dst.dot(pixel_rays[i].getVector()); // angle between vector to sphere center and vector to pixel
-            float c = dst.dot(dst) - objects[j]->getRadius()*objects[j]->getRadius(); // distance from camera to sphere center, squared
-            float d = b*b - c;*/
-
-            float distance = objects[j]->doIntersection(camera, pixel_rays[i].getVector());
-            
-            if(distance >= 0) // if there is a hit
-            {
-                hit = true;
-                //float intersection_distance = -b - sqrt(d);
-                pixel_rays[i].intersection(distance, j);
-            }
-        }
-
-
-        Colour pixel_colour;
-        if(hit)
+        for(int x=0; x<c_width; x++)
         {
-            // object that this pixel hits
-            RenderableObject* intersected_object = objects[pixel_rays[i].get_intersection_object()];
+            Colour pixelColour = RayTracePixel(x, y);
+            unsigned char pixelColours[4];
+            pixelColour.getColour256(&pixelColours[0]);
 
-            // surface normal and position of the point at which the pixel's ray hits the above object
-            Fragment pixel_fragment = intersected_object->getFragment(camera, pixel_rays[i].getVector(), pixel_rays[i].get_closest_intersection());
-
-            // its material
-            Colour material_colour = intersected_object->getMaterial().getColour();
-
-            // its normal
-            Vector normal = pixel_fragment.getNormal();
-
-
-            float light_intensity = 0;
-            
-            for(int l=0; l<c_num_lights;l++)
-            {
-                RenderableObject* light = objects[l+c_num_spheres];
-                Vector light_vector = light->getPosition()-pixel_fragment.getPosition();//intersected_object->getPosition();
-                light_vector.normalise();
-                float dot_product = light_vector.dot(normal);
-                //normal.dot()
-
-                if(dot_product > 0)
-                {
-                    light_intensity += dot_product;
-                }
-
-            }
-
-            /*
-            // normal pass comp with material colour
-            float pixelColours[4];
-            material_colour.getColour(&pixelColours[0]);
-            pixel_colour = Colour(fabs(normal.m_x)*pixelColours[0], fabs(normal.m_y)*pixelColours[1], fabs(normal.m_z)*pixelColours[2]);
-            */
-
-
-            // normal pass
-            light_intensity = 1/light_intensity;
-            //light_intensity = 1;
-
-
-            //Normals
-            /*float r_base = fabs(normal.m_x);
-            float g_base = fabs(normal.m_y);
-            float b_base = fabs(normal.m_z);*/
-
-
-            float pixelColours[4];
-            material_colour.getColour(&pixelColours[0]);
-            float r_base = pixelColours[0];
-            float g_base = pixelColours[1];
-            float b_base = pixelColours[2];
-
-            
-
-            float r = std::min(1.0f, (float)r_base/light_intensity);
-            float g = std::min(1.0f, (float)g_base/light_intensity);
-            float b = std::min(1.0f, (float)b_base/light_intensity);
-
-            pixel_colour = Colour(r, g, b);
-
-
-            //pixel_colour = spheres[pixel_rays[i].get_intersection_object()].getColour();
+            pixels[x+y*c_width] = SDL_MapRGB(screen->format, (Uint8)pixelColours[0], (Uint8)pixelColours[1], (Uint8)pixelColours[2]);
         }
-        else
-        {
-            // background colour
-            pixel_colour = Colour(0.5f, 0.5f, 0.5f);
-        }
-
-        unsigned char pixelColours[4];
-        pixel_colour.getColour256(&pixelColours[0]);
-
-        pixels[i] = SDL_MapRGB(screen->format, (Uint8)pixelColours[0], (Uint8)pixelColours[1], (Uint8)pixelColours[2]);
     }
-
-
-    /*// determine color at point of intersection
-    pi = a_Ray.GetOrigin() + a_Ray.GetDirection() * a_Dist;
-    // trace lights
-    for ( int l = 0; l < m_Scene->GetNrPrimitives(); l++ )
-    {
-      Primitive* p = m_Scene->GetPrimitive( l );
-      if (p->IsLight())
-      {
-        Primitive* light = p;
-        // calculate diffuse shading
-
-        vector3 L = ((Sphere*)light)->GetCentre() - pi;
-        NORMALIZE( L );
-        vector3 N = prim->GetNormal( pi );
-        if (prim->GetMaterial()->GetDiffuse() > 0)
-        {
-          float dot = DOT( N, L );
-          if (dot > 0)
-          {
-            float diff = dot * prim->GetMaterial()->GetDiffuse();
-            // add diffuse component to ray color
-
-            a_Acc += diff * prim->GetMaterial()->GetColor() * light->GetMaterial()->GetColor();
-          }
-        }
-      }
-    }*/
-
-
-
 
     const int finish_time = clock();
 
@@ -308,4 +141,106 @@ int main(int argc, char *argv[])
 
     //Return success!
     return EXIT_SUCCESS;
+}
+
+
+Colour SDLRenderer::RayTracePixel(const int _x, const int _y)
+{
+    Ray currentPixel;
+    Fragment pixel_fragment;
+    Vector currDirection = Vector(_x*c_yDivisionSize-c_halfWidth,
+                                  _y*c_yDivisionSize-0.5,
+                                  1) - camera;
+
+    currDirection.normalise();
+
+    currentPixel = Ray(currDirection);
+
+    // Ray pixel_rays[x+y*c_width];
+    // currPixel = Ray(currDirection);
+
+
+    bool hit = false;
+
+    // for each object in scene
+    for(int j=0; j<c_num_spheres+c_num_lights;j++) {
+        float distance = objects[j]->doIntersection(camera, currentPixel.getVector());
+
+        if(distance >= 0) // if there is a hit
+        {
+            hit = true;
+            currentPixel.intersection(distance, j);
+        }
+    }
+
+
+    Colour pixel_colour;
+    if(hit)
+    {
+        // object that this pixel hits
+        RenderableObject* intersected_object = objects[currentPixel.get_intersection_object()];
+
+        // surface normal, position and material of the point at which the pixel's ray hits the above object
+        Fragment pixel_fragment = intersected_object->getFragment(camera, currentPixel.getVector(), currentPixel.get_closest_intersection());
+
+        // its material
+        Colour material_colour = intersected_object->getMaterial().getColour();
+
+        // its normal
+        Vector normal = pixel_fragment.getNormal();
+
+        float light_intensity = 0;
+        // for each light
+        for(int l=0; l<c_num_lights;l++)
+        {
+            RenderableObject* light = objects[l+c_num_spheres];
+
+            // vector from intersection to light
+            // could be used for light falloff
+            Vector light_vector = light->getPosition()-pixel_fragment.getPosition();
+
+            light_vector.normalise();
+
+            float dot_product = light_vector.dot(normal);
+            //normal.dot()
+
+            // if dot product > 0 (angle less than 90)
+            if(dot_product > 0)
+            {
+                light_intensity += dot_product;
+            }
+
+        }        
+
+        ///* Normals
+        light_intensity = 1;
+        float r_base = fabs(normal.m_x);
+        float g_base = fabs(normal.m_y);
+        float b_base = fabs(normal.m_z);
+        //*/
+
+        /* Lambert
+        light_intensity = 1/light_intensity;
+        float pixelColours[4];
+        material_colour.getColour(&pixelColours[0]);
+        float r_base = pixelColours[0];
+        float g_base = pixelColours[1];
+        float b_base = pixelColours[2];
+        */
+
+        float r = std::min(1.0f, (float)r_base/light_intensity);
+        float g = std::min(1.0f, (float)g_base/light_intensity);
+        float b = std::min(1.0f, (float)b_base/light_intensity);
+
+        return pixel_colour = Colour(r, g, b);
+
+
+        //pixel_colour = spheres[pixel_rays[i].get_intersection_object()].getColour();
+    }
+    else
+    {
+        // background colour
+        return pixel_colour = Colour(0.5f, 0.5f, 0.5f);
+    }
+
 }
