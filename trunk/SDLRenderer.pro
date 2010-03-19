@@ -1,10 +1,11 @@
-#QT -= core \
- #   gui
+# QT -= core \
+# gui
 INCLUDEPATH += $$(HOME)/lib/SDL/include
 INCLUDEPATH += $$(HOME)/lib/SDL/bin
-#INCLUDEPATH += $$(HOME)/lib/Boost
+
+# INCLUDEPATH += $$(HOME)/lib/Boost
 LIBS += -lSDLmain
-LIBS+= -lpthread
+LIBS += -lpthread
 LIBS += -L \
     $$(HOME)/lib/SDL/lib
 LIBS += -lSDL
@@ -17,7 +18,8 @@ HEADERS += sdlrenderer.h \
     RenderableObject.h \
     Material.h \
     Fragment.h \
-    Light.h
+    Light.h \
+    ReflectableRay.h
 SOURCES += sdlrenderer.cpp \
     Box.cpp \
     Vector.cpp \
@@ -27,4 +29,5 @@ SOURCES += sdlrenderer.cpp \
     RenderableObject.cpp \
     Material.cpp \
     Fragment.cpp \
-    Light.cpp
+    Light.cpp \
+    ReflectableRay.cpp

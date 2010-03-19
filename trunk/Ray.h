@@ -2,21 +2,23 @@
 #define RAY_H
 
 #include "Vector.h"
+#include "RenderableObject.h"
 
 class Ray
 {
 public:
     Ray();
-    Ray(Vector);
-    void intersection(const float&, const int&);
-    void printDebug();
-    Vector& getVector();
-    float get_closest_intersection() const { return m_closest_intersection; }
-    int get_intersection_object() const { return m_intersection_object; }
+    Ray(Vector& _direction);
+    void Intersection(const float& _intersectionDistance, RenderableObject& _objectIntersected);
+    void PrintDebug();
+    Vector& GetVector();
+    float GetClosestIntersection() const { return m_closestIntersection; }
+    RenderableObject* GetObjectIntersected() const { return m_objectIntersected; }
 private:
-    float m_closest_intersection;
-    unsigned int m_intersection_object;
     Vector m_direction;
+    float m_closestIntersection;
+    RenderableObject* m_objectIntersected;
+    Ray* m_reflection;
 };
 
 #endif // RAY_H

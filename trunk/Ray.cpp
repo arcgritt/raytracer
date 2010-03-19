@@ -8,28 +8,28 @@ Ray::Ray()
 
 }
 
-Ray::Ray(Vector _direction)
+Ray::Ray(Vector& _direction)
 {
     m_direction = _direction;
-    m_closest_intersection = FLT_MAX;
+    m_closestIntersection = FLT_MAX;
 }
 
-void Ray::printDebug()
+void Ray::PrintDebug()
 {
     m_direction.printDebug();
-    printf("Float Max: %f", m_closest_intersection);
+    printf("Float Max: %f", m_closestIntersection);
 }
 
-Vector& Ray::getVector()
+Vector& Ray::GetVector()
 {
     return m_direction;
 }
 
-void Ray::intersection(const float &_intersection_distance, const int &_intersection_object)
+void Ray::Intersection(const float& _intersectionDistance, RenderableObject& _objectIntersected)
 {
-    if(_intersection_distance < m_closest_intersection)
+    if(_intersectionDistance < m_closestIntersection)
     {
-        m_closest_intersection = _intersection_distance;
-        m_intersection_object = _intersection_object;
+        m_closestIntersection = _intersectionDistance;
+        m_objectIntersected = &_objectIntersected;
     }
 }
