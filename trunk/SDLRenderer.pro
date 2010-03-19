@@ -1,7 +1,10 @@
+#QT -= core \
+ #   gui
 INCLUDEPATH += $$(HOME)/lib/SDL/include
 INCLUDEPATH += $$(HOME)/lib/SDL/bin
 #INCLUDEPATH += $$(HOME)/lib/Boost
 LIBS += -lSDLmain
+LIBS+= -lpthread
 LIBS += -L \
     $$(HOME)/lib/SDL/lib
 LIBS += -lSDL

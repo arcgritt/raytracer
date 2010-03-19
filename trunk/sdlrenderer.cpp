@@ -17,7 +17,7 @@
 
 
 #include "boost/random.hpp"
-//#include <boost/thread.hpp>
+#include <boost/thread.hpp>
 
 #define PI 3.1415926535
 
@@ -40,6 +40,8 @@ RenderableObject* objects[c_num_spheres];
 Light* lights[c_num_lights];
 
 Vector camera;
+
+boost::thread *t;
 
 Colour RayTracePixel(const int _x, const int _y)
 {
