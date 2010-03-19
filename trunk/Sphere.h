@@ -3,19 +3,21 @@
 
 #include "Vector.h"
 #include "Colour.h"
+#include "RenderableObject.h"
 
-class Sphere
+class Sphere: public RenderableObject
 {
 public:
     Sphere();
     Sphere(Vector, float);
+    Sphere(Vector, float, Colour);
     float getRadius();
-    Vector getCenter();
-    Colour getColour();
+    //Vector getCenter();
+    //Colour getColour();
 private:
-    Vector m_center;
+    //Vector m_center;
     float m_radius;
-    Colour m_colour;
+   // Colour m_colour;
 };
 
 #endif // SPHERE_H

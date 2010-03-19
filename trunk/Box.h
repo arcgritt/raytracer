@@ -6,12 +6,13 @@
 class Box
 {
 public:
-    Box();
+    Box(Vector &_center, float _size);
+    Box(Vector &_center, float _x_size, float _y_size, float _z_size);
 private:
-    Vector center;
-    float x_magnitude;
-    float y_magnitude;
-    float z_magnitude;
+    Vector m_center;
+    float m_x_size;
+    float m_y_size;
+    float m_z_size;
 };
 
 #endif // BOX_H

@@ -1,5 +1,6 @@
 INCLUDEPATH += $$(HOME)/lib/SDL/include
 INCLUDEPATH += $$(HOME)/lib/SDL/bin
+INCLUDEPATH += $$(HOME)/lib/Boost
 LIBS += -lSDLmain
 LIBS += -L \
     $$(HOME)/lib/SDL/lib
@@ -9,10 +10,16 @@ HEADERS += sdlrenderer.h \
     Vector.h \
     Colour.h \
     Sphere.h \
-    Ray.h
+    Ray.h \
+    Intersect.h \
+    RenderableObject.h \
+    Material.h
 SOURCES += sdlrenderer.cpp \
     Box.cpp \
     Vector.cpp \
     Colour.cpp \
     Sphere.cpp \
-    Ray.cpp
+    Ray.cpp \
+    Intersect.cpp \
+    RenderableObject.cpp \
+    Material.cpp

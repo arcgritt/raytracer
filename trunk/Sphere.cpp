@@ -7,21 +7,18 @@ Sphere::Sphere()
 
 Sphere::Sphere(Vector _center, float _radius)
 {
-    m_center = _center;
+    setPosition(_center);
     m_radius = _radius;
+}
+
+Sphere::Sphere(Vector _center, float _radius, Colour _colour)
+{
+    setPosition(_center);
+    m_radius = _radius;
+    setMaterial(Material(_colour));
 }
 
 float Sphere::getRadius()
 {
     return m_radius;
-}
-
-Vector Sphere::getCenter()
-{
-    return m_center;
-}
-
-Colour Sphere::getColour()
-{
-    return m_colour;
 }

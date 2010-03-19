@@ -8,13 +8,14 @@ class Ray
 public:
     Ray();
     Ray(Vector);
-    void intersection(const float&);
+    void intersection(const float&, const int&);
     void printDebug();
     Vector& getVector();
     float get_closest_intersection();
+    int get_intersection_object();
 private:
-    float m_closestIntersection;
-    unsigned int m_intersectionObject;
+    float m_closest_intersection;
+    unsigned int m_intersection_object;
     Vector m_direction;
 };
 
