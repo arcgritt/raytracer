@@ -1,14 +1,36 @@
-# QT -= core \
-# gui
-INCLUDEPATH += $$(HOME)/lib/SDL/include
-INCLUDEPATH += $$(HOME)/lib/SDL/bin
+QT -= core \
+    gui
 
-# INCLUDEPATH += $$(HOME)/lib/Boost
-LIBS += -lSDLmain
-LIBS += -lpthread
-LIBS += -L \
-    $$(HOME)/lib/SDL/lib
+
 LIBS += -lSDL
+LIBS += -lSDLmain
+
+
+LIBS += -lpthread
+
+unix: {
+    INCLUDEPATH += $$(HOME)/lib/SDL/include
+    INCLUDEPATH += $$(HOME)/lib/SDL/bin
+    LIBS += -L \
+        $$(HOME)/lib/SDL/lib
+
+    # INCLUDEPATH += $$(HOME)/lib/Boost
+}
+
+
+win32: {
+    INCLUDEPATH += C:\lib\SDL-1.2.14\include
+    INCLUDEPATH += C:\lib\SDL-1.2.14\bin
+    INCLUDEPATH += C:\lib\boost_1_42_0
+
+    LIBS += -L \
+        C:\lib\SDL-1.2.14\lib
+
+    CONFIG += console
+}
+
+
+
 HEADERS += sdlrenderer.h \
     Box.h \
     Vector.h \

@@ -11,7 +11,6 @@
 #include <ctime>
 #include <algorithm>
 
-//#include "Colour.h"
 #include "Vector.h"
 #include "Sphere.h"
 #include "Ray.h"
@@ -19,7 +18,9 @@
 
 
 #include "boost/random.hpp"
-#include <boost/thread.hpp>
+//#include "boost/thread.hpp"
+
+#undef main
 
 #define PI 3.1415926535
 
@@ -244,7 +245,7 @@ Colour SDLRenderer::RaytraceRay(Vector &_rayOrigin, Ray &_ray, unsigned int _tra
             Vector rayVector = _ray.GetVector();
             Vector normal = pixel_fragment.GetNormal();
             Vector reflectionVector = rayVector - normal*(2*rayVector.dot(normal));
-            reflectionVector.printDebug();
+            //reflectionVector.printDebug();
             Ray reflectionray = Ray(reflectionVector);
             Vector origin = pixel_fragment.GetPosition();
             return RaytraceRay(origin, reflectionray, _traceDepth+1);
