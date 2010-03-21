@@ -23,11 +23,11 @@ Sphere::Sphere(Vector _center, float _radius, Material _material)
     setMaterial(_material);
 }
 
-float Sphere::doIntersection(Vector _cam, Vector _ray) // SpherePrimitive::intersect(const Ray& ray, float* t)
+float Sphere::doIntersection(Vector _rayOrigin, Vector _ray) // SpherePrimitive::intersect(const Ray& ray, float* t)
 {
     // source: http://wiki.cgsociety.org/index.php/Ray_Sphere_Intersection
 
-    Vector dst = _cam-getPosition();
+    Vector dst = _rayOrigin-getPosition();
 
     //Compute A, B and C coefficients
     float a = _ray.dot(_ray);
