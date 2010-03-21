@@ -80,12 +80,19 @@ float Sphere::doIntersection(Vector _cam, Vector _ray) // SpherePrimitive::inter
     }
 }
 
-Fragment Sphere::getFragment(Vector _cam, Vector _ray, float _distance)
+Fragment Sphere::getFragment(Vector _rayOrigin, Vector _ray, float _distance)
 {
-    Vector point = _ray * _distance;
-    Vector position = -_cam + getPosition();
+    // point of intersection in world space
+    Vector point = _ray * _distance + _rayOrigin;
+    //point.printDebug();
 
-    Vector normal = point - position;
+
+
+    // normal = point - center
+    Vector normal = point - getPosition();
+    //normal.printDebug();
+    //Vector normal = position - point;
+
     normal.normalise();
 
     return Fragment(point, normal, getMaterial());

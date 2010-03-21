@@ -26,17 +26,13 @@
 
 SDL_Surface *screen;	//This pointer will reference the backbuffer
 
-
-
-float c_divisionSize;
-Vector camera;
 float c_halfWidth;
 
 
-const unsigned int c_num_spheres = 50;
+const unsigned int c_num_spheres = 10;
 const unsigned int c_num_lights = 2;
 
-const unsigned int c_maxTraceDepth = 1;
+const unsigned int c_maxTraceDepth = 50;
 
 
 
@@ -52,23 +48,29 @@ Light* lights[c_num_lights];
 int main()//int argc, char *argv[])
 {
     const int start_time = clock();
-    
-    const unsigned int c_width = 1280;
-    const unsigned int c_height = 720;
+
+    #define RES_MULTI 1.25
+
+    const unsigned int c_width = 1280*RES_MULTI;
+    const unsigned int c_height = 720*RES_MULTI;
     const unsigned int c_bpp = 32;
+
+    //c_width*=2;
+    //c_height*=2;
+
     if(!SDLRenderer::SDLInit(c_width, c_height, c_bpp))
     {
         std::cerr << "SDL failed to initialise" << std::endl;
     }
 
     const unsigned int c_verticalFieldOfView = 90;
-    camera = SDLRenderer::CameraInit(c_verticalFieldOfView);
+    Vector camera = SDLRenderer::CameraInit(c_verticalFieldOfView);
 
 
     const float c_aspectRatio = (float)c_width/(float)c_height;
     c_halfWidth = c_aspectRatio*0.5;
     // const int c_num_pixels = c_width*c_height;    // redundant?
-    c_divisionSize = 1.0f/(float)c_height;
+    const float c_divisionSize = 1.0f/(float)c_height;
 
 
     const bool debug = true;
@@ -89,7 +91,7 @@ int main()//int argc, char *argv[])
     {
         for(unsigned int x=0; x<c_width; x++)
         {
-            Colour pixelColour = SDLRenderer::RayTracePixel(x, y);
+            Colour pixelColour = SDLRenderer::RayTracePixel(camera, x, y, c_divisionSize);
             unsigned char pixelColours[4];
             pixelColour.getColour256(&pixelColours[0]);
 
@@ -105,8 +107,38 @@ int main()//int argc, char *argv[])
     // Update the screen
     SDL_Flip(screen);
 
-    //Wait for 2500ms (2.5 seconds) so we can see the image
-    SDL_Delay(2500);
+
+    // pointer to pass to SDL_WaitEvent
+    SDL_Event event;
+    bool quit = false;
+    while(quit == false)
+    {
+        SDL_WaitEvent(&event);
+
+        switch (event.type)
+        {
+            // all keyboard events
+            case SDL_KEYDOWN:
+                //int key = event.key.keysym.sym;
+                switch (event.key.keysym.sym)
+                {
+                    // escape key = quit
+                    case SDLK_ESCAPE:
+                        quit = true;
+                        //break;
+                    // ALL keys
+                    default:
+                        std::cout << "Key pressed: " << SDL_GetKeyName(event.key.keysym.sym) << std::endl;
+                        break;
+                }
+                break;
+
+            // close button
+            case SDL_QUIT:
+                quit = true;
+                break;
+        }
+    }
 
     //Return success!
     return EXIT_SUCCESS;
@@ -146,6 +178,7 @@ void SDLRenderer::SceneInit()
     // Random number generator
     boost::mt19937 Generator;
 
+
     boost::uniform_real<float> distributionPos(0.0f, 1.0f);
     boost::variate_generator<boost::mt19937&, boost::uniform_real<float> > RandPosFloat(Generator, distributionPos);
 
@@ -155,11 +188,11 @@ void SDLRenderer::SceneInit()
     for(unsigned int i=0; i<c_num_spheres;i++)
     {
         objects[i] = new Sphere(
-                Vector(RandFloat()*10, RandFloat()*10, RandPosFloat()+30),
-                RandPosFloat(),
+                Vector(RandFloat()*9, RandFloat()*9, RandFloat()*5+30),
+                RandPosFloat()*2+1,
                 Material(
                         Colour(RandPosFloat(), RandPosFloat(), RandPosFloat()),
-                        1.0f
+                        RandPosFloat()*0.1+0.3
                         )
                 );
     }
@@ -170,17 +203,17 @@ void SDLRenderer::SceneInit()
                 Vector(-7, RandFloat(), 30),
                 1,
                 Colour(),
-                10
+                3
                 );
     }
 }
 
 
-Colour SDLRenderer::RayTracePixel(const unsigned int _x, const unsigned int _y)
+Colour SDLRenderer::RayTracePixel(Vector &_camera, const unsigned int _x, const unsigned int _y, const float _divisionSize)
 {
-    Vector currDirection = Vector(_x*c_divisionSize-c_halfWidth,
-                                  _y*c_divisionSize-0.5,
-                                  1) - camera;
+    Vector currDirection = Vector(_x*_divisionSize-c_halfWidth,
+                                  _y*_divisionSize-0.5,
+                                  1);// - camera;
     currDirection.normalise();
 
     // Ray from camera to somewhere, rather than from an object to somewhere
@@ -189,7 +222,7 @@ Colour SDLRenderer::RayTracePixel(const unsigned int _x, const unsigned int _y)
     // Ray pixel_rays[x+y*c_width];
     // currPixel = Ray(currDirection);
 
-    return RaytraceRay(camera, cameraRay, 0);
+    return RaytraceRay(_camera, cameraRay, 0);
 
 }
 
@@ -201,7 +234,7 @@ Colour SDLRenderer::RaytraceRay(Vector &_rayOrigin, Ray &_ray, unsigned int _tra
     for(unsigned int j=0; j<c_num_spheres;j++) {
         float distance = objects[j]->doIntersection(_rayOrigin, _ray.GetVector());
 
-        if(distance >= 0) // if there is a hit
+        if(distance >= 0.1) // if there is a hit
         {
             hit = true;
             _ray.Intersection(distance, *objects[j]);
@@ -209,59 +242,55 @@ Colour SDLRenderer::RaytraceRay(Vector &_rayOrigin, Ray &_ray, unsigned int _tra
     }
 
     // if it hit something
-    Colour pixel_colour;
+    Colour pixel_colour;// = Colour(0.5f, 0.5f, 0.5f);
     if(hit)
     {
         // object that this pixel hits
         RenderableObject* objectIntersected = _ray.GetObjectIntersected();//.objects[currentPixel.GetObjectIntersected()];
 
         // surface normal, position and material of the point at which the pixel's ray hits the above object
-        Fragment pixel_fragment = objectIntersected->getFragment(camera, _ray.GetVector(), _ray.GetClosestIntersection());
+        Fragment pixel_fragment = objectIntersected->getFragment(_rayOrigin, _ray.GetVector(), _ray.GetClosestIntersection());
 
         // its material
         Material objectMaterial = objectIntersected->getMaterial();
         float objectReflectivity = objectMaterial.GetReflectivity();
 
-        if(objectReflectivity == 0.0f || _traceDepth > c_maxTraceDepth)
-        {
-            // If it's not reflective at all, we don't have to bother with recursion
-            float light_intensity = CalculateLighting(pixel_fragment);
-            return CalculateColour(objectMaterial, light_intensity);
-        }
-       // else if(objectReflectivity == 1.0f)
-        //{
-
-
-            // If it's TOTALLY reflective, we don't care about the colour of this object
-
-
-
-
-       // }
-        //else if(objectReflectivity > 0.0f)
-       // {
-            // If it's partially reflective, we need to multiply the colour of this object by its reflectants
-
-            Vector rayVector = _ray.GetVector();
-            Vector normal = pixel_fragment.GetNormal();
-            Vector reflectionVector = rayVector - normal*(2*rayVector.dot(normal));
-            //reflectionVector.printDebug();
-            Ray reflectionray = Ray(reflectionVector);
-            Vector origin = pixel_fragment.GetPosition();
-            return RaytraceRay(origin, reflectionray, _traceDepth+1);
-
-
-
-
-       // }
 
         // Get the intensity of light which is hitting this object
+        float light_intensity = CalculateLighting(pixel_fragment);
+        pixel_colour = CalculateColour(objectMaterial, light_intensity);
 
+        if(objectReflectivity == 0.0f || _traceDepth >= c_maxTraceDepth)
+        {
+            // If it's not reflective at all, we don't have to bother with recursion
+            return pixel_colour;
+        }
+        // If it's TOTALLY reflective, we don't care about the colour of this object
+        // If it's partially reflective, we need to multiply the colour of this object by its reflectants
+
+        // calculate the reflection bounce ray
+        Vector rayVector = _ray.GetVector();
+        Vector normal = pixel_fragment.GetNormal();
+        Vector reflectionVector = rayVector - (normal*2*rayVector.dot(normal));
+        //reflectionVector = reflectionVector;
+        reflectionVector.normalise();
+        //reflectionVector.printDebug();
+        //reflectionVector = -reflectionVector;
+        Ray reflectionray = Ray(reflectionVector);
+
+        Vector origin = pixel_fragment.GetPosition();
+
+
+        Colour reflection_colour = RaytraceRay(origin, reflectionray, _traceDepth+1);
+        reflection_colour *= objectReflectivity;
+        pixel_colour *= (1.0f-objectReflectivity);
+        pixel_colour += reflection_colour;
+        return pixel_colour;
     }
     else // if it didn't hit anything
     {
         // background colour
-        return pixel_colour = Colour(0.5f, 0.5f, 0.5f);
+        return pixel_colour = Colour(0.1f, 0.1f, 0.1f);
     }
 }
 
@@ -287,12 +316,16 @@ float SDLRenderer::CalculateLighting(Fragment& _fragment )
         // if dot product > 0 (angle less than 90)
         if(dot_product > 0)
         {
-            light_intensity += dot_product*(light->GetMagnitude()/light_attenuation);
+            light_intensity += dot_product*(light->GetMagnitude()/sqrt(light_attenuation));
         }
 
     }
 
-    return light_intensity;
+    // ambient light
+    light_intensity += 0.15;
+    //return light_intensity;
+
+    return std::min(1.0f, light_intensity);
 }
 
 

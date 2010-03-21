@@ -38,6 +38,33 @@ void Colour::getColour(float* _colour)
     _colour[3] = c_a;
 }
 
+void Colour::operator+=(Colour &_colour)
+{
+    c_r += _colour.c_r;
+    c_g += _colour.c_g;
+    c_b += _colour.c_b;
+    c_a += _colour.c_a;
+
+}
+
+void Colour::operator*=(Colour &_colour)
+{
+    c_r *= _colour.c_r;
+    c_g *= _colour.c_g;
+    c_b *= _colour.c_b;
+    c_a *= _colour.c_a;
+
+}
+
+void Colour::operator*=(float _multiplier)
+{
+    c_r *= _multiplier;
+    c_g *= _multiplier;
+    c_b *= _multiplier;
+    c_a *= _multiplier;
+
+}
+
 /*void Colour::operator*=(Colour &_colour)
 {
     _colour[0]*=
