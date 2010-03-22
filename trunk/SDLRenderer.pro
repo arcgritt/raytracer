@@ -9,6 +9,8 @@ RCC_DIR = resources
 BASE_DIR = ./
 HEADERS_DIR = $$BASE_DIR/include
 SOURCES_DIR = $$BASE_DIR/src
+
+# So that you can put "Sphere.h" instead of "include/Sphere.h"
 INCLUDEPATH += $$HEADERS_DIR
 
 # VPATH += $$SOURCES_DIR
@@ -47,7 +49,7 @@ HEADERS += $$HEADERS_DIR/SDLRaytracer.h \
     $$HEADERS_DIR/Light.h \
     $$HEADERS_DIR/ReflectableRay.h \
     $$HEADERS_DIR/Plane.h \
-    include/Raytracer.h
+    $$HEADERS_DIR/Raytracer.h
 
 # for(file, HEADERS) {
 # HEADERS -= $$file
@@ -66,4 +68,4 @@ SOURCES += $$SOURCES_DIR/SDLRaytracer.cpp \
     $$SOURCES_DIR/Light.cpp \
     $$SOURCES_DIR/ReflectableRay.cpp \
     $$SOURCES_DIR/Plane.cpp \
-    src/Raytracer.cpp
+    $$SOURCES_DIR/Raytracer.cpp

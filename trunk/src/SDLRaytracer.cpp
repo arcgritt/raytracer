@@ -1,13 +1,3 @@
-// cstdlib
-#include <algorithm>
-#include <cmath>
-#include <cstdio>
-#include <ctime>
-#include <float.h>
-#include <iostream>
-#include <stdlib.h>
-#include <unistd.h>
-
 // Boost
 #include "boost/random.hpp"
 //#include "boost/thread.hpp"
@@ -23,8 +13,12 @@
 // something weird with SDL causes this to screw up on Windows unless you have this line
 #undef main
 
+
+// DEFINES
+
 #define DEBUG true
 
+// numbers of each type of object (randomly generated)
 #define NUM_SPHERES 20
 #define NUM_LIGHTS 1
 
@@ -94,8 +88,8 @@ int main(void)//int argc, char *argv[])
         for(unsigned int x=0; x<c_width; x++)
         {
             Colour pixelColour = SDLRaytracer::RayTracePixel(camera, x, y, c_divisionSize, c_halfWidth);
-            unsigned char pixelColours[4];
-            pixelColour.getColour256(&pixelColours[0]);
+            float pixelColours[4];
+            pixelColour.GetColour256(&pixelColours[0]);
 
             pixels[x+y*c_width] = SDL_MapRGB(screen->format, (Uint8)pixelColours[0], (Uint8)pixelColours[1], (Uint8)pixelColours[2]);
         }
@@ -391,7 +385,7 @@ Colour SDLRaytracer::CalculateColour(Material& _material, float _lightIntensity)
     ///* Lambert
     _lightIntensity = 1/_lightIntensity;
     float pixelColours[4];
-    _material.GetColour().getColour(&pixelColours[0]);
+    _material.GetColour().GetColour(&pixelColours[0]);
     float r_base = pixelColours[0];
     float g_base = pixelColours[1];
     float b_base = pixelColours[2];

@@ -7,9 +7,8 @@ public:
     Colour();
     Colour(float, float, float);
     Colour(float, float, float, float);
-    //float getColourScalar();
-    void getColour256 (unsigned char *_colour);
-    void getColour (float *_colour);
+    void GetColour(float* _colour);
+    void GetColour256(float* _colour);
     void operator+=(Colour& _colour);
     void operator*=(Colour& _colour);
     void operator*=(float _multiplier);
