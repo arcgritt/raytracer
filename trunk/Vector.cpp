@@ -113,3 +113,11 @@ Vector Vector::operator *(const float _m)
             m_w
             );
 }
+
+Vector Vector::cross(const Vector &_v1, const Vector &_v2)
+{
+    float v_x = _v1.m_y*_v2.m_z-_v1.m_z*_v2.m_y;
+    float v_y = _v1.m_z*_v2.m_x-_v1.m_x*_v2.m_z;
+    float v_z = _v1.m_x*_v2.m_y-_v1.m_y*_v2.m_x;
+    return Vector(v_x, v_y, v_z);
+}

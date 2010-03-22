@@ -29,10 +29,10 @@ SDL_Surface *screen;	//This pointer will reference the backbuffer
 float c_halfWidth;
 
 
-const unsigned int c_num_spheres = 10;
-const unsigned int c_num_lights = 2;
+const unsigned int c_num_spheres = 20;
+const unsigned int c_num_lights = 1;
 
-const unsigned int c_maxTraceDepth = 50;
+const unsigned int c_maxTraceDepth = 500;
 
 
 
@@ -63,7 +63,7 @@ int main()//int argc, char *argv[])
         std::cerr << "SDL failed to initialise" << std::endl;
     }
 
-    const unsigned int c_verticalFieldOfView = 90;
+    const unsigned int c_verticalFieldOfView = 60;
     Vector camera = SDLRenderer::CameraInit(c_verticalFieldOfView);
 
 
@@ -201,9 +201,12 @@ void SDLRenderer::SceneInit()
     {
         lights[i] = new Light(
                 Vector(-7, RandFloat(), 30),
-                1,
-                Colour(),
-                3
+                0.5f,
+                Material(
+                        Colour(),
+                        0.0f
+                        ),
+                3.0f
                 );
     }
 }
@@ -213,7 +216,7 @@ Colour SDLRenderer::RayTracePixel(Vector &_camera, const unsigned int _x, const 
 {
     Vector currDirection = Vector(_x*_divisionSize-c_halfWidth,
                                   _y*_divisionSize-0.5,
-                                  1);// - _camera;
+                                  1) - _camera;
     currDirection.normalise();
 
     // Ray from camera to somewhere, rather than from an object to somewhere
@@ -231,10 +234,13 @@ Colour SDLRenderer::RaytraceRay(Vector &_rayOrigin, Ray &_ray, unsigned int _tra
     bool hit = false;
 
     // for each object in scene
-    for(unsigned int j=0; j<c_num_spheres;j++) {
+    for(unsigned int j=0; j<c_num_spheres+c_num_lights;j++) {
         float distance = objects[j]->doIntersection(_rayOrigin, _ray.GetVector());
 
-        if(distance >= 0.1) // if there is a hit
+        // arbitrary number which stops the surface from intersecting itself due to float rounding errors
+        // should be as SMALL as possible, until artifacts start occuring... 0.001 seems to do the trick
+        const float lambda = 0.001;
+        if(distance >= lambda) // if there is a hit
         {
             hit = true;
             _ray.Intersection(distance, *objects[j]);
@@ -322,7 +328,7 @@ float SDLRenderer::CalculateLighting(Fragment& _fragment )
     }
 
     // ambient light
-    float ambient_multiplier = 0.15;
+    const float ambient_multiplier = 0.15;
     float ambient_modifier = (1.0f - light_intensity) * ambient_multiplier;
     light_intensity += ambient_modifier;
     //return light_intensity;

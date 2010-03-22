@@ -7,7 +7,7 @@ class Light : public Sphere
 {
 public:
     Light();
-    Light(Vector, float, Colour, float);
+    Light(Vector _position, float, Material _material, float);
     float GetMagnitude() { return c_magnitude; }
     void SetMagnitude(float &_magnitude) { c_magnitude = _magnitude; }
 private:
