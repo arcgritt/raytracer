@@ -10,16 +10,15 @@ class RenderableObject
 public:
     RenderableObject();
 
-    Vector getPosition() const { return m_position; }
-    void setPosition(const Vector& _position) { m_position = _position; }
+    Vector GetPosition() const { return m_position; }
+    void SetPosition(const Vector& _position) { m_position = _position; }
 
-    Material getMaterial() const { return m_material; }
-    void setMaterial(const Material& _material) { m_material = _material; }
+    Material GetMaterial() const { return m_material; }
+    void SetMaterial(const Material& _material) { m_material = _material; }
 
-    virtual float getRadius() const =0;
-    virtual float doIntersection(const Vector _rayOrigin, const Vector _ray) =0;
-    virtual Fragment getFragment(const Vector _rayOrigin, const Vector _ray, const float _distance) =0;
-    //virtual
+    virtual float GetRadius() const =0;
+    virtual float DoIntersection(Vector& _rayOrigin, Vector& _ray) =0;
+    virtual Fragment GetFragment(Vector& _rayOrigin, Vector& _ray, const float _distance) =0;
 private:
     Vector m_position;
     Material m_material;

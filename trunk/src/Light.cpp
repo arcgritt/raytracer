@@ -7,8 +7,8 @@ Light::Light()
 
 Light::Light(Vector _position, float _radius, Material _material, float _magnitude)
 {
-    setPosition(_position);
+    SetPosition(_position);
     SetRadius(_radius);
-    setMaterial(_material);
+    SetMaterial(_material);
     SetMagnitude(_magnitude);
 }

@@ -12,27 +12,27 @@ Sphere::Sphere()
 
 Sphere::Sphere(Vector _center, float _radius)
 {
-    setPosition(_center);
+    SetPosition(_center);
     m_radius = _radius;
 }
 
 Sphere::Sphere(Vector _center, float _radius, Material _material)
 {
-    setPosition(_center);
+    SetPosition(_center);
     m_radius = _radius;
-    setMaterial(_material);
+    SetMaterial(_material);
 }
 
-float Sphere::doIntersection(Vector _rayOrigin, Vector _ray) // SpherePrimitive::intersect(const Ray& ray, float* t)
+float Sphere::DoIntersection(Vector &_rayOrigin, Vector &_ray) // SpherePrimitive::intersect(const Ray& ray, float* t)
 {
     // source: http://wiki.cgsociety.org/index.php/Ray_Sphere_Intersection
 
-    Vector dst = _rayOrigin-getPosition();
+    Vector dst = _rayOrigin-GetPosition();
 
     //Compute A, B and C coefficients
     float a = Vector::dot(_ray, _ray); //_ray.dot(_ray);
     float b = 2 * Vector::dot(_ray, dst); //_ray.dot(dst);
-    float c = Vector::dot(dst, dst) - (getRadius() * getRadius());
+    float c = Vector::dot(dst, dst) - (GetRadius() * GetRadius());
     //float c = dst.dot(dst) - (getRadius() * getRadius());
 
     //Find discriminant
@@ -81,7 +81,7 @@ float Sphere::doIntersection(Vector _rayOrigin, Vector _ray) // SpherePrimitive:
     }
 }
 
-Fragment Sphere::getFragment(Vector _rayOrigin, Vector _ray, float _distance)
+Fragment Sphere::GetFragment(Vector &_rayOrigin, Vector &_ray, float _distance)
 {
     // point of intersection in world space
     Vector point = _ray * _distance + _rayOrigin;
@@ -90,11 +90,11 @@ Fragment Sphere::getFragment(Vector _rayOrigin, Vector _ray, float _distance)
 
 
     // normal = point - center
-    Vector normal = point - getPosition();
+    Vector normal = point - GetPosition();
     //normal.printDebug();
     //Vector normal = position - point;
 
     normal.normalise();
 
-    return Fragment(point, normal, getMaterial());
+    return Fragment(point, normal, GetMaterial());
 }

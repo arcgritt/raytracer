@@ -6,17 +6,17 @@ Plane::Plane()
 
 Plane::Plane(Vector _position, float _x, float _y)
 {
-    setPosition(_position);
+    SetPosition(_position);
     c_x = _x;
     c_y = _y;
 }
 
 Plane::Plane(Vector _position, float _x, float _y, Material _material)
 {
-    setPosition(_position);
+    SetPosition(_position);
     c_x = _x;
     c_y = _y;
-    setMaterial(_material);
+    SetMaterial(_material);
 }
 
 float Plane::doIntersection(Vector _rayOrigin, Vector _ray)

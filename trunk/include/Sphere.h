@@ -11,10 +11,10 @@ public:
     Sphere();
     Sphere(Vector, float);
     Sphere(Vector, float, Material);
-    float getRadius() const { return m_radius; }
-    void SetRadius(float _radius) { m_radius = _radius; }
-    float doIntersection(const Vector _rayOrigin, const Vector _ray);
-    Fragment getFragment(const Vector _rayOrigin, const Vector _ray, const float _distance);
+    float GetRadius() const { return m_radius; }
+    void SetRadius(const float _radius) { m_radius = _radius; }
+    float DoIntersection(Vector& _rayOrigin, Vector& _ray);
+    Fragment GetFragment(Vector& _rayOrigin, Vector& _ray, const float _distance);
 private:
     float m_radius;
 };

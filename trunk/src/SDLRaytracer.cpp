@@ -247,7 +247,7 @@ Colour SDLRaytracer::RaytraceRay(Vector &_rayOrigin, Ray &_ray, unsigned int _tr
 
     // for each object in scene
     for(unsigned int j=0; j<NUM_SPHERES+NUM_LIGHTS;j++) {
-        float distance = objects[j]->doIntersection(_rayOrigin, _ray.GetVector());
+        float distance = objects[j]->DoIntersection(_rayOrigin, _ray.GetVector());
 
         // arbitrary number which stops the surface from intersecting itself due to float rounding errors
         // should be as SMALL as possible, until artifacts start occuring... 0.001 seems to do the trick
@@ -266,10 +266,10 @@ Colour SDLRaytracer::RaytraceRay(Vector &_rayOrigin, Ray &_ray, unsigned int _tr
         RenderableObject* objectIntersected = _ray.GetObjectIntersected();//.objects[currentPixel.GetObjectIntersected()];
 
         // surface normal, position and material of the point at which the pixel's ray hits the above object
-        Fragment pixel_fragment = objectIntersected->getFragment(_rayOrigin, _ray.GetVector(), _ray.GetClosestIntersection());
+        Fragment pixel_fragment = objectIntersected->GetFragment(_rayOrigin, _ray.GetVector(), _ray.GetClosestIntersection());
 
         // its material
-        Material objectMaterial = objectIntersected->getMaterial();
+        Material objectMaterial = objectIntersected->GetMaterial();
         float objectReflectivity = objectMaterial.GetReflectivity();
 
 
@@ -318,7 +318,7 @@ float SDLRaytracer::CalculateLighting(Fragment& _fragment )
     for(unsigned int l=0; l<NUM_LIGHTS;l++)
     {
         Light* light = lights[l];
-        Vector light_vector = light->getPosition()-_fragment.GetPosition();
+        Vector light_vector = light->GetPosition()-_fragment.GetPosition();
         float lightDistance = light_vector.SquareLength();
 
         bool occluded = false;
@@ -326,7 +326,8 @@ float SDLRaytracer::CalculateLighting(Fragment& _fragment )
         for(unsigned int j=0; j<NUM_SPHERES+NUM_LIGHTS;j++) {
             // don't check against this light as it will always intersect
             if(j != NUM_SPHERES + l) {
-                float distance = objects[j]->doIntersection(_fragment.GetPosition(), light_vector);
+                Vector surfacePoint = _fragment.GetPosition();
+                float distance = objects[j]->DoIntersection(surfacePoint, light_vector);
 
                 if(distance >= LAMBDA && // if there is a hit
                    distance < lightDistance) // if the object is between the light and the fragment
