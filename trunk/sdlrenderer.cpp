@@ -213,7 +213,7 @@ Colour SDLRenderer::RayTracePixel(Vector &_camera, const unsigned int _x, const 
 {
     Vector currDirection = Vector(_x*_divisionSize-c_halfWidth,
                                   _y*_divisionSize-0.5,
-                                  1);// - camera;
+                                  1);// - _camera;
     currDirection.normalise();
 
     // Ray from camera to somewhere, rather than from an object to somewhere
@@ -322,7 +322,9 @@ float SDLRenderer::CalculateLighting(Fragment& _fragment )
     }
 
     // ambient light
-    light_intensity += 0.15;
+    float ambient_multiplier = 0.15;
+    float ambient_modifier = (1.0f - light_intensity) * ambient_multiplier;
+    light_intensity += ambient_modifier;
     //return light_intensity;
 
     return std::min(1.0f, light_intensity);
