@@ -5,11 +5,13 @@ DESTDIR = bin
 OBJECTS_DIR = obj
 RCC_DIR = resources
 
-#SUBDIRS += src include
+# SUBDIRS += src include
+BASE_DIR = ./
+HEADERS_DIR = $$BASE_DIR/include
+SOURCES_DIR = $$BASE_DIR/src
+INCLUDEPATH += $$HEADERS_DIR
 
-HEADERS_DIR = include
-SOURCES_DIR = src
-
+# VPATH += $$SOURCES_DIR
 # SDL
 LIBS += -lSDL
 LIBS += -lSDLmain
@@ -33,8 +35,7 @@ win32: {
         C:\lib\SDL-1.2.14\lib
     CONFIG += console
 }
-
-HEADERS += $$HEADERS_DIR/sdlrenderer.h \
+HEADERS += $$HEADERS_DIR/SDLRaytracer.h \
     $$HEADERS_DIR/Box.h \
     $$HEADERS_DIR/Vector.h \
     $$HEADERS_DIR/Colour.h \
@@ -45,15 +46,15 @@ HEADERS += $$HEADERS_DIR/sdlrenderer.h \
     $$HEADERS_DIR/Fragment.h \
     $$HEADERS_DIR/Light.h \
     $$HEADERS_DIR/ReflectableRay.h \
-    $$HEADERS_DIR/Plane.h
+    $$HEADERS_DIR/Plane.h \
+    include/Raytracer.h
 
- #for(file, HEADERS) {
- #   HEADERS -= $$file
- #   HEADERS += include/$$file
+# for(file, HEADERS) {
+# HEADERS -= $$file
+# HEADERS += $$HEADERS_DIR/$$file
 # }
-
-
-SOURCES += $$SOURCES_DIR/sdlrenderer.cpp \
+# The headers cheat thing doesn't work with sources for some reason
+SOURCES += $$SOURCES_DIR/SDLRaytracer.cpp \
     $$SOURCES_DIR/Box.cpp \
     $$SOURCES_DIR/Vector.cpp \
     $$SOURCES_DIR/Colour.cpp \
@@ -64,4 +65,5 @@ SOURCES += $$SOURCES_DIR/sdlrenderer.cpp \
     $$SOURCES_DIR/Fragment.cpp \
     $$SOURCES_DIR/Light.cpp \
     $$SOURCES_DIR/ReflectableRay.cpp \
-    $$SOURCES_DIR/Plane.cpp
+    $$SOURCES_DIR/Plane.cpp \
+    src/Raytracer.cpp

@@ -16,7 +16,7 @@
 #include "SDL/SDL.h"
 
 // Project
-#include "sdlrenderer.h"
+#include "SDLRaytracer.h"
 #include "Sphere.h"
 #include "Light.h"
 
@@ -47,7 +47,7 @@ SDL_Surface *screen;	//This pointer will reference the backbuffer
 RenderableObject* objects[NUM_SPHERES];
 Light* lights[NUM_LIGHTS];
 
-int main()//int argc, char *argv[])
+int main(void)//int argc, char *argv[])
 {
     const int start_time = clock();
 
@@ -60,13 +60,13 @@ int main()//int argc, char *argv[])
     //c_width*=2;
     //c_height*=2;
 
-    if(!SDLRenderer::SDLInit(c_width, c_height, c_bpp))
+    if(!SDLRaytracer::SDLInit(c_width, c_height, c_bpp))
     {
         std::cerr << "SDL failed to initialise" << std::endl;
     }
 
     const unsigned int c_verticalFieldOfView = 60;
-    Vector camera = SDLRenderer::CameraInit(c_verticalFieldOfView);
+    Vector camera = SDLRaytracer::CameraInit(c_verticalFieldOfView);
 
 
     const float c_aspectRatio = (float)c_width/(float)c_height;
@@ -82,7 +82,7 @@ int main()//int argc, char *argv[])
         printf("Y Axis Division Size: %f\n", c_divisionSize);
     }
 
-    SDLRenderer::SceneInit();
+    SDLRaytracer::SceneInit();
 
     const int frame_time = clock();
 
@@ -93,7 +93,7 @@ int main()//int argc, char *argv[])
     {
         for(unsigned int x=0; x<c_width; x++)
         {
-            Colour pixelColour = SDLRenderer::RayTracePixel(camera, x, y, c_divisionSize, c_halfWidth);
+            Colour pixelColour = SDLRaytracer::RayTracePixel(camera, x, y, c_divisionSize, c_halfWidth);
             unsigned char pixelColours[4];
             pixelColour.getColour256(&pixelColours[0]);
 
@@ -160,7 +160,7 @@ int main()//int argc, char *argv[])
     return EXIT_SUCCESS;
 }
 
-bool SDLRenderer::SDLInit(const unsigned int _width, const unsigned int _height, const unsigned int _bpp)
+bool SDLRaytracer::SDLInit(const unsigned int _width, const unsigned int _height, const unsigned int _bpp)
 {
     //We must first initialize the SDL video component, and check for success
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
@@ -183,13 +183,13 @@ bool SDLRenderer::SDLInit(const unsigned int _width, const unsigned int _height,
     return true;
 }
 
-Vector SDLRenderer::CameraInit(const unsigned int _verticalFieldOfView)
+Vector SDLRaytracer::CameraInit(const unsigned int _verticalFieldOfView)
 {
     const float c_cameraPosition = -0.5/tan((_verticalFieldOfView/2)*(PI/180));
     return Vector(0, 0, c_cameraPosition);
 }
 
-void SDLRenderer::SceneInit()
+void SDLRaytracer::SceneInit()
 {
     // Random number generator
     boost::mt19937 Generator;
@@ -228,7 +228,7 @@ void SDLRenderer::SceneInit()
 }
 
 
-Colour SDLRenderer::RayTracePixel(Vector &_camera, const unsigned int _x, const unsigned int _y, const float _divisionSize, const float _halfWidth)
+Colour SDLRaytracer::RayTracePixel(Vector &_camera, const unsigned int _x, const unsigned int _y, const float _divisionSize, const float _halfWidth)
 {
     Vector currDirection = Vector(_x*_divisionSize-_halfWidth,
                                   _y*_divisionSize-0.5,
@@ -245,7 +245,7 @@ Colour SDLRenderer::RayTracePixel(Vector &_camera, const unsigned int _x, const 
 
 }
 
-Colour SDLRenderer::RaytraceRay(Vector &_rayOrigin, Ray &_ray, unsigned int _traceDepth)
+Colour SDLRaytracer::RaytraceRay(Vector &_rayOrigin, Ray &_ray, unsigned int _traceDepth)
 {
     m_rayIntersections++;
     if(_traceDepth > 0) m_recursiveBounces++;
@@ -316,7 +316,7 @@ Colour SDLRenderer::RaytraceRay(Vector &_rayOrigin, Ray &_ray, unsigned int _tra
 }
 
 
-float SDLRenderer::CalculateLighting(Fragment& _fragment )
+float SDLRaytracer::CalculateLighting(Fragment& _fragment )
 {
     m_lightTraces++;
     float light_intensity = 0;
@@ -377,7 +377,7 @@ float SDLRenderer::CalculateLighting(Fragment& _fragment )
 }
 
 
-Colour SDLRenderer::CalculateColour(Material& _material, float _lightIntensity)
+Colour SDLRaytracer::CalculateColour(Material& _material, float _lightIntensity)
 {
     // TODO: Pass fragment in so that normal pass is possible
 
