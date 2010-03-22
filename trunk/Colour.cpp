@@ -64,11 +64,3 @@ void Colour::operator*=(float _multiplier)
     c_a *= _multiplier;
 
 }
-
-/*void Colour::operator*=(Colour &_colour)
-{
-    _colour[0]*=
-
-
-
-}*/

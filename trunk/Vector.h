@@ -11,7 +11,7 @@ public:
     void normalise();
     float Length();
     float SquareLength();
-    float dot(const Vector&);
+    //float dot(const Vector&);
     void operator+=(const Vector&);
     Vector operator+(const Vector&);
     Vector operator-();
@@ -19,6 +19,7 @@ public:
     Vector operator-(const Vector&);
     Vector operator*(float _m);
     static Vector cross(const Vector& _v1, const Vector& _v2);
+    static float dot(const Vector & _v1, const Vector& _v2);
     float GetX() { return m_x; }
     float GetY() { return m_y; }
     float GetZ() { return m_z; }

@@ -30,9 +30,10 @@ float Sphere::doIntersection(Vector _rayOrigin, Vector _ray) // SpherePrimitive:
     Vector dst = _rayOrigin-getPosition();
 
     //Compute A, B and C coefficients
-    float a = _ray.dot(_ray);
-    float b = 2 * _ray.dot(dst);
-    float c = dst.dot(dst) - (getRadius() * getRadius());
+    float a = Vector::dot(_ray, _ray); //_ray.dot(_ray);
+    float b = 2 * Vector::dot(_ray, dst); //_ray.dot(dst);
+    float c = Vector::dot(dst, dst) - (getRadius() * getRadius());
+    //float c = dst.dot(dst) - (getRadius() * getRadius());
 
     //Find discriminant
     float disc = b * b - 4 * a * c;

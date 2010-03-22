@@ -1,49 +1,48 @@
-#include "sdlrenderer.h"
-#include "SDL/SDL.h"
-
-#include <unistd.h>
-#include <stdlib.h>
-#include <cstdio>
-#include <iostream>
-
-#include <cmath>
-#include <float.h>
-#include <ctime>
+// cstdlib
 #include <algorithm>
+#include <cmath>
+#include <cstdio>
+#include <ctime>
+#include <float.h>
+#include <iostream>
+#include <stdlib.h>
+#include <unistd.h>
 
-#include "Vector.h"
-#include "Sphere.h"
-#include "Ray.h"
-#include "Light.h"
-
-
+// Boost
 #include "boost/random.hpp"
 //#include "boost/thread.hpp"
 
+// SDL
+#include "SDL/SDL.h"
+
+// Project
+#include "sdlrenderer.h"
+#include "Sphere.h"
+#include "Light.h"
+
+// something weird with SDL causes this to screw up on Windows unless you have this line
 #undef main
+
+#define DEBUG false
+
+#define NUM_SPHERES 20
+#define NUM_LIGHTS 1
+
+// how many times the algorithm will recurse in order to calculate reflections
+#define MAX_TRACE_DEPTH 500
+
+// arbitrary number which stops the surface from intersecting itself due to float rounding errors
+// should be as SMALL as possible, until artifacts start occuring... 0.001 seems to do the trick
+#define LAMBDA 0.001
 
 #define PI 3.1415926535
 
+
 SDL_Surface *screen;	//This pointer will reference the backbuffer
 
-float c_halfWidth;
 
-
-const unsigned int c_num_spheres = 20;
-const unsigned int c_num_lights = 1;
-
-const unsigned int c_maxTraceDepth = 500;
-
-
-
-RenderableObject* objects[c_num_spheres];
-Light* lights[c_num_lights];
-
-
-
-//boost::thread *t;
-
-
+RenderableObject* objects[NUM_SPHERES];
+Light* lights[NUM_LIGHTS];
 
 int main()//int argc, char *argv[])
 {
@@ -68,13 +67,13 @@ int main()//int argc, char *argv[])
 
 
     const float c_aspectRatio = (float)c_width/(float)c_height;
-    c_halfWidth = c_aspectRatio*0.5;
+    const float c_halfWidth = c_aspectRatio*0.5;
     // const int c_num_pixels = c_width*c_height;    // redundant?
     const float c_divisionSize = 1.0f/(float)c_height;
 
 
-    const bool debug = true;
-    if(debug) {
+    //const bool debug = true;
+    if(DEBUG) {
         //printf("Camera position: %f\n", c_cameraPosition);
         printf("Aspect ratio: %f\n", c_aspectRatio);
         printf("Y Axis Division Size: %f\n", c_divisionSize);
@@ -91,7 +90,7 @@ int main()//int argc, char *argv[])
     {
         for(unsigned int x=0; x<c_width; x++)
         {
-            Colour pixelColour = SDLRenderer::RayTracePixel(camera, x, y, c_divisionSize);
+            Colour pixelColour = SDLRenderer::RayTracePixel(camera, x, y, c_divisionSize, c_halfWidth);
             unsigned char pixelColours[4];
             pixelColour.getColour256(&pixelColours[0]);
 
@@ -119,24 +118,32 @@ int main()//int argc, char *argv[])
         {
             // all keyboard events
             case SDL_KEYDOWN:
+            {
                 //int key = event.key.keysym.sym;
                 switch (event.key.keysym.sym)
                 {
                     // escape key = quit
                     case SDLK_ESCAPE:
+                    {
                         quit = true;
                         //break;
                     // ALL keys
+                    }
                     default:
+                    {
                         std::cout << "Key pressed: " << SDL_GetKeyName(event.key.keysym.sym) << std::endl;
                         break;
+                    }
                 }
                 break;
+            }
 
             // close button
             case SDL_QUIT:
+            {
                 quit = true;
                 break;
+            }
         }
     }
 
@@ -185,7 +192,7 @@ void SDLRenderer::SceneInit()
     boost::uniform_real<float> distribution(-1.0f, 1.0f);
     boost::variate_generator<boost::mt19937&, boost::uniform_real<float> > RandFloat(Generator, distribution);
 
-    for(unsigned int i=0; i<c_num_spheres;i++)
+    for(unsigned int i=0; i<NUM_SPHERES;i++)
     {
         objects[i] = new Sphere(
                 Vector(RandFloat()*9, RandFloat()*9, RandFloat()*5+30),
@@ -197,7 +204,7 @@ void SDLRenderer::SceneInit()
                 );
     }
 
-    for(unsigned int i=0; i<c_num_lights;i++)
+    for(unsigned int i=0; i<NUM_LIGHTS;i++)
     {
         lights[i] = new Light(
                 Vector(-7, RandFloat(), 30),
@@ -212,9 +219,9 @@ void SDLRenderer::SceneInit()
 }
 
 
-Colour SDLRenderer::RayTracePixel(Vector &_camera, const unsigned int _x, const unsigned int _y, const float _divisionSize)
+Colour SDLRenderer::RayTracePixel(Vector &_camera, const unsigned int _x, const unsigned int _y, const float _divisionSize, const float _halfWidth)
 {
-    Vector currDirection = Vector(_x*_divisionSize-c_halfWidth,
+    Vector currDirection = Vector(_x*_divisionSize-_halfWidth,
                                   _y*_divisionSize-0.5,
                                   1) - _camera;
     currDirection.normalise();
@@ -234,13 +241,12 @@ Colour SDLRenderer::RaytraceRay(Vector &_rayOrigin, Ray &_ray, unsigned int _tra
     bool hit = false;
 
     // for each object in scene
-    for(unsigned int j=0; j<c_num_spheres+c_num_lights;j++) {
+    for(unsigned int j=0; j<NUM_SPHERES+NUM_LIGHTS;j++) {
         float distance = objects[j]->doIntersection(_rayOrigin, _ray.GetVector());
 
         // arbitrary number which stops the surface from intersecting itself due to float rounding errors
         // should be as SMALL as possible, until artifacts start occuring... 0.001 seems to do the trick
-        const float lambda = 0.001;
-        if(distance >= lambda) // if there is a hit
+        if(distance >= LAMBDA) // if there is a hit
         {
             hit = true;
             _ray.Intersection(distance, *objects[j]);
@@ -266,7 +272,7 @@ Colour SDLRenderer::RaytraceRay(Vector &_rayOrigin, Ray &_ray, unsigned int _tra
         float light_intensity = CalculateLighting(pixel_fragment);
         pixel_colour = CalculateColour(objectMaterial, light_intensity);
 
-        if(objectReflectivity == 0.0f || _traceDepth >= c_maxTraceDepth)
+        if(objectReflectivity == 0.0f || _traceDepth >= MAX_TRACE_DEPTH)
         {
             // If it's not reflective at all, we don't have to bother with recursion
             return pixel_colour;
@@ -277,11 +283,9 @@ Colour SDLRenderer::RaytraceRay(Vector &_rayOrigin, Ray &_ray, unsigned int _tra
         // calculate the reflection bounce ray
         Vector rayVector = _ray.GetVector();
         Vector normal = pixel_fragment.GetNormal();
-        Vector reflectionVector = rayVector - (normal*2*rayVector.dot(normal));
-        //reflectionVector = reflectionVector;
+        const float dotRay_Normal = Vector::dot(rayVector, normal);
+        Vector reflectionVector = rayVector - (normal*2*dotRay_Normal);
         reflectionVector.normalise();
-        //reflectionVector.printDebug();
-        //reflectionVector = -reflectionVector;
         Ray reflectionray = Ray(reflectionVector);
 
         Vector origin = pixel_fragment.GetPosition();
@@ -305,24 +309,48 @@ float SDLRenderer::CalculateLighting(Fragment& _fragment )
 {
     float light_intensity = 0;
     // for each light
-    for(unsigned int l=0; l<c_num_lights;l++)
+    for(unsigned int l=0; l<NUM_LIGHTS;l++)
     {
         Light* light = lights[l];
+        Vector light_vector = light->getPosition()-_fragment.GetPosition();
+        float lightDistance = light_vector.SquareLength();
+
+        bool occluded = false;
+        // check against all objects including lights
+        for(unsigned int j=0; j<NUM_SPHERES+NUM_LIGHTS;j++) {
+            // don't check against this light as it will always intersect
+            if(j != NUM_SPHERES + l) {
+                float distance = objects[j]->doIntersection(_fragment.GetPosition(), light_vector);
+
+                if(distance >= LAMBDA && // if there is a hit
+                   distance < lightDistance) // if the object is between the light and the fragment
+                {
+                    // set this external variable so we can skip light calculations
+                    occluded = true;
+                    // don't bother checking aganist other objects as there is already one in the way
+                    // if we were doing refraction it would not be this simple
+                    break;
+                    //hit = true;
+                    //_ray.Intersection(distance, *objects[j]);
+                }
+            }
+        }
+
+        if(occluded) break; //
 
         // vector from intersection to light
         // could be used for light falloff
-        Vector light_vector = light->getPosition()-_fragment.GetPosition();
-        float light_attenuation = light_vector.SquareLength();
+        const float light_attenuation = light_vector.Length(); // Length = linear falloff... SquareLength = quadratic (real) falloff
 
         light_vector.normalise();
-
-        float dot_product = light_vector.dot(_fragment.GetNormal());
+        const float dotLight_Normal = Vector::dot(light_vector, _fragment.GetNormal());
+        //float dot_product = light_vector.dot(_fragment.GetNormal());
         //normal.dot()
 
         // if dot product > 0 (angle less than 90)
-        if(dot_product > 0)
+        if(dotLight_Normal > 0)
         {
-            light_intensity += dot_product*(light->GetMagnitude()/sqrt(light_attenuation));
+            light_intensity += dotLight_Normal*(light->GetMagnitude()/sqrt(light_attenuation));
         }
 
     }

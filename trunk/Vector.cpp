@@ -51,12 +51,12 @@ float Vector::SquareLength()
 }
 
 
-float Vector::dot(const Vector &_v)
+/*float Vector::dot(const Vector &_v)
 {
     // source Jon Macey
 
     return m_x * _v.m_x + m_y * _v.m_y + m_z * _v.m_z;
-}
+}*/
 
 void Vector::operator+=(const Vector &_v)
 {
@@ -107,17 +107,22 @@ Vector Vector::operator-(const Vector &_v)
 Vector Vector::operator *(const float _m)
 {
     return Vector(
-            m_x*_m,
-            m_y*_m,
-            m_z*_m,
+            m_x * _m,
+            m_y * _m,
+            m_z * _m,
             m_w
             );
 }
 
 Vector Vector::cross(const Vector &_v1, const Vector &_v2)
 {
-    float v_x = _v1.m_y*_v2.m_z-_v1.m_z*_v2.m_y;
-    float v_y = _v1.m_z*_v2.m_x-_v1.m_x*_v2.m_z;
-    float v_z = _v1.m_x*_v2.m_y-_v1.m_y*_v2.m_x;
+    const float v_x = (_v1.m_y * _v2.m_z) - (_v1.m_z * _v2.m_y);
+    const float v_y = (_v1.m_z * _v2.m_x) - (_v1.m_x * _v2.m_z);
+    const float v_z = (_v1.m_x * _v2.m_y) - (_v1.m_y * _v2.m_x);
     return Vector(v_x, v_y, v_z);
+}
+
+float Vector::dot(const Vector &_v1, const Vector &_v2)
+{
+    return (_v1.m_x * _v2.m_x) + (_v1.m_y * _v2.m_y) + (_v1.m_z * _v2.m_z);
 }
