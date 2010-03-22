@@ -2,7 +2,9 @@ QT -= core \
     gui
 LIBS += -lSDL
 LIBS += -lSDLmain
+CONFIG += thread
 LIBS += -lpthread
+DESTDIR = bin
 unix: { 
     INCLUDEPATH += $$(HOME)/lib/SDL/include
     INCLUDEPATH += $$(HOME)/lib/SDL/bin
@@ -43,3 +45,11 @@ SOURCES += sdlrenderer.cpp \
     Light.cpp \
     ReflectableRay.cpp \
     Plane.cpp
+#for(headerfile, HEADERS):exists($$headerfile) { 
+#    HEADERS -= $$headerfile
+#    HEADERS += include/$$headerfile
+#}
+#for(sourcefile, SOURCES):exists($$sourcefile) { 
+#    SOURCES -= $$sourcefile
+#    SOURCES += src/$$sourcefile
+#}

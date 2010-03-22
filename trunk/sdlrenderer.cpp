@@ -23,7 +23,7 @@
 // something weird with SDL causes this to screw up on Windows unless you have this line
 #undef main
 
-#define DEBUG false
+#define DEBUG true
 
 #define NUM_SPHERES 20
 #define NUM_LIGHTS 1
@@ -37,6 +37,9 @@
 
 #define PI 3.1415926535
 
+unsigned int m_rayIntersections = 0;
+unsigned int m_recursiveBounces = 0;
+unsigned int m_lightTraces = 0;
 
 SDL_Surface *screen;	//This pointer will reference the backbuffer
 
@@ -102,6 +105,12 @@ int main()//int argc, char *argv[])
 
     printf("Render time: %3.2f seconds\n", difftime(finish_time, start_time)/CLOCKS_PER_SEC);
     printf("Draw time: %3.2f seconds\n", difftime(finish_time, frame_time)/CLOCKS_PER_SEC);
+
+    if(DEBUG) {
+        std::cout << "Ray Traces: " << m_rayIntersections << std::endl;
+        std::cout << "Recursive Traces: " << m_recursiveBounces << std::endl;
+        std::cout << "Light Traces: " << m_lightTraces << std::endl;
+    }
 
     // Update the screen
     SDL_Flip(screen);
@@ -238,6 +247,8 @@ Colour SDLRenderer::RayTracePixel(Vector &_camera, const unsigned int _x, const 
 
 Colour SDLRenderer::RaytraceRay(Vector &_rayOrigin, Ray &_ray, unsigned int _traceDepth)
 {
+    m_rayIntersections++;
+    if(_traceDepth > 0) m_recursiveBounces++;
     bool hit = false;
 
     // for each object in scene
@@ -307,6 +318,7 @@ Colour SDLRenderer::RaytraceRay(Vector &_rayOrigin, Ray &_ray, unsigned int _tra
 
 float SDLRenderer::CalculateLighting(Fragment& _fragment )
 {
+    m_lightTraces++;
     float light_intensity = 0;
     // for each light
     for(unsigned int l=0; l<NUM_LIGHTS;l++)
