@@ -1,6 +1,8 @@
 #ifndef COLOUR_H
 #define COLOUR_H
 
+#include <string>
+
 class Colour
 {
 public:
@@ -12,6 +14,9 @@ public:
     void operator+=(Colour& _colour);
     void operator*=(Colour& _colour);
     void operator*=(float _multiplier);
+    static Colour Average(Colour& _colour1, Colour& _colour2);
+    void operator&=(Colour& _colour);
+    std::string GetDebugInformation();
 private:
     float c_r;
     float c_g;

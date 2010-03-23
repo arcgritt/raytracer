@@ -22,8 +22,13 @@
 #define NUM_SPHERES 20
 #define NUM_LIGHTS 1
 
+#define RESOLUTION_MULTIPLIER 1
 // how many times the algorithm will recurse in order to calculate reflections
 #define MAX_TRACE_DEPTH 500
+// depth of AA - (x*2)^2 samples (1 = 4 samples, 2 = 16 samples, 3 = 64 samples)
+#define FULL_SCENE_ANTI_ALIASING_LEVEL 1
+
+#define FIELD_OF_VIEW 60
 
 // arbitrary number which stops the surface from intersecting itself due to float rounding errors
 // should be as SMALL as possible, until artifacts start occuring... 0.001 seems to do the trick
@@ -45,66 +50,35 @@ int main(void)//int argc, char *argv[])
 {
     const int start_time = clock();
 
-    #define RES_MULTI 1.25
-
-    const unsigned int c_width = 1280*RES_MULTI;
-    const unsigned int c_height = 720*RES_MULTI;
+    const unsigned int c_width = 1280*RESOLUTION_MULTIPLIER;
+    const unsigned int c_height = 720*RESOLUTION_MULTIPLIER;
     const unsigned int c_bpp = 32;
-
-    //c_width*=2;
-    //c_height*=2;
 
     if(!SDLRaytracer::SDLInit(c_width, c_height, c_bpp))
     {
         std::cerr << "SDL failed to initialise" << std::endl;
     }
 
-    const unsigned int c_verticalFieldOfView = 60;
-    Vector camera = SDLRaytracer::CameraInit(c_verticalFieldOfView);
-
-
-    const float c_aspectRatio = (float)c_width/(float)c_height;
-    const float c_halfWidth = c_aspectRatio*0.5;
-    // const int c_num_pixels = c_width*c_height;    // redundant?
-    const float c_divisionSize = 1.0f/(float)c_height;
-
-
-    //const bool debug = true;
-    if(DEBUG) {
-        //printf("Camera position: %f\n", c_cameraPosition);
-        printf("Aspect ratio: %f\n", c_aspectRatio);
-        printf("Y Axis Division Size: %f\n", c_divisionSize);
-    }
-
-    SDLRaytracer::SceneInit();
-
     const int frame_time = clock();
 
-    Uint32 *pixels = (Uint32 *)screen->pixels;
 
-    // Draw the scene
-    for(unsigned int y=0; y<c_height; y++)
-    {
-        for(unsigned int x=0; x<c_width; x++)
-        {
-            Colour pixelColour = SDLRaytracer::RayTracePixel(camera, x, y, c_divisionSize, c_halfWidth);
-            float pixelColours[4];
-            pixelColour.GetColour256(&pixelColours[0]);
 
-            pixels[x+y*c_width] = SDL_MapRGB(screen->format, (Uint8)pixelColours[0], (Uint8)pixelColours[1], (Uint8)pixelColours[2]);
-        }
-    }
+    SDLRaytracer::RenderScene(c_width, c_height);
+
+
 
     const int finish_time = clock();
 
+
+
+#ifdef DEBUG
     printf("Render time: %3.2f seconds\n", difftime(finish_time, start_time)/CLOCKS_PER_SEC);
     printf("Draw time: %3.2f seconds\n", difftime(finish_time, frame_time)/CLOCKS_PER_SEC);
 
-    if(DEBUG) {
-        std::cout << "Ray Traces: " << m_rayIntersections << std::endl;
-        std::cout << "Recursive Traces: " << m_recursiveBounces << std::endl;
-        std::cout << "Light Traces: " << m_lightTraces << std::endl;
-    }
+    std::cout << "Ray Traces: " << m_rayIntersections << std::endl;
+    std::cout << "Recursive Traces: " << m_recursiveBounces << std::endl;
+    std::cout << "Light Traces: " << m_lightTraces << std::endl;
+#endif // DEBUG
 
     // Update the screen
     SDL_Flip(screen);
@@ -177,13 +151,13 @@ bool SDLRaytracer::SDLInit(const unsigned int _width, const unsigned int _height
     return true;
 }
 
-Vector SDLRaytracer::CameraInit(const unsigned int _verticalFieldOfView)
+Vector SDLRaytracer::CameraInit()
 {
-    const float c_cameraPosition = -0.5/tan((_verticalFieldOfView/2)*(PI/180));
+    const float c_cameraPosition = -0.5/tan((FIELD_OF_VIEW/2)*(PI/180));
     return Vector(0, 0, c_cameraPosition);
 }
 
-void SDLRaytracer::SceneInit()
+void SDLRaytracer::SceneObjectsInit()
 {
     // Random number generator
     boost::mt19937 Generator;
@@ -221,22 +195,146 @@ void SDLRaytracer::SceneInit()
     }
 }
 
+void SDLRaytracer::RenderScene(unsigned int _width, unsigned int _height) {
+    SDLRaytracer::SceneObjectsInit();
 
-Colour SDLRaytracer::RayTracePixel(Vector &_camera, const unsigned int _x, const unsigned int _y, const float _divisionSize, const float _halfWidth)
+    //const unsigned int c_verticalFieldOfView = 60;
+    Vector camera = SDLRaytracer::CameraInit(); //c_verticalFieldOfView);
+
+    Uint32 *pixelBuffer = (Uint32 *)screen->pixels;
+
+    RaytraceScene(pixelBuffer, _width, _height, camera);
+}
+
+void SDLRaytracer::RaytraceScene(Uint32* _pixelBuffer, unsigned int _width, unsigned int _height, Vector &_camera)
 {
-    Vector currDirection = Vector(_x*_divisionSize-_halfWidth,
-                                  _y*_divisionSize-0.5,
+    const float c_aspectRatio = (float)_width/(float)_height;
+    const float c_halfWidth = c_aspectRatio*0.5;
+    const float c_divisionSize = 1.0f/(float)_height;
+
+    if(DEBUG) {
+        //printf("Camera position: %f\n", c_cameraPosition);
+        printf("Aspect ratio: %f\n", c_aspectRatio);
+        printf("Y Axis Division Size: %f\n", c_divisionSize);
+    }
+
+#ifdef FULL_SCENE_ANTI_ALIASING_LEVEL
+
+    // number of samples in an orthagonal direction
+    const unsigned int fsaaAxisSamples = pow(2, FULL_SCENE_ANTI_ALIASING_LEVEL); // * 2;
+    //std::cout << fsaaAxisSamples << std::endl;
+    // total number of samples
+    unsigned int fsaaSamples = fsaaAxisSamples * fsaaAxisSamples;
+
+    // half pixel size
+    const float halfDivisionSize = c_divisionSize*0.5;
+    // distance between fsaa samples
+    const float fsaaDivisionSize = c_divisionSize/fsaaAxisSamples;
+    // half distance between fsaa samples
+    const float halfFSAADivisionSize = fsaaDivisionSize*0.5;
+
+    // calculate offset so we can use a clean loop for calculing sample positions
+    const float offsetPosition = halfDivisionSize - halfFSAADivisionSize;
+
+#endif // FULL_SCENE_ANTI_ALIASING_LEVEL
+
+    // Draw the scene
+    for(unsigned int y=0; y<_height; y++)
+    {
+        for(unsigned int x=0; x<_width; x++)
+        {
+            float xPos = x*c_divisionSize-c_halfWidth;
+            float yPos = y*c_divisionSize-0.5;            
+            
+#ifdef FULL_SCENE_ANTI_ALIASING_LEVEL
+
+            xPos -= offsetPosition;
+            yPos -= offsetPosition;
+            Colour pixelColour = SDLRaytracer::FSAARaytracePixel(_camera, xPos, yPos, fsaaSamples, fsaaAxisSamples, fsaaDivisionSize);
+
+#endif // #ifdef FULL_SCENE_ANTI_ALIASING_LEVEL
+
+#ifndef FULL_SCENE_ANTI_ALIASING_LEVEL
+
+            Colour pixelColour = SDLRaytracer::RaytracePixel(_camera, xPos, yPos);
+
+#endif // #ifndef FULL_SCENE_ANTI_ALIASING_LEVEL
+
+            /*if(FULL_SCENE_ANTI_ALIASING_LEVEL > 0) {
+                pixelColour
+            }
+            else
+            {
+
+            }*/
+            float pixelColours[4];
+            pixelColour.GetColour256(&pixelColours[0]);
+
+            _pixelBuffer[x+y*_width] = SDL_MapRGB(screen->format, (Uint8)pixelColours[0], (Uint8)pixelColours[1], (Uint8)pixelColours[2]);
+        }
+        SDL_Flip(screen);
+    }
+}
+
+
+Colour SDLRaytracer::RaytracePixel(Vector &_camera, float _xPos, float _yPos)
+{
+    Vector currDirection = Vector(_xPos,
+                                  _yPos,
                                   1) - _camera;
     currDirection.normalise();
 
     // Ray from camera to somewhere, rather than from an object to somewhere
     Ray cameraRay = Ray(currDirection);
 
-    // Ray pixel_rays[x+y*c_width];
-    // currPixel = Ray(currDirection);
-
     return RaytraceRay(_camera, cameraRay, 0);
+}
 
+Colour SDLRaytracer::FSAARaytracePixel(Vector &_camera,
+                                       float _xPos,
+                                       float _yPos,
+                                       unsigned int _fsaaSamples,
+                                       const unsigned int _fsaaAxisSamples,
+                                       const float _fsaaDivisionSize)
+{
+
+    Colour pixelColours[_fsaaSamples];
+    for(unsigned int x = 0; x < _fsaaAxisSamples; x++)
+    {
+        for(unsigned int y = 0; y < _fsaaAxisSamples; y++)
+        {
+            //std::cout << "test" << std::endl;
+            Vector currDirection = Vector(_xPos + (x*_fsaaDivisionSize),
+                                          _yPos + (y*_fsaaDivisionSize),
+                                          1) - _camera;
+            //currDirection.printDebug();
+            currDirection.normalise();
+            Ray cameraRay = Ray(currDirection);
+            pixelColours[x*_fsaaAxisSamples + y] = RaytraceRay(_camera, cameraRay, 0);
+            //std::cout << x*fsaaAxisSamples + y << ": " << pixelColours[x*fsaaAxisSamples + y].GetDebugInformation() << std::endl;
+        }
+    }
+
+    while(_fsaaSamples > 1)
+    {
+        //std::cout << fsaaSamples << std::endl;
+        //arrayPosition = 0;
+        //Colour pixelColoursMerged[fsaaSamplesMerged];
+        unsigned int iteration = 0;
+        for(unsigned int i = 0; i < _fsaaSamples; i=i+2)
+        {
+            //Colour multipliedColour = Colour::average(pixelColours[i], pixelColours[i+1]);
+            //std::cout << i << ": " << pixelColours[i].GetDebugInformation() << std::endl;
+            //std::cout << i+1 << ": " << pixelColours[i+1].GetDebugInformation() << std::endl;
+            pixelColours[iteration] = Colour::Average(pixelColours[i], pixelColours[i+1]);
+            //std::cout << "multiplication: " << pixelColours[iteration].GetDebugInformation() << std::endl;
+            iteration++;
+        }
+        //std::cout << fsaaSamples << std::endl;
+        _fsaaSamples >>= 1;
+    }
+
+    return pixelColours[0];
 }
 
 Colour SDLRaytracer::RaytraceRay(Vector &_rayOrigin, Ray &_ray, unsigned int _traceDepth)
@@ -305,7 +403,9 @@ Colour SDLRaytracer::RaytraceRay(Vector &_rayOrigin, Ray &_ray, unsigned int _tr
     else // if it didn't hit anything
     {
         // background colour
+        //return pixel_colour = Colour(1.0f, 1.0f, 1.0f);
         return pixel_colour = Colour(0.1f, 0.1f, 0.1f);
+        //return pixel_colour = Colour(0.2f, 0.2f, 0.2f);
     }
 }
 
