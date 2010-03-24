@@ -1,4 +1,8 @@
+#ifdef WINDOWS
+
 #include <ctime>
+
+#endif // #ifdef WINDOWS
 
 // Boost
 #include "boost/random.hpp"
@@ -32,7 +36,7 @@
 // how many times the algorithm will recurse in order to calculate reflections
 #define MAX_TRACE_DEPTH 5
 // depth of AA - (x*2)^2 samples (1 = 4 samples, 2 = 16 samples, 3 = 64 samples)
-#define FULL_SCENE_ANTI_ALIASING_LEVEL 1
+#define FULL_SCENE_ANTI_ALIASING_LEVEL 2
 
 // Vertical field of view of camera. Human eye is 120. Max is 180/aspect ratio
 #define FIELD_OF_VIEW 60
@@ -74,11 +78,7 @@ int main(void)//int argc, char *argv[])
 
     const int frame_time = clock();
 
-
-
     SDLRaytracer::RenderScene(backBuffer, c_width, c_height);
-
-
 
     const int finish_time = clock();
 
