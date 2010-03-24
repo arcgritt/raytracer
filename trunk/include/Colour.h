@@ -18,10 +18,10 @@ public:
     void operator&=(Colour& _colour);
     std::string GetDebugInformation();
 private:
-    float c_r;
-    float c_g;
-    float c_b;
-    float c_a;
+    float m_r;
+    float m_g;
+    float m_b;
+    float m_a;
 };
 
 #endif // COLOUR_H
