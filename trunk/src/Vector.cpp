@@ -26,12 +26,7 @@ Vector::Vector(float _x, float _y, float _z, float _w)
     m_w = _w;
 }
 
-void Vector::printDebug()
-{
-    printf("Vector information: %f, %f, %f, %f \n", m_x, m_y, m_z, m_w);
-}
-
-void Vector::normalise()
+void Vector::Normalise()
 {
     // source Jon Macey
     float length=sqrt(m_x*m_x + m_y*m_y + m_z*m_z);
@@ -92,17 +87,17 @@ Vector Vector::operator-(const Vector &_v)
 
 
 
-Vector Vector::operator *(const float _m)
+Vector Vector::operator*(const float _multiplier)
 {
     return Vector(
-            m_x * _m,
-            m_y * _m,
-            m_z * _m,
+            m_x * _multiplier,
+            m_y * _multiplier,
+            m_z * _multiplier,
             m_w
             );
 }
 
-Vector Vector::cross(const Vector &_v1, const Vector &_v2)
+Vector Vector::Cross(const Vector &_v1, const Vector &_v2)
 {
     const float v_x = (_v1.m_y * _v2.m_z) - (_v1.m_z * _v2.m_y);
     const float v_y = (_v1.m_z * _v2.m_x) - (_v1.m_x * _v2.m_z);
@@ -110,7 +105,14 @@ Vector Vector::cross(const Vector &_v1, const Vector &_v2)
     return Vector(v_x, v_y, v_z);
 }
 
-float Vector::dot(const Vector &_v1, const Vector &_v2)
+float Vector::Dot(const Vector &_v1, const Vector &_v2)
 {
     return (_v1.m_x * _v2.m_x) + (_v1.m_y * _v2.m_y) + (_v1.m_z * _v2.m_z);
+}
+
+std::string Vector::GetDebugInformation()
+{
+    char tmp[256];
+    sprintf(tmp, "X: %f, Y: %f, Z: %f, W: %f", m_x, m_y, m_z, m_w);
+    return std::string(tmp);
 }

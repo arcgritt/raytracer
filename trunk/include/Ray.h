@@ -8,12 +8,21 @@ class Ray
 {
 public:
     Ray();
+
     Ray(Vector& _direction);
+
     void Intersection(const float& _intersectionDistance, RenderableObject& _objectIntersected);
-    void PrintDebug();
+
+    //void PrintDebug();
+
     Vector& GetVector();
+
     float GetClosestIntersection() const { return m_closestIntersection; }
+
     RenderableObject* GetObjectIntersected() const { return m_objectIntersected; }
+
+    /// \brief Returns a string containing debug information about this object
+    std::string GetDebugInformation();
 private:
     Vector m_direction;
     float m_closestIntersection;

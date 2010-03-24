@@ -1,28 +1,47 @@
 #ifndef VECTOR_H
 #define VECTOR_H
 
+#include <string>
+
 class Vector
 {
 public:
     Vector();
-    Vector(float, float, float);
-    Vector(float, float, float, float);
-    void printDebug();
-    void normalise();
+
+    Vector(float _x, float _y, float _z);
+
+    Vector(float _x, float _y, float _z, float _w);
+
+    void Normalise();
+
     float Length();
+
     float SquareLength();
-    //float dot(const Vector&);
-    void operator+=(const Vector&);
-    Vector operator+(const Vector&);
+
+    void operator+=(const Vector& _v);
+
+    Vector operator+(const Vector& _v);
+
     Vector operator-();
-    void operator-=(const Vector&);
-    Vector operator-(const Vector&);
-    Vector operator*(float _m);
-    static Vector cross(const Vector& _v1, const Vector& _v2);
-    static float dot(const Vector & _v1, const Vector& _v2);
-    float GetX() { return m_x; }
-    float GetY() { return m_y; }
-    float GetZ() { return m_z; }
+
+    void operator-=(const Vector& _v);
+
+    Vector operator-(const Vector& _v);
+
+    Vector operator*(float _multiplier);
+
+    static Vector Cross(const Vector& _v1, const Vector& _v2);
+
+    static float Dot(const Vector & _v1, const Vector& _v2);
+
+    float GetX() const { return m_x; }
+
+    float GetY() const { return m_y; }
+
+    float GetZ() const { return m_z; }
+
+    /// \brief Returns a string containing debug information about this object
+    std::string GetDebugInformation();
 private:
     union
     {

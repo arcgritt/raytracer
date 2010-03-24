@@ -279,7 +279,7 @@ void SDLRaytracer::RaytraceScene(SDL_Surface *&_backBuffer, unsigned int _width,
             {
 
             }*/
-            float pixelColours[4];
+            unsigned int pixelColours[4];
             pixelColour.GetColour256(&pixelColours[0]);
 
             _pixelBuffer[x+y*_width] = SDL_MapRGB(_backBuffer->format, (Uint8)pixelColours[0], (Uint8)pixelColours[1], (Uint8)pixelColours[2]);
@@ -294,7 +294,7 @@ Colour SDLRaytracer::RaytracePixel(Vector &_camera, float _xPos, float _yPos)
     Vector currDirection = Vector(_xPos,
                                   _yPos,
                                   1) - _camera;
-    currDirection.normalise();
+    currDirection.Normalise();
 
     // Ray from camera to somewhere, rather than from an object to somewhere
     Ray cameraRay = Ray(currDirection);
@@ -321,7 +321,7 @@ Colour SDLRaytracer::FSAARaytracePixel(Vector &_camera,
                                           _yPos + (y*_fsaaDivisionSize),
                                           1) - _camera;
             // normalise it
-            currDirection.normalise();
+            currDirection.Normalise();
             // save it to Ray object
             Ray cameraRay = Ray(currDirection);
             // trace it
@@ -408,9 +408,9 @@ Colour SDLRaytracer::RaytraceRay(Vector &_rayOrigin, Ray &_ray, unsigned int _tr
         // calculate the reflection bounce ray
         Vector rayVector = _ray.GetVector();
         Vector normal = pixel_fragment.GetNormal();
-        const float dotRay_Normal = Vector::dot(rayVector, normal);
+        const float dotRay_Normal = Vector::Dot(rayVector, normal);
         Vector reflectionVector = rayVector - (normal*2*dotRay_Normal);
-        reflectionVector.normalise();
+        reflectionVector.Normalise();
         Ray reflectionray = Ray(reflectionVector);
 
         Vector origin = pixel_fragment.GetPosition();
@@ -474,8 +474,8 @@ float SDLRaytracer::CalculateLighting(Fragment& _fragment )
         // could be used for light falloff
         const float light_attenuation = light_vector.Length(); // Length = linear falloff... SquareLength = quadratic (real) falloff
 
-        light_vector.normalise();
-        const float dotLight_Normal = Vector::dot(light_vector, _fragment.GetNormal());
+        light_vector.Normalise();
+        const float dotLight_Normal = Vector::Dot(light_vector, _fragment.GetNormal());
         //float dot_product = light_vector.dot(_fragment.GetNormal());
         //normal.dot()
 

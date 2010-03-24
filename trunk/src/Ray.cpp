@@ -14,12 +14,6 @@ Ray::Ray(Vector& _direction)
     m_closestIntersection = FLT_MAX;
 }
 
-void Ray::PrintDebug()
-{
-    m_direction.printDebug();
-    printf("Float Max: %f", m_closestIntersection);
-}
-
 Vector& Ray::GetVector()
 {
     return m_direction;
@@ -32,4 +26,11 @@ void Ray::Intersection(const float& _intersectionDistance, RenderableObject& _ob
         m_closestIntersection = _intersectionDistance;
         m_objectIntersected = &_objectIntersected;
     }
+}
+
+std::string Ray::GetDebugInformation()
+{
+    char tmp[256];
+    sprintf(tmp, "Closest Intersection: %f", m_closestIntersection);
+    return std::string(tmp);
 }

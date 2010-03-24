@@ -4,6 +4,7 @@ Plane::Plane()
 {
 }
 
+/*
 Plane::Plane(Vector _position, float _x, float _y)
 {
     SetPosition(_position);
@@ -22,14 +23,14 @@ Plane::Plane(Vector _position, float _x, float _y, Material _material)
 float Plane::doIntersection(Vector _rayOrigin, Vector _ray)
 {
 
-    /* surface normal:
+    surface normal:
         Vector(getPosition().
 
-    */
+
 
     //Vector u = _
 
-    /*int
+    int
     intersect3D_SegmentPlane( Segment S, Plane Pn, Point* I )
     {
         Vector    u = S.P1 - S.P0;
@@ -52,7 +53,7 @@ float Plane::doIntersection(Vector _rayOrigin, Vector _ray)
 
         *I = S.P0 + sI * u;                 // compute segment intersect point
         return 1;
-    }*/
+    }
 }
 
 
@@ -61,3 +62,4 @@ Fragment Plane::getFragment(Vector _rayOrigin, Vector _ray, float _distance)
 
 
 }
+*/

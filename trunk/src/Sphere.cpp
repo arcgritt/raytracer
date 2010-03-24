@@ -30,9 +30,9 @@ float Sphere::DoIntersection(Vector &_rayOrigin, Vector &_ray) // SpherePrimitiv
     Vector dst = _rayOrigin-GetPosition();
 
     //Compute A, B and C coefficients
-    float a = Vector::dot(_ray, _ray); //_ray.dot(_ray);
-    float b = 2 * Vector::dot(_ray, dst); //_ray.dot(dst);
-    float c = Vector::dot(dst, dst) - (GetRadius() * GetRadius());
+    float a = Vector::Dot(_ray, _ray); //_ray.dot(_ray);
+    float b = 2 * Vector::Dot(_ray, dst); //_ray.dot(dst);
+    float c = Vector::Dot(dst, dst) - (GetRadius() * GetRadius());
     //float c = dst.dot(dst) - (getRadius() * getRadius());
 
     //Find discriminant
@@ -94,7 +94,7 @@ Fragment Sphere::GetFragment(Vector &_rayOrigin, Vector &_ray, float _distance)
     //normal.printDebug();
     //Vector normal = position - point;
 
-    normal.normalise();
+    normal.Normalise();
 
     return Fragment(point, normal, GetMaterial());
 }

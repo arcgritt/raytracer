@@ -4,6 +4,8 @@
 
 #endif
 
+#include <assert.h>
+
 #include "Colour.h"
 
 Colour::Colour()
@@ -30,7 +32,7 @@ Colour::Colour(float _r, float _g, float _b, float _a)
     m_a = _a;
 }
 
-void  Colour::GetColour(float* _colour)
+void Colour::GetColour(float *_colour)
 {
     _colour[0] = m_r;
     _colour[1] = m_g;
@@ -38,8 +40,14 @@ void  Colour::GetColour(float* _colour)
     _colour[3] = m_a;
 }
 
-void Colour::GetColour256(float* _colour)
+void Colour::GetColour256(unsigned int *_colour)
 {
+    assert(
+            m_r >= 0.0f && m_r <= 1.0f &&
+            m_g >= 0.0f && m_g <= 1.0f &&
+            m_b >= 0.0f && m_b <= 1.0f &&
+            m_a >= 0.0f && m_a <= 1.0f
+           );
     _colour[0] = 255*m_r;
     _colour[1] = 255*m_g;
     _colour[2] = 255*m_b;
