@@ -1,3 +1,9 @@
+#ifdef WINDOWS
+
+#include <cstdio>
+
+#endif
+
 #include "Colour.h"
 
 Colour::Colour()

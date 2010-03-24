@@ -30,6 +30,8 @@ unix: {
 
 # INCLUDEPATH += $$(HOME)/lib/Boost
 win32: { 
+    DEFINES += WINDOWS
+
     INCLUDEPATH += C:\lib\SDL-1.2.14\include
     INCLUDEPATH += C:\lib\SDL-1.2.14\bin
     INCLUDEPATH += C:\lib\boost_1_42_0

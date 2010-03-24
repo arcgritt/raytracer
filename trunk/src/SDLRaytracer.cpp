@@ -1,3 +1,5 @@
+#include <ctime>
+
 // Boost
 #include "boost/random.hpp"
 //#include "boost/thread.hpp"
@@ -22,27 +24,36 @@
 #define NUM_SPHERES 20
 #define NUM_LIGHTS 1
 
+// use this to change the resolution by a multiple (rather than mess with pixel numbers)
 #define RESOLUTION_MULTIPLIER 1
+#define PIXELS_WIDE 1280
+#define PIXELS_HIGH 720
+
 // how many times the algorithm will recurse in order to calculate reflections
-#define MAX_TRACE_DEPTH 500
+#define MAX_TRACE_DEPTH 5
 // depth of AA - (x*2)^2 samples (1 = 4 samples, 2 = 16 samples, 3 = 64 samples)
 #define FULL_SCENE_ANTI_ALIASING_LEVEL 1
 
+// Vertical field of view of camera. Human eye is 120. Max is 180/aspect ratio
 #define FIELD_OF_VIEW 60
 
 // arbitrary number which stops the surface from intersecting itself due to float rounding errors
 // should be as SMALL as possible, until artifacts start occuring... 0.001 seems to do the trick
 #define LAMBDA 0.001
 
-#define PI 3.1415926535
+
+#define PI 3.14159265358979323846264338327950288
+
+
+#ifdef DEBUG
 
 unsigned int m_rayIntersections = 0;
 unsigned int m_recursiveBounces = 0;
 unsigned int m_lightTraces = 0;
 
-SDL_Surface *screen;	//This pointer will reference the backbuffer
+#endif // #ifdef DEBUG
 
-
+// TODO: Make a Scene class which contains all these
 RenderableObject* objects[NUM_SPHERES];
 Light* lights[NUM_LIGHTS];
 
@@ -50,11 +61,13 @@ int main(void)//int argc, char *argv[])
 {
     const int start_time = clock();
 
-    const unsigned int c_width = 1280*RESOLUTION_MULTIPLIER;
-    const unsigned int c_height = 720*RESOLUTION_MULTIPLIER;
+    const unsigned int c_width = PIXELS_WIDE*RESOLUTION_MULTIPLIER;
+    const unsigned int c_height = PIXELS_HIGH*RESOLUTION_MULTIPLIER;
     const unsigned int c_bpp = 32;
 
-    if(!SDLRaytracer::SDLInit(c_width, c_height, c_bpp))
+    SDL_Surface* backBuffer;
+
+    if(!SDLRaytracer::SDLInit(backBuffer, c_width, c_height, c_bpp))
     {
         std::cerr << "SDL failed to initialise" << std::endl;
     }
@@ -63,7 +76,7 @@ int main(void)//int argc, char *argv[])
 
 
 
-    SDLRaytracer::RenderScene(c_width, c_height);
+    SDLRaytracer::RenderScene(backBuffer, c_width, c_height);
 
 
 
@@ -81,7 +94,7 @@ int main(void)//int argc, char *argv[])
 #endif // DEBUG
 
     // Update the screen
-    SDL_Flip(screen);
+    SDL_Flip(backBuffer);
 
 
     // pointer to pass to SDL_WaitEvent
@@ -128,7 +141,7 @@ int main(void)//int argc, char *argv[])
     return EXIT_SUCCESS;
 }
 
-bool SDLRaytracer::SDLInit(const unsigned int _width, const unsigned int _height, const unsigned int _bpp)
+bool SDLRaytracer::SDLInit(SDL_Surface *&_backBuffer, const unsigned int _width, const unsigned int _height, const unsigned int _bpp)
 {
     //We must first initialize the SDL video component, and check for success
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
@@ -143,8 +156,8 @@ bool SDLRaytracer::SDLInit(const unsigned int _width, const unsigned int _height
     atexit(SDL_Quit);
 
     //Set the video mode with double-buffering
-    screen = SDL_SetVideoMode(_width, _height, _bpp, SDL_DOUBLEBUF);
-    if (screen == NULL) {
+    _backBuffer = SDL_SetVideoMode(_width, _height, _bpp, SDL_DOUBLEBUF);
+    if (_backBuffer == NULL) {
         printf("Unable to set video mode: %s\n", SDL_GetError());
         return false;
     }
@@ -195,19 +208,18 @@ void SDLRaytracer::SceneObjectsInit()
     }
 }
 
-void SDLRaytracer::RenderScene(unsigned int _width, unsigned int _height) {
+void SDLRaytracer::RenderScene(SDL_Surface *&_backBuffer, unsigned int _width, unsigned int _height) {
     SDLRaytracer::SceneObjectsInit();
 
-    //const unsigned int c_verticalFieldOfView = 60;
-    Vector camera = SDLRaytracer::CameraInit(); //c_verticalFieldOfView);
+    Vector camera = SDLRaytracer::CameraInit();
 
-    Uint32 *pixelBuffer = (Uint32 *)screen->pixels;
-
-    RaytraceScene(pixelBuffer, _width, _height, camera);
+    RaytraceScene(_backBuffer, _width, _height, camera);
 }
 
-void SDLRaytracer::RaytraceScene(Uint32* _pixelBuffer, unsigned int _width, unsigned int _height, Vector &_camera)
+void SDLRaytracer::RaytraceScene(SDL_Surface *&_backBuffer, unsigned int _width, unsigned int _height, Vector &_camera)
 {
+    Uint32 *_pixelBuffer = (Uint32 *)_backBuffer->pixels;
+
     const float c_aspectRatio = (float)_width/(float)_height;
     const float c_halfWidth = c_aspectRatio*0.5;
     const float c_divisionSize = 1.0f/(float)_height;
@@ -270,9 +282,9 @@ void SDLRaytracer::RaytraceScene(Uint32* _pixelBuffer, unsigned int _width, unsi
             float pixelColours[4];
             pixelColour.GetColour256(&pixelColours[0]);
 
-            _pixelBuffer[x+y*_width] = SDL_MapRGB(screen->format, (Uint8)pixelColours[0], (Uint8)pixelColours[1], (Uint8)pixelColours[2]);
+            _pixelBuffer[x+y*_width] = SDL_MapRGB(_backBuffer->format, (Uint8)pixelColours[0], (Uint8)pixelColours[1], (Uint8)pixelColours[2]);
         }
-        SDL_Flip(screen);
+        SDL_Flip(_backBuffer);
     }
 }
 
@@ -297,50 +309,60 @@ Colour SDLRaytracer::FSAARaytracePixel(Vector &_camera,
                                        const unsigned int _fsaaAxisSamples,
                                        const float _fsaaDivisionSize)
 {
-
+    // array to store each pixel sample
     Colour pixelColours[_fsaaSamples];
     for(unsigned int x = 0; x < _fsaaAxisSamples; x++)
     {
         for(unsigned int y = 0; y < _fsaaAxisSamples; y++)
         {
-            //std::cout << "test" << std::endl;
+            // for each sample
+            // slightly modified vector
             Vector currDirection = Vector(_xPos + (x*_fsaaDivisionSize),
                                           _yPos + (y*_fsaaDivisionSize),
                                           1) - _camera;
-            //currDirection.printDebug();
+            // normalise it
             currDirection.normalise();
+            // save it to Ray object
             Ray cameraRay = Ray(currDirection);
+            // trace it
             pixelColours[x*_fsaaAxisSamples + y] = RaytraceRay(_camera, cameraRay, 0);
-            //std::cout << x*fsaaAxisSamples + y << ": " << pixelColours[x*fsaaAxisSamples + y].GetDebugInformation() << std::endl;
         }
     }
 
+    // TODO: static function in colour class, which takes an array of colours and averages them
+
+    // loop which multiplies samples back together to create average.
+    // from a design point of view, you could do _fsaaSamples minus 1 # of float adds, plus a float division
+    // OR _fsaaSamples minus 1 (e.g. 8+4+2+1) # of multiplications
+    // this loop uses the multiplication method, which also uses less memory
+
+    // _fsaaSamples is divided by 2 every loop iteration,
+    // leading to 8, then 4, then 2, then 1 multiplications - if you had 16 samples
     while(_fsaaSamples > 1)
     {
-        //std::cout << fsaaSamples << std::endl;
-        //arrayPosition = 0;
-        //Colour pixelColoursMerged[fsaaSamplesMerged];
+        // iteration is used so that the output is placed into the first bunch of array positions (e.g. 0-7)
+        // this is used because i is incremented by 2 every loop iteration
         unsigned int iteration = 0;
         for(unsigned int i = 0; i < _fsaaSamples; i=i+2)
         {
-            //Colour multipliedColour = Colour::average(pixelColours[i], pixelColours[i+1]);
-            //std::cout << i << ": " << pixelColours[i].GetDebugInformation() << std::endl;
-            //std::cout << i+1 << ": " << pixelColours[i+1].GetDebugInformation() << std::endl;
-            pixelColours[iteration] = Colour::Average(pixelColours[i], pixelColours[i+1]);
-            //std::cout << "multiplication: " << pixelColours[iteration].GetDebugInformation() << std::endl;
+            // on first loop, 0 becomes the average of [0, 1], 1 becomes [2,3] etc
+            pixelColours[iteration] &= pixelColours[i+1];
             iteration++;
         }
-        //std::cout << fsaaSamples << std::endl;
-        _fsaaSamples >>= 1;
+        // bit shift right _fsaaSamples (e.g. 16 becomes 8)
+        _fsaaSamples /= 2;
     }
 
+    // return the first element of the array, which should have ended up with the average of all of the array
     return pixelColours[0];
 }
 
 Colour SDLRaytracer::RaytraceRay(Vector &_rayOrigin, Ray &_ray, unsigned int _traceDepth)
 {
+#ifdef DEBUG
     m_rayIntersections++;
     if(_traceDepth > 0) m_recursiveBounces++;
+#endif // #ifdef DEBUG
     bool hit = false;
 
     // for each object in scene
@@ -412,7 +434,10 @@ Colour SDLRaytracer::RaytraceRay(Vector &_rayOrigin, Ray &_ray, unsigned int _tr
 
 float SDLRaytracer::CalculateLighting(Fragment& _fragment )
 {
+#ifdef DEBUG
     m_lightTraces++;
+#endif // #ifdef DEBUG
+
     float light_intensity = 0;
     // for each light
     for(unsigned int l=0; l<NUM_LIGHTS;l++)

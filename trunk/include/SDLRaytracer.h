@@ -13,12 +13,12 @@ class SDLRaytracer
 {
 public:
     SDLRaytracer();
-    static bool SDLInit(const unsigned int _width, const unsigned int _height, const unsigned int _bpp);
+    static bool SDLInit(SDL_Surface*& _backBuffer, const unsigned int _width, const unsigned int _height, const unsigned int _bpp);
     static Vector CameraInit();
     static void SceneObjectsInit();
 
-    static void RenderScene(const unsigned int _width, const unsigned int _height);
-    static void RaytraceScene(Uint32* pixelBuffer, const unsigned int _width, const unsigned int _height, Vector& _camera);
+    static void RenderScene(SDL_Surface*& _backBuffer, const unsigned int _width, const unsigned int _height);
+    static void RaytraceScene(SDL_Surface*& _backBuffer, const unsigned int _width, const unsigned int _height, Vector& _camera);
 
     static Colour RaytracePixel(Vector& _camera, float _xPos, float _yPos);
     static Colour FSAAPixel(Vector& _camera, const unsigned int _x, const unsigned int _y, const float _divisionSize, const float _halfWidth);
