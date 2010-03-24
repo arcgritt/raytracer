@@ -31,7 +31,6 @@ unix: {
 # INCLUDEPATH += $$(HOME)/lib/Boost
 win32: { 
     DEFINES += WINDOWS
-
     INCLUDEPATH += C:\lib\SDL-1.2.14\include
     INCLUDEPATH += C:\lib\SDL-1.2.14\bin
     INCLUDEPATH += C:\lib\boost_1_42_0
@@ -71,3 +70,4 @@ SOURCES += $$SOURCES_DIR/SDLRaytracer.cpp \
     $$SOURCES_DIR/ReflectableRay.cpp \
     $$SOURCES_DIR/Plane.cpp \
     $$SOURCES_DIR/Raytracer.cpp
+OTHER_FILES += Doxyfile
