@@ -36,7 +36,7 @@
 // how many times the algorithm will recurse in order to calculate reflections
 #define MAX_TRACE_DEPTH 5
 // depth of AA - (x*2)^2 samples (1 = 4 samples, 2 = 16 samples, 3 = 64 samples)
-#define FULL_SCENE_ANTI_ALIASING_LEVEL 2
+#define FULL_SCENE_ANTI_ALIASING_LEVEL 0
 
 // Vertical field of view of camera. Human eye is 120. Max is 180/aspect ratio
 #define FIELD_OF_VIEW 60
