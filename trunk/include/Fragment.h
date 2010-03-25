@@ -13,7 +13,7 @@ public:
     /// @param[in] _position    the position (point) of this pixel fragment
     /// @param[in] _normal      the  
     /// @param[in] _material
-    Fragment(const Vector& _position, const Vector& _normal, const Material& _material);
+    Fragment(const Vector& _position, const Vector& _normal, const Vector& _reverseNormal, const Material& _material);
 
     /// \brief
     /// \returns the position (point) of this pixel fragment
@@ -24,12 +24,17 @@ public:
     Vector GetNormal() const { return c_normal; }
 
     /// \brief
+    /// \returns the reverse (reflected) surface normal of the object of this pixel fragment
+    Vector GetReverseNormal() const { return c_reverseNormal; }
+
+    /// \brief
     /// \returns a pointer to the material of the object of this pixel fragment
     const Material* GetMaterial() const { return c_material; }
 
 private:
     Vector c_position;
     Vector c_normal;
+    Vector c_reverseNormal;
     const Material* c_material;
 };
 

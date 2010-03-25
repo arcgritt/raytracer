@@ -91,10 +91,11 @@ Fragment Sphere::GetFragment(Vector &_rayOrigin, Vector &_ray, float _distance)
 
     // normal = point - center
     Vector normal = point - GetPosition();
+    Vector reverseNormal = GetPosition() - point;
     //normal.printDebug();
     //Vector normal = position - point;
 
     normal.Normalise();
 
-    return Fragment(point, normal, GetMaterial());
+    return Fragment(point, normal, reverseNormal, GetMaterial());
 }

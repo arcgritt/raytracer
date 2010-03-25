@@ -55,6 +55,8 @@ unsigned int m_rayIntersections = 0;
 unsigned int m_recursiveBounces = 0;
 unsigned int m_lightTraces = 0;
 
+float cameraXpos = -7;
+
 #endif // #ifdef DEBUG
 
 // TODO: Make a Scene class which contains all these
@@ -94,7 +96,7 @@ int main(void)//int argc, char *argv[])
 #endif // DEBUG
 
     // Update the screen
-    SDL_Flip(backBuffer);
+    //SDL_Flip(backBuffer);
 
 
     // pointer to pass to SDL_WaitEvent
@@ -118,6 +120,16 @@ int main(void)//int argc, char *argv[])
                         quit = true;
                         //break;
                     // ALL keys
+                    }
+                    case SDLK_LEFT:
+                    {
+                           cameraXpos-= 5;
+                           SDLRaytracer::RenderScene(backBuffer, c_width, c_height);
+                    }
+                    case SDLK_RIGHT:
+                    {
+                           cameraXpos-= 5;
+                           SDLRaytracer::RenderScene(backBuffer, c_width, c_height);
                     }
                     default:
                     {
@@ -197,7 +209,7 @@ void SDLRaytracer::SceneObjectsInit()
     for(unsigned int i=0; i<NUM_LIGHTS;i++)
     {
         lights[i] = new Light(
-                Vector(-7, RandFloat(), 30),
+                Vector(cameraXpos, RandFloat(), 15),
                 0.5f,
                 Material(
                         Colour(),
@@ -394,7 +406,7 @@ Colour SDLRaytracer::RaytraceRay(Vector &_rayOrigin, Ray &_ray, unsigned int _tr
 
 
         // Get the intensity of light which is hitting this object
-        float light_intensity = CalculateLighting(pixel_fragment);
+        float light_intensity = CalculateLighting(pixel_fragment, _ray.GetVector());
         pixel_colour = CalculateColour(objectMaterial, light_intensity);
 
         if(objectReflectivity == 0.0f || _traceDepth >= MAX_TRACE_DEPTH)
@@ -432,7 +444,7 @@ Colour SDLRaytracer::RaytraceRay(Vector &_rayOrigin, Ray &_ray, unsigned int _tr
 }
 
 
-float SDLRaytracer::CalculateLighting(Fragment& _fragment )
+float SDLRaytracer::CalculateLighting(Fragment &_fragment, Vector &_rayVector)
 {
 #ifdef DEBUG
     m_lightTraces++;
@@ -443,17 +455,29 @@ float SDLRaytracer::CalculateLighting(Fragment& _fragment )
     for(unsigned int l=0; l<NUM_LIGHTS;l++)
     {
         Light* light = lights[l];
-        Vector light_vector = light->GetPosition()-_fragment.GetPosition();
-        float lightDistance = light_vector.SquareLength();
+
+        // point on object surface
+        Vector surfacePoint = _fragment.GetPosition();
+
+        // light center
+        Vector lightPoint = light->GetPosition();
+
+        // vector from point on surface to light
+        Vector lightVector = lightPoint-surfacePoint;
 
         bool occluded = false;
         // check against all objects including lights
-        for(unsigned int j=0; j<NUM_SPHERES+NUM_LIGHTS;j++) {
+        for(unsigned int j=0; j<NUM_SPHERES+NUM_LIGHTS;j++)
+        {
             // don't check against this light as it will always intersect
-            if(j != NUM_SPHERES + l) {
-                Vector surfacePoint = _fragment.GetPosition();
-                float distance = objects[j]->DoIntersection(surfacePoint, light_vector);
+            if(j != NUM_SPHERES + l)
+            {
 
+                float lightDistance = lightVector.SquareLength();
+
+                float distance = objects[j]->DoIntersection(surfacePoint, lightVector);
+
+                // 'hard' shadows
                 if(distance >= LAMBDA && // if there is a hit
                    distance < lightDistance) // if the object is between the light and the fragment
                 {
@@ -468,32 +492,77 @@ float SDLRaytracer::CalculateLighting(Fragment& _fragment )
             }
         }
 
-        if(occluded) break; //
+        if(occluded) break; // if there is a single object in the way, the light is occluded
 
-        // vector from intersection to light
-        // could be used for light falloff
-        const float light_attenuation = light_vector.Length(); // Length = linear falloff... SquareLength = quadratic (real) falloff
 
-        light_vector.Normalise();
-        const float dotLight_Normal = Vector::Dot(light_vector, _fragment.GetNormal());
-        //float dot_product = light_vector.dot(_fragment.GetNormal());
-        //normal.dot()
+        float unattenuatedIntensity = 0;
 
-        // if dot product > 0 (angle less than 90)
-        if(dotLight_Normal > 0)
+        // Fragment normal
+        Vector normal = _fragment.GetNormal();
+        float diffuse = Vector::Dot(lightVector, normal);
+
+        if(diffuse > 0)
         {
-            light_intensity += dotLight_Normal*(light->GetMagnitude()/sqrt(light_attenuation));
+            unattenuatedIntensity += diffuse;
+
+
+            //Vector reverseNormal = _fragment.GetReverseNormal();
+
+            // reflection of light, for Phong calculations
+            Vector reflectionVector = lightVector - normal * Vector::Dot(normal, lightVector) * 2;
+            reflectionVector.Normalise();
+
+            // dot product of light reflection and ray, for Phong calculations
+            float phong = Vector::Dot(reflectionVector, _rayVector);
+
+            Vector halfWayVector = lightVector + _rayVector;
+            halfWayVector.Normalise();
+
+            float blinn = Vector::Dot(halfWayVector, normal);
+
+            float exponent = 20;
+            float intensity = 500;
+            //float specular = 0;
+            if(phong > 0)
+            {
+                // if dot product > 0 (angle less than 90)
+                float phongIntensity = pow(phong, exponent) * intensity;
+                unattenuatedIntensity += phongIntensity;
+
+                float blinnIntensity = pow(blinn, exponent*0.5) * intensity*2;
+                //unattenuatedIntensity += blinnIntensity;
+            }
+
+            /*Vector halfWayVector = lightVector + _rayVector;
+            halfWayVector.Normalise();
+
+            float blinn = Vector::Dot(halfWayVector, normal);
+
+            if(blinn > 0)
+            {
+                float blinnIntensity = pow(blinn, exponent) * intensity;
+                unattenuatedIntensity += blinnIntensity;
+            }*/
         }
+
+        if(unattenuatedIntensity > 0)   // don't waste time with attenuation if it's got no light, ~5% speed boost
+        {
+            // vector from intersection to light
+            // could be used for light falloff
+            const float light_attenuation = lightVector.SquareLength(); // Length = linear falloff... SquareLength = quadratic (real) falloff
+            light_intensity += unattenuatedIntensity*(light->GetMagnitude()/light_attenuation);
+        }
+
 
     }
 
     // ambient light
-    const float ambient_multiplier = 0.15;
+    const float ambient_multiplier = 0.3;
     float ambient_modifier = (1.0f - light_intensity) * ambient_multiplier;
     light_intensity += ambient_modifier;
     //return light_intensity;
 
-    return std::min(1.0f, light_intensity);
+    return light_intensity;//std::min(1.0f, light_intensity);
 }
 
 
@@ -510,6 +579,7 @@ Colour SDLRaytracer::CalculateColour(Material& _material, float _lightIntensity)
 
     ///* Lambert
     _lightIntensity = 1/_lightIntensity;
+
     float pixelColours[4];
     _material.GetColour().GetColour(&pixelColours[0]);
     float r_base = pixelColours[0];

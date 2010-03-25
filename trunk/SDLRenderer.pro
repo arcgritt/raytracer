@@ -48,7 +48,6 @@ HEADERS += $$HEADERS_DIR/SDLRaytracer.h \
     $$HEADERS_DIR/Material.h \
     $$HEADERS_DIR/Fragment.h \
     $$HEADERS_DIR/Light.h \
-    $$HEADERS_DIR/ReflectableRay.h \
     $$HEADERS_DIR/Plane.h \
     $$HEADERS_DIR/Raytracer.h
 
@@ -67,7 +66,6 @@ SOURCES += $$SOURCES_DIR/SDLRaytracer.cpp \
     $$SOURCES_DIR/Material.cpp \
     $$SOURCES_DIR/Fragment.cpp \
     $$SOURCES_DIR/Light.cpp \
-    $$SOURCES_DIR/ReflectableRay.cpp \
     $$SOURCES_DIR/Plane.cpp \
     $$SOURCES_DIR/Raytracer.cpp
 OTHER_FILES += Doxyfile
