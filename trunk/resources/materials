@@ -1,0 +1,12 @@
+# asdasdasdas
+
+#
+
+Material testMaterial
+
+DiffuseColour       rand 0.2 0.5
+SpecularColour      0.1 0.4 0.4
+SpecularIntensity   10
+SpecularExponent    20
+Reflectivity        0.5
+

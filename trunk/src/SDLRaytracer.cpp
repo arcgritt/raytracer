@@ -13,6 +13,7 @@
 
 // Project
 #include "SDLRaytracer.h"
+#include "MaterialParser.h"
 #include "Sphere.h"
 #include "Light.h"
 
@@ -65,7 +66,9 @@ Light* lights[NUM_LIGHTS];
 
 int main(void)//int argc, char *argv[])
 {
-    const int start_time = clock();
+    MaterialParser materialParser = MaterialParser("../resources/materials");
+
+    /*const int start_time = clock();
 
     const unsigned int c_width = PIXELS_WIDE*RESOLUTION_MULTIPLIER;
     const unsigned int c_height = PIXELS_HIGH*RESOLUTION_MULTIPLIER;
@@ -147,11 +150,13 @@ int main(void)//int argc, char *argv[])
                 break;
             }
         }
-    }
+    }*/
 
     //Return success!
     return EXIT_SUCCESS;
 }
+
+
 
 bool SDLRaytracer::SDLInit(SDL_Surface *&_backBuffer, const unsigned int _width, const unsigned int _height, const unsigned int _bpp)
 {
@@ -509,29 +514,32 @@ float SDLRaytracer::CalculateLighting(Fragment &_fragment, Vector &_rayVector)
             //Vector reverseNormal = _fragment.GetReverseNormal();
 
             // reflection of light, for Phong calculations
-            Vector reflectionVector = lightVector - normal * Vector::Dot(normal, lightVector) * 2;
+            Vector reflectionVector = -lightVector + normal * Vector::Dot(normal, lightVector) * 2;
             reflectionVector.Normalise();
 
             // dot product of light reflection and ray, for Phong calculations
-            float phong = Vector::Dot(reflectionVector, _rayVector);
+            float phong = Vector::Dot(reflectionVector, -_rayVector);
 
             Vector halfWayVector = lightVector + _rayVector;
             halfWayVector.Normalise();
 
             float blinn = Vector::Dot(halfWayVector, normal);
 
-            float exponent = 20;
-            float intensity = 500;
-            //float specular = 0;
+            float exponent = 15;
+            float intensity = 5;
+            float specular = 0;
             if(phong > 0)
             {
                 // if dot product > 0 (angle less than 90)
                 float phongIntensity = pow(phong, exponent) * intensity;
-                unattenuatedIntensity += phongIntensity;
+                specular += phongIntensity;
 
-                float blinnIntensity = pow(blinn, exponent*0.5) * intensity*2;
-                //unattenuatedIntensity += blinnIntensity;
+                float blinnIntensity = pow(blinn, exponent*2) * intensity;
+                specular += blinnIntensity;
             }
+
+            specular *= diffuse;
+            unattenuatedIntensity += specular;
 
             /*Vector halfWayVector = lightVector + _rayVector;
             halfWayVector.Normalise();
@@ -581,7 +589,7 @@ Colour SDLRaytracer::CalculateColour(Material& _material, float _lightIntensity)
     _lightIntensity = 1/_lightIntensity;
 
     float pixelColours[4];
-    _material.GetColour().GetColour(&pixelColours[0]);
+    _material.GetDiffuseColour().GetColour(&pixelColours[0]);
     float r_base = pixelColours[0];
     float g_base = pixelColours[1];
     float b_base = pixelColours[2];

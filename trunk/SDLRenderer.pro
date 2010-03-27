@@ -49,7 +49,10 @@ HEADERS += $$HEADERS_DIR/SDLRaytracer.h \
     $$HEADERS_DIR/Fragment.h \
     $$HEADERS_DIR/Light.h \
     $$HEADERS_DIR/Plane.h \
-    $$HEADERS_DIR/Raytracer.h
+    $$HEADERS_DIR/Raytracer.h \
+    $$HEADERS_DIR/MaterialParser.h \
+    include/Scene.h \
+    include/ObjectParser.h
 
 # for(file, HEADERS) {
 # HEADERS -= $$file
@@ -67,5 +70,10 @@ SOURCES += $$SOURCES_DIR/SDLRaytracer.cpp \
     $$SOURCES_DIR/Fragment.cpp \
     $$SOURCES_DIR/Light.cpp \
     $$SOURCES_DIR/Plane.cpp \
-    $$SOURCES_DIR/Raytracer.cpp
-OTHER_FILES += Doxyfile
+    $$SOURCES_DIR/Raytracer.cpp \
+    $$SOURCES_DIR/MaterialParser.cpp \
+    src/Scene.cpp \
+    src/ObjectParser.cpp
+OTHER_FILES += Doxyfile \
+    $$RCC_DIR/materials \
+    $$RCC_DIR/objects

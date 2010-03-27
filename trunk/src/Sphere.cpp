@@ -47,9 +47,13 @@ float Sphere::DoIntersection(Vector &_rayOrigin, Vector &_ray) // SpherePrimitiv
     float distSqrt = sqrtf(disc);
     float q;
     if (b < 0)
+    {
         q = (-b - distSqrt)/2.0;
+    }
     else
+    {
         q = (-b + distSqrt)/2.0;
+    }
 
     // compute t0 and t1
     float t0 = q / a;
@@ -67,7 +71,9 @@ float Sphere::DoIntersection(Vector &_rayOrigin, Vector &_ray) // SpherePrimitiv
     // if t1 is less than zero, the object is in the ray's negative direction
     // and consequently the ray misses the sphere
     if (t1 < 0)
+    {
         return -1;
+    }
 
     // if t0 is less than zero, the intersection point is at t1
     if (t0 < 0)
