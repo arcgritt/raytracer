@@ -7,7 +7,7 @@
 #include "boost/random.hpp"
 #include "boost/lexical_cast.hpp"
 
-boost::char_separator<char> sep(" \t\r\n");
+/*boost::char_separator<char> sep(" \t\r\n");
 
 boost::mt19937 Generator;
 
@@ -15,7 +15,7 @@ boost::uniform_real<float> distributionPos(0.0f, 1.0f);
 boost::variate_generator<boost::mt19937&, boost::uniform_real<float> > RandPosFloat(Generator, distributionPos);
 
 boost::uniform_real<float> distribution(-1.0f, 1.0f);
-boost::variate_generator<boost::mt19937&, boost::uniform_real<float> > RandFloat(Generator, distribution);
+boost::variate_generator<boost::mt19937&, boost::uniform_real<float> > RandFloat(Generator, distribution);*/
 
 
 RIBParser::RIBParser()
@@ -176,7 +176,6 @@ void RIBParser::ParseWorld(std::ifstream &_ribFileStream, Scene& _scene)
                 float radius = ParseFloat(*tokenIterator++);
                 Sphere sphere = Sphere(translate, radius, material);
                 objects.push_back(&sphere);
-                //objects.push_back(new Sphere(translate, radius, material));
             }
             else if(typeName == "#")
             {
@@ -194,97 +193,7 @@ void RIBParser::ParseWorld(std::ifstream &_ribFileStream, Scene& _scene)
         }
     } // while (not end of file) loop
 
+    _scene.SetObjects(objects);
 }
 
 
-std::string RIBParser::StripBrackets(std::string _string)
-{
-    return _string.substr(1, _string.size()-2);
-}
-
-
-tokenizer::iterator RIBParser::GetTokenIterator(std::string _line)
-{
-    // now tokenize the line
-    tokenizer tokens(_line, sep);
-
-    // and get the first token
-    tokenizer::iterator tokenIterator = tokens.begin();
-    return tokenIterator;
-}
-
-/* RIB Header parsing methods */
-
-//void
-
-
-/* RIB World parsing methods */
-
-
-/* Generic parsing methods */
-
-unsigned int RIBParser::ParseUnsignedInt(std::string _token)
-{
-    return boost::lexical_cast<unsigned int>(_token);
-}
-
-float RIBParser::ParseFloat(std::string _token)
-{
-    //Util util;
-    //if()
-    if(_token.find("rand") != _token.npos)
-    {
-        if(_token.npos == 4)
-        {
-            return RandPosFloat();
-        }
-        return ParseRand(_token);//RandPosFloat();
-    }
-    return boost::lexical_cast<float>(_token);
-}
-
-float RIBParser::ParseRand(std::string _token)
-{
-    bool positive = false;
-    unsigned int splitPos = _token.find("*-");
-    if(splitPos == _token.npos)
-    {
-        splitPos = _token.find("*");
-        if(splitPos == _token.npos)
-        {
-            return RandPosFloat();
-        }
-        positive = true;
-    }
-
-    std::string substr = _token.substr(splitPos+1, _token.npos);
-    float multiplier = boost::lexical_cast<float>(substr);
-    if(positive)
-    {
-        return RandPosFloat() * multiplier;
-    }
-    else
-    {
-        return RandFloat() * multiplier;
-    }
-}
-
-Vector RIBParser::ParseVector(tokenizer::iterator &_iterator)
-{
-    // use lexical cast to convert to float then increment the itor
-    float x = ParseFloat(*_iterator++);
-    float y = ParseFloat(*_iterator++);
-    float z = ParseFloat(*_iterator++);
-
-    return Vector(x, y, z);
-}
-
-Colour RIBParser::ParseColour(tokenizer::iterator &_iterator)
-{
-    // use lexical cast to convert to float then increment the itor
-    float r = ParseFloat(*_iterator++);
-    float g = ParseFloat(*_iterator++);
-    float b = ParseFloat(*_iterator++);
-
-    return Colour(r, g, b);
-}

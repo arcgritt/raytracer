@@ -1,7 +1,7 @@
 # Sphere1.rib
 # GSO 6-22-98
 Display "sphere1.tif" "file" "rgb"
-Format 320 240 1
+Format 1280 720 1
 Projection "perspective" "fov" [90]
 # Translate Camera (moves world origin 6 units towards +Z)
 Translate 0 0 6
@@ -11,5 +11,8 @@ WorldBegin
   # Define a red plastic unit sphere at 0 0 0
   Color [1.0 0.0 0.0]
   Surface "plastic"
+  Translate 0 0 30
+  Sphere 1 -1 1 360
+  Translate 0 0 -30
   Sphere 1 -1 1 360
 WorldEnd

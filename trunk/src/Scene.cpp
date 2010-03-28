@@ -28,7 +28,7 @@ void Scene::SetDimensions(unsigned int _displayWidth, unsigned int _displayHeigh
     m_displayHeight = _displayHeight;
 }
 
-void Scene::SetLights(unsigned int _numLights, Light**_lights)
+/*void Scene::SetLights(unsigned int _numLights, Light**_lights)
 {
     m_numLights = _numLights;
     m_lights = _lights;
@@ -38,4 +38,4 @@ void Scene::SetObjects(unsigned int _numObjects, RenderableObject**_objects)
 {
     m_numObjects = _numObjects;
     m_objects = _objects;
-}
+}*/
