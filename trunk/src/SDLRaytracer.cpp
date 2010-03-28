@@ -13,7 +13,8 @@
 
 // Project
 #include "SDLRaytracer.h"
-#include "MaterialParser.h"
+#include "RIBParser.h"
+//#include "MaterialParser.h"
 #include "Sphere.h"
 #include "Light.h"
 
@@ -67,30 +68,30 @@ Light* lights[NUM_LIGHTS];
 
 int main(void)//int argc, char *argv[])
 {
-    MaterialParser materialParser = MaterialParser("../resources/materials");
-
-    std::vector<Material> materials = materialParser.GetMaterials();
-
     const int start_time = clock();
 
-    const unsigned int c_width = PIXELS_WIDE*RESOLUTION_MULTIPLIER;
-    const unsigned int c_height = PIXELS_HIGH*RESOLUTION_MULTIPLIER;
+    Scene scene = RIBParser::ParseFile("../resources/example.rib");
+
+    std::cout << "Height: " << scene.GetHeight() << std::endl;
+    std::cout << "Width: " << scene.GetWidth() << std::endl;
+    std::cout << "Camera: " << scene.GetCamera().GetDebugInformation() << std::endl;
+
     const unsigned int c_bpp = 32;
 
     SDL_Surface* backBuffer;
 
-    if(!SDLRaytracer::SDLInit(backBuffer, c_width, c_height, c_bpp))
+    if(!SDLRaytracer::SDLInit(backBuffer, scene.GetWidth(), scene.GetHeight(), c_bpp))
     {
         std::cerr << "SDL failed to initialise" << std::endl;
     }
 
 
-    SDLRaytracer::SceneObjectsInit(materials);
+    //SDLRaytracer::SceneObjectsInit(materials);
 
 
     const int frame_time = clock();
 
-    SDLRaytracer::RenderScene(backBuffer, c_width, c_height);
+    SDLRaytracer::RenderScene(backBuffer, scene);//c_width, c_height);
 
     const int finish_time = clock();
 
@@ -128,18 +129,17 @@ int main(void)//int argc, char *argv[])
                     case SDLK_ESCAPE:
                     {
                         quit = true;
-                        //break;
-                    // ALL keys
+                        continue;
                     }
                     case SDLK_LEFT:
                     {
                            cameraXpos-= 5;
-                           SDLRaytracer::RenderScene(backBuffer, c_width, c_height);
+                           SDLRaytracer::RenderScene(backBuffer, scene);//c_width, c_height);
                     }
                     case SDLK_RIGHT:
                     {
                            cameraXpos-= 5;
-                           SDLRaytracer::RenderScene(backBuffer, c_width, c_height);
+                           SDLRaytracer::RenderScene(backBuffer, scene); //c_width, c_height);
                     }
                     default:
                     {
@@ -238,13 +238,14 @@ void SDLRaytracer::SceneObjectsInit(std::vector<Material> _materials)
     }
 }
 
-void SDLRaytracer::RenderScene(SDL_Surface *&_backBuffer, unsigned int _width, unsigned int _height) {
+void SDLRaytracer::RenderScene(SDL_Surface *&_backBuffer, Scene &_scene)
+{ //unsigned int _width, unsigned int _height) {
     Vector camera = SDLRaytracer::CameraInit();
 
-    RaytraceScene(_backBuffer, _width, _height, camera);
+    RaytraceScene(_backBuffer, _scene.GetWidth(), _scene.GetHeight(), _scene.GetCamera()); //_height, camera);
 }
 
-void SDLRaytracer::RaytraceScene(SDL_Surface *&_backBuffer, unsigned int _width, unsigned int _height, Vector &_camera)
+void SDLRaytracer::RaytraceScene(SDL_Surface *&_backBuffer, unsigned int _width, unsigned int _height, Vector _camera)
 {
     Uint32 *_pixelBuffer = (Uint32 *)_backBuffer->pixels;
 

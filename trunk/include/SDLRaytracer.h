@@ -10,6 +10,7 @@
 #include "Colour.h"
 #include "Vector.h"
 #include "Ray.h"
+#include "Scene.h"
 
 
 class SDLRaytracer
@@ -26,9 +27,9 @@ public:
     static void SceneObjectsInit(std::vector<Material> _materials);
 
 
-    static void RenderScene(SDL_Surface*& _backBuffer, const unsigned int _width, const unsigned int _height);
+    static void RenderScene(SDL_Surface*& _backBuffer, Scene& _scene); // const unsigned int _width, const unsigned int _height);
 
-    static void RaytraceScene(SDL_Surface*& _backBuffer, const unsigned int _width, const unsigned int _height, Vector& _camera);
+    static void RaytraceScene(SDL_Surface*& _backBuffer, const unsigned int _width, const unsigned int _height, Vector _camera);
 
     static Colour RaytracePixel(Vector& _camera, float _xPos, float _yPos);
 

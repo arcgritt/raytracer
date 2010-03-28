@@ -1,0 +1,15 @@
+# Sphere1.rib
+# GSO 6-22-98
+Display "sphere1.tif" "file" "rgb"
+Format 320 240 1
+Projection "perspective" "fov" [90]
+# Translate Camera (moves world origin 6 units towards +Z)
+Translate 0 0 6
+WorldBegin
+  LightSource "ambientlight" 1 "intensity" [0.2]
+  LightSource "distantlight" 2 "intensity" [1.2]"from" [0 0 -6]"to" [0 0 0]
+  # Define a red plastic unit sphere at 0 0 0
+  Color [1.0 0.0 0.0]
+  Surface "plastic"
+  Sphere 1 -1 1 360
+WorldEnd
