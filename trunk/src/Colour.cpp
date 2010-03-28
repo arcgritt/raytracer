@@ -97,7 +97,8 @@ void Colour::operator&=(Colour &_colour)
 
 std::string Colour::GetDebugInformation()
 {
-    char tmp[256];
-    sprintf(tmp, "Red: %f, Green: %f, Blue: %f, Alpha: %f", m_r, m_g, m_b, m_a);
-    return std::string(tmp);
+    //char tmp[256];
+    //sprintf(tmp, "Red: %f, Green: %f, Blue: %f, Alpha: %f", m_r, m_g, m_b, m_a);
+    //return std::string(tmp);
+    return std::string("");
 }

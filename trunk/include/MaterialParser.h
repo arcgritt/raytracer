@@ -1,26 +1,27 @@
 #ifndef MATERIALPARSER_H
 #define MATERIALPARSER_H
 
-#include <string>
-
-#include "boost/tokenizer.hpp"
-
+#include "Parser.h"
+#include "Material.h"
 #include "Colour.h"
 
-typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
 
-class MaterialParser
+class MaterialParser: public Parser
 {
 public:
     MaterialParser();
 
-    MaterialParser(char* _filename);
+    MaterialParser(std::string _filename);
 
-    static void ParseFile(char* _filename);
+    void ParseFile(std::string _filename);
+
+    std::vector<Material> GetMaterials() const { return materials; }
 
 private:
+
+    std::vector<Material> materials;
+
     static Colour ParseColour(tokenizer::iterator& _iterator);
-    static float ParseFloat(std::string _token);
 };
 
 #endif // MATERIALPARSER_H

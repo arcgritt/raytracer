@@ -15,6 +15,8 @@ public:
     float GetSpecularExponent() const { return c_specularExponent; }
     float GetReflectivity() { return c_reflectivity; }
 
+    std::string GetDebugInformation();
+
    // void setReflectivity()
 private:
     Colour c_diffuseColour;

@@ -4,6 +4,9 @@
 // SDL
 #include "SDL/SDL.h"
 
+#include <vector>
+
+#include "Material.h"
 #include "Colour.h"
 #include "Vector.h"
 #include "Ray.h"
@@ -20,8 +23,7 @@ public:
 
     static Vector CameraInit();
 
-
-    static void SceneObjectsInit();
+    static void SceneObjectsInit(std::vector<Material> _materials);
 
 
     static void RenderScene(SDL_Surface*& _backBuffer, const unsigned int _width, const unsigned int _height);
@@ -44,6 +46,8 @@ public:
     static float CalculateLighting(Fragment& _fragment, Vector& _rayVector);
 
     static Colour CalculateColour(Material& _material, float _lightIntensity);
+
+    //static Colour CalculateColour(Fragment& _fragment, Vector& _rayVector);
 private:
 
 };

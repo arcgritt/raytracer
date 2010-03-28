@@ -61,14 +61,17 @@ float cameraXpos = -7;
 #endif // #ifdef DEBUG
 
 // TODO: Make a Scene class which contains all these
-RenderableObject* objects[NUM_SPHERES];
+unsigned int m_numObjects;
+RenderableObject** objects;
 Light* lights[NUM_LIGHTS];
 
 int main(void)//int argc, char *argv[])
 {
     MaterialParser materialParser = MaterialParser("../resources/materials");
 
-    /*const int start_time = clock();
+    std::vector<Material> materials = materialParser.GetMaterials();
+
+    const int start_time = clock();
 
     const unsigned int c_width = PIXELS_WIDE*RESOLUTION_MULTIPLIER;
     const unsigned int c_height = PIXELS_HIGH*RESOLUTION_MULTIPLIER;
@@ -80,6 +83,10 @@ int main(void)//int argc, char *argv[])
     {
         std::cerr << "SDL failed to initialise" << std::endl;
     }
+
+
+    SDLRaytracer::SceneObjectsInit(materials);
+
 
     const int frame_time = clock();
 
@@ -150,7 +157,7 @@ int main(void)//int argc, char *argv[])
                 break;
             }
         }
-    }*/
+    }
 
     //Return success!
     return EXIT_SUCCESS;
@@ -187,8 +194,14 @@ Vector SDLRaytracer::CameraInit()
     return Vector(0, 0, c_cameraPosition);
 }
 
-void SDLRaytracer::SceneObjectsInit()
+void SDLRaytracer::SceneObjectsInit(std::vector<Material> _materials)
 {
+    m_numObjects = _materials.size();
+
+    //RenderableObject* objects = new RenderableObject* [_materials.size()];
+    objects = new RenderableObject* [_materials.size()];
+
+     //std::cout << _materials.size() << std::endl;
     // Random number generator
     boost::mt19937 Generator;
 
@@ -199,15 +212,15 @@ void SDLRaytracer::SceneObjectsInit()
     boost::uniform_real<float> distribution(-1.0f, 1.0f);
     boost::variate_generator<boost::mt19937&, boost::uniform_real<float> > RandFloat(Generator, distribution);
 
-    for(unsigned int i=0; i<NUM_SPHERES;i++)
+
+
+    for(unsigned int i=0; i<_materials.size();i++)
     {
+        //Material material = ;
         objects[i] = new Sphere(
                 Vector(RandFloat()*9, RandFloat()*9, RandFloat()*5+30),
                 RandPosFloat()*2+1,
-                Material(
-                        Colour(RandPosFloat(), RandPosFloat(), RandPosFloat()),
-                        RandPosFloat()*0.1+0.3
-                        )
+                _materials[i]
                 );
     }
 
@@ -226,8 +239,6 @@ void SDLRaytracer::SceneObjectsInit()
 }
 
 void SDLRaytracer::RenderScene(SDL_Surface *&_backBuffer, unsigned int _width, unsigned int _height) {
-    SDLRaytracer::SceneObjectsInit();
-
     Vector camera = SDLRaytracer::CameraInit();
 
     RaytraceScene(_backBuffer, _width, _height, camera);
@@ -383,7 +394,7 @@ Colour SDLRaytracer::RaytraceRay(Vector &_rayOrigin, Ray &_ray, unsigned int _tr
     bool hit = false;
 
     // for each object in scene
-    for(unsigned int j=0; j<NUM_SPHERES+NUM_LIGHTS;j++) {
+    for(unsigned int j=0; j<m_numObjects;j++) {
         float distance = objects[j]->DoIntersection(_rayOrigin, _ray.GetVector());
 
         // arbitrary number which stops the surface from intersecting itself due to float rounding errors
@@ -472,10 +483,10 @@ float SDLRaytracer::CalculateLighting(Fragment &_fragment, Vector &_rayVector)
 
         bool occluded = false;
         // check against all objects including lights
-        for(unsigned int j=0; j<NUM_SPHERES+NUM_LIGHTS;j++)
+        for(unsigned int j=0; j<m_numObjects+NUM_LIGHTS;j++)
         {
             // don't check against this light as it will always intersect
-            if(j != NUM_SPHERES + l)
+            if(j != m_numObjects + l)
             {
 
                 float lightDistance = lightVector.SquareLength();

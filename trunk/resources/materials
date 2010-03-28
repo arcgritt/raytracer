@@ -1,12 +1,28 @@
-# asdasdasdas
+# Only blank lines and comments allowed
 
-#
 
 Material testMaterial
 
 DiffuseColour       rand 0.2 0.5
-SpecularColour      0.1 0.4 0.4
-SpecularIntensity   10
+SpecularColour      0.1 0.4 rand
+SpecularIntensity   rand*10
 SpecularExponent    20
+Reflectivity        rand
+
+
+Material testMaterial2
+
+DiffuseColour       rand rand rand
+SpecularColour      0.1 0.4 rand
+SpecularIntensity   rand*10
+SpecularExponent    rand*40
 Reflectivity        0.5
 
+
+Material testMaterial2
+
+DiffuseColour       rand rand rand
+SpecularColour      0.1 0.4 rand
+SpecularIntensity   rand*10
+SpecularExponent    rand*40
+Reflectivity        0.5

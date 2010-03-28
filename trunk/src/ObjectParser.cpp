@@ -1,16 +1,18 @@
-#include <fstream>
-
-#include <iostream>
-
-
 #include "ObjectParser.h"
 
 ObjectParser::ObjectParser()
 {
-    std::cout << "Parsing Objects" << std::endl;
-
 
 }
 
+ObjectParser::ObjectParser(std::string _filename)
+{
+    ObjectParser::ParseFile(_filename);
+}
+
+void ObjectParser::ParseFile(std::string _filename)
+{
 
 
+
+}

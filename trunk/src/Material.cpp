@@ -28,3 +28,22 @@ Material::Material(const Colour &_diffuseColour, const Colour &_specularColour, 
     c_specularExponent = _specularExponent;
     c_reflectivity = _reflectivity;
 }
+
+std::string Material::GetDebugInformation()
+{
+    char* temp = new char[32];
+
+    std::string debugInfo;
+    debugInfo += "Diffuse Colour: " + c_diffuseColour.GetDebugInformation() + "\n";
+    debugInfo += "Specular Colour: " + c_specularColour.GetDebugInformation() + "\n";
+
+    sprintf(temp, "Specular Intensity: %f \n", c_specularIntensity);
+    debugInfo += temp;
+
+    sprintf(temp, "Specular Exponent: %f \n", c_specularExponent);
+    debugInfo += temp;
+
+    sprintf(temp, "Reflectivity: %f \n", c_reflectivity);
+    debugInfo += temp;
+    return debugInfo;
+}
