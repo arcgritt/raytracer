@@ -13,8 +13,7 @@
 
 // Project
 #include "SDLRaytracer.h"
-#include "RIBParser.h"
-//#include "MaterialParser.h"
+#include "MaterialParser.h"
 #include "Sphere.h"
 #include "Light.h"
 
@@ -62,60 +61,36 @@ float cameraXpos = -7;
 #endif // #ifdef DEBUG
 
 // TODO: Make a Scene class which contains all these
-unsigned int m_numObjects = 1;
-//RenderableObject** m_objects;
-RenderableObject** m_objects;
-//std::vector<RenderableObject*> m_objects;
+unsigned int m_numObjects;
+RenderableObject** objects;
 Light* lights[NUM_LIGHTS];
 
 int main(void)//int argc, char *argv[])
 {
+    MaterialParser materialParser = MaterialParser("../resources/materials");
+
+    std::vector<Material> materials = materialParser.GetMaterials();
+
     const int start_time = clock();
 
-    Scene scene = RIBParser::ParseFile("../resources/example.rib");
-
-    std::cout << "Width: " << scene.GetWidth() << std::endl;
-    std::cout << "Height: " << scene.GetHeight() << std::endl;
-    std::cout << "Camera: " << scene.GetCamera().GetDebugInformation() << std::endl;
-
+    const unsigned int c_width = PIXELS_WIDE*RESOLUTION_MULTIPLIER;
+    const unsigned int c_height = PIXELS_HIGH*RESOLUTION_MULTIPLIER;
     const unsigned int c_bpp = 32;
 
     SDL_Surface* backBuffer;
 
-    if(!SDLRaytracer::SDLInit(backBuffer, scene.GetWidth(), scene.GetHeight(), c_bpp))
+    if(!SDLRaytracer::SDLInit(backBuffer, c_width, c_height, c_bpp))
     {
         std::cerr << "SDL failed to initialise" << std::endl;
     }
 
-    std::cout << "Num: " << scene.GetObjects().size();
 
-    //m_objects = scene.GetObjects();
-    //std::cout << m_objects.size();
-    //m_numObjects = scene.GetObjects().size();
-
-
-    std::cout << "test";
-
-    m_objects = new RenderableObject*[1];
-
-
-    m_objects[0] = new Sphere(
-            Vector(9, 9, 30),
-            2+1,
-            Material(Colour(0.3, 0.9, 0.1),
-                     0.5
-                    )
-            );
-
-
-
-
-    //SDLRaytracer::SceneObjectsInit(materials);
+    SDLRaytracer::SceneObjectsInit(materials);
 
 
     const int frame_time = clock();
 
-    SDLRaytracer::RenderScene(backBuffer, scene);//c_width, c_height);
+    SDLRaytracer::RenderScene(backBuffer, c_width, c_height);
 
     const int finish_time = clock();
 
@@ -153,17 +128,18 @@ int main(void)//int argc, char *argv[])
                     case SDLK_ESCAPE:
                     {
                         quit = true;
-                        continue;
+                        //break;
+                    // ALL keys
                     }
                     case SDLK_LEFT:
                     {
                            cameraXpos-= 5;
-                           SDLRaytracer::RenderScene(backBuffer, scene);//c_width, c_height);
+                           SDLRaytracer::RenderScene(backBuffer, c_width, c_height);
                     }
                     case SDLK_RIGHT:
                     {
                            cameraXpos-= 5;
-                           SDLRaytracer::RenderScene(backBuffer, scene); //c_width, c_height);
+                           SDLRaytracer::RenderScene(backBuffer, c_width, c_height);
                     }
                     default:
                     {
@@ -218,12 +194,12 @@ Vector SDLRaytracer::CameraInit()
     return Vector(0, 0, c_cameraPosition);
 }
 
-/*void SDLRaytracer::SceneObjectsInit(std::vector<Material> _materials)
+void SDLRaytracer::SceneObjectsInit(std::vector<Material> _materials)
 {
     m_numObjects = _materials.size();
 
     //RenderableObject* objects = new RenderableObject* [_materials.size()];
-    //objects = new RenderableObject* [_materials.size()];
+    objects = new RenderableObject* [_materials.size()];
 
      //std::cout << _materials.size() << std::endl;
     // Random number generator
@@ -241,7 +217,7 @@ Vector SDLRaytracer::CameraInit()
     for(unsigned int i=0; i<_materials.size();i++)
     {
         //Material material = ;
-        m_objects[i] = new Sphere(
+        objects[i] = new Sphere(
                 Vector(RandFloat()*9, RandFloat()*9, RandFloat()*5+30),
                 RandPosFloat()*2+1,
                 _materials[i]
@@ -260,16 +236,15 @@ Vector SDLRaytracer::CameraInit()
                 3.0f
                 );
     }
-}*/
-
-void SDLRaytracer::RenderScene(SDL_Surface *&_backBuffer, Scene &_scene)
-{ //unsigned int _width, unsigned int _height) {
-    Vector camera = SDLRaytracer::CameraInit();
-
-    RaytraceScene(_backBuffer, _scene.GetWidth(), _scene.GetHeight(), _scene.GetCamera()); //_height, camera);
 }
 
-void SDLRaytracer::RaytraceScene(SDL_Surface *&_backBuffer, unsigned int _width, unsigned int _height, Vector _camera)
+void SDLRaytracer::RenderScene(SDL_Surface *&_backBuffer, unsigned int _width, unsigned int _height) {
+    Vector camera = SDLRaytracer::CameraInit();
+
+    RaytraceScene(_backBuffer, _width, _height, camera);
+}
+
+void SDLRaytracer::RaytraceScene(SDL_Surface *&_backBuffer, unsigned int _width, unsigned int _height, Vector &_camera)
 {
     Uint32 *_pixelBuffer = (Uint32 *)_backBuffer->pixels;
 
@@ -420,15 +395,14 @@ Colour SDLRaytracer::RaytraceRay(Vector &_rayOrigin, Ray &_ray, unsigned int _tr
 
     // for each object in scene
     for(unsigned int j=0; j<m_numObjects;j++) {
-        float distance = m_objects[j]->DoIntersection(_rayOrigin, _ray.GetVector());
-
+        float distance = objects[j]->DoIntersection(_rayOrigin, _ray.GetVector());
 
         // arbitrary number which stops the surface from intersecting itself due to float rounding errors
         // should be as SMALL as possible, until artifacts start occuring... 0.001 seems to do the trick
         if(distance >= LAMBDA) // if there is a hit
         {
             hit = true;
-            _ray.Intersection(distance, *m_objects[j]);
+            _ray.Intersection(distance, *objects[j]);
         }
     }
 
@@ -517,7 +491,7 @@ Colour SDLRaytracer::CalculateColour(Fragment &_fragment, Vector &_rayVector, Ma
 
                 float lightDistance = lightVector.SquareLength();
 
-                float distance = m_objects[j]->DoIntersection(surfacePoint, lightVector);
+                float distance = objects[j]->DoIntersection(surfacePoint, lightVector);
 
                 // 'hard' shadows
                 if(distance >= LAMBDA && // if there is a hit
