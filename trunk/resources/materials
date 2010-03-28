@@ -26,3 +26,12 @@ SpecularColour      0.1 0.4 rand
 SpecularIntensity   rand*10
 SpecularExponent    rand*40
 Reflectivity        0.5
+
+
+Material testMaterial2
+
+DiffuseColour       rand rand rand
+SpecularColour      0.1 0.4 rand
+SpecularIntensity   rand*10
+SpecularExponent    rand*40
+Reflectivity        0.5

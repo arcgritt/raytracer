@@ -43,11 +43,11 @@ public:
 
     static Colour RaytraceRay(Vector& _rayOrigin, Ray& ray, unsigned int _traceDepth);
 
-    static float CalculateLighting(Fragment& _fragment, Vector& _rayVector);
+    //static float CalculateLighting(Fragment& _fragment, Vector& _rayVector);
 
-    static Colour CalculateColour(Material& _material, float _lightIntensity);
+    //static Colour CalculateColour(Material& _material, float _lightIntensity);
 
-    //static Colour CalculateColour(Fragment& _fragment, Vector& _rayVector);
+    static Colour CalculateColour(Fragment& _fragment, Vector& _rayVector, Material& _material);
 private:
 
 };

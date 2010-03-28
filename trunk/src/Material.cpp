@@ -1,3 +1,6 @@
+#include <cstdio>
+
+
 #include "Material.h"
 
 #include "Colour.h"

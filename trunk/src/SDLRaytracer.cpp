@@ -422,8 +422,8 @@ Colour SDLRaytracer::RaytraceRay(Vector &_rayOrigin, Ray &_ray, unsigned int _tr
 
 
         // Get the intensity of light which is hitting this object
-        float light_intensity = CalculateLighting(pixel_fragment, _ray.GetVector());
-        pixel_colour = CalculateColour(objectMaterial, light_intensity);
+        pixel_colour = CalculateColour(pixel_fragment, _ray.GetVector(), objectMaterial);
+        //pixel_colour = CalculateColour(objectMaterial, light_intensity);
 
         if(objectReflectivity == 0.0f || _traceDepth >= MAX_TRACE_DEPTH)
         {
@@ -460,7 +460,7 @@ Colour SDLRaytracer::RaytraceRay(Vector &_rayOrigin, Ray &_ray, unsigned int _tr
 }
 
 
-float SDLRaytracer::CalculateLighting(Fragment &_fragment, Vector &_rayVector)
+Colour SDLRaytracer::CalculateColour(Fragment &_fragment, Vector &_rayVector, Material &_material)
 {
 #ifdef DEBUG
     m_lightTraces++;
@@ -571,8 +571,6 @@ float SDLRaytracer::CalculateLighting(Fragment &_fragment, Vector &_rayVector)
             const float light_attenuation = lightVector.SquareLength(); // Length = linear falloff... SquareLength = quadratic (real) falloff
             light_intensity += unattenuatedIntensity*(light->GetMagnitude()/light_attenuation);
         }
-
-
     }
 
     // ambient light
@@ -581,13 +579,9 @@ float SDLRaytracer::CalculateLighting(Fragment &_fragment, Vector &_rayVector)
     light_intensity += ambient_modifier;
     //return light_intensity;
 
-    return light_intensity;//std::min(1.0f, light_intensity);
-}
-
-
-Colour SDLRaytracer::CalculateColour(Material& _material, float _lightIntensity)
-{
     // TODO: Pass fragment in so that normal pass is possible
+
+    float _lightIntensity = light_intensity;
 
     /* Normals
     light_intensity = 1;
@@ -605,6 +599,8 @@ Colour SDLRaytracer::CalculateColour(Material& _material, float _lightIntensity)
     float g_base = pixelColours[1];
     float b_base = pixelColours[2];
     float a = pixelColours[3];
+    
+    
     //*/
 
     /* Lambert Normals
