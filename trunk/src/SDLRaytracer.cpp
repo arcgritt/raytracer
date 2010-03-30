@@ -55,11 +55,12 @@ float cameraXpos = -7;
 #endif // #ifdef DEBUG
 
 // TODO: Make a Scene class which contains all these
-unsigned int m_numObjects;
-RenderableObject** objects;
 Light* lights[NUM_LIGHTS];
-
 std::vector<RenderableObject*> m_objects;
+
+
+
+
 
 int main(int argc, char *argv[])//int argc, char *argv[])
 {
@@ -108,11 +109,11 @@ int main(int argc, char *argv[])//int argc, char *argv[])
     std::cout << "Using materials file: " << materialsFile << std::endl;
     std::cout << "Using RIB file: " << ribFile << std::endl << std::endl;
 
-    return SDLRaytracer::RayTrace(materialsFile, ribFile);
+    return SDLRaytracer::InitScene(materialsFile, ribFile);
 }
 
 
-int SDLRaytracer::RayTrace(std::string _materialsFile, std::string _ribFile)
+int SDLRaytracer::InitScene(std::string _materialsFile, std::string _ribFile)
 {
     //MaterialParser materialParser = MaterialParser(_materialsFile);
 
@@ -124,21 +125,9 @@ int SDLRaytracer::RayTrace(std::string _materialsFile, std::string _ribFile)
 
     m_objects = scene.GetObjects();
 
-    //RenderableObject* sphere = scene.GetObjects()[0];
-    //std::cout << sphere->GetPosition().GetDebugInformation() << std::endl;
-
-
-    RenderableObject* object = m_objects[0];
-    m_numObjects = m_objects.size();
-    std::cout << std::endl << "XYNXXFXD" << object->GetPosition().GetDebugInformation() << std::endl;
-    std::cout << "Colour: " << object->GetMaterial().GetDiffuseColour().GetDebugInformation() << std::endl;
-
-    //std::vector<Material> materials = materialParser.GetMaterials();
 
     const int start_time = clock();
 
-    //const unsigned int c_width = PIXELS_WIDE*RESOLUTION_MULTIPLIER;
-    //const unsigned int c_height = PIXELS_HIGH*RESOLUTION_MULTIPLIER;
     const unsigned int c_bpp = 32;
 
     SDL_Surface* backBuffer;
@@ -269,10 +258,11 @@ bool SDLRaytracer::SDLInit(SDL_Surface *&_backBuffer, const unsigned int _width,
 
 
 void SDLRaytracer::RenderScene(SDL_Surface *&_backBuffer, Scene &_scene) {
+    // utility function which takes 2 variables instead of 4
     RaytraceScene(_backBuffer, _scene.GetWidth(), _scene.GetHeight(), _scene.GetCamera());
 }
 
-void SDLRaytracer::RaytraceScene(SDL_Surface *&_backBuffer, unsigned int _width, unsigned int _height, Vector &_camera)
+void SDLRaytracer::RaytraceScene(SDL_Surface *&_backBuffer, const unsigned int _width, const unsigned int _height, Vector &_camera)
 {
     Uint32 *_pixelBuffer = (Uint32 *)_backBuffer->pixels;
 
@@ -415,7 +405,7 @@ Colour SDLRaytracer::RaytraceRay(Vector &_rayOrigin, Ray &_ray, unsigned int _tr
     bool hit = false;
 
     // for each object in scene
-    for(unsigned int j=0; j<m_numObjects;j++) {
+    for(unsigned int j=0; j<m_objects.size();j++) {
         float distance = m_objects[j]->DoIntersection(_rayOrigin, _ray.GetVector());
 
         // arbitrary number which stops the surface from intersecting itself due to float rounding errors
@@ -441,10 +431,8 @@ Colour SDLRaytracer::RaytraceRay(Vector &_rayOrigin, Ray &_ray, unsigned int _tr
         Material objectMaterial = objectIntersected->GetMaterial();
         float objectReflectivity = objectMaterial.GetReflectivity();
 
-
         // Get the intensity of light which is hitting this object
         pixel_colour = CalculateColour(pixel_fragment, _ray.GetVector());
-        //pixel_colour = CalculateColour(objectMaterial, light_intensity);
 
         if(objectReflectivity == 0.0f || _traceDepth >= MAX_TRACE_DEPTH)
         {
@@ -474,7 +462,6 @@ Colour SDLRaytracer::RaytraceRay(Vector &_rayOrigin, Ray &_ray, unsigned int _tr
     else // if it didn't hit anything
     {
         // background colour
-        //return pixel_colour = Colour(1.0f, 1.0f, 1.0f);
         return pixel_colour = Colour(0.1f, 0.1f, 0.1f);
         //return pixel_colour = Colour(0.2f, 0.2f, 0.2f);
     }
@@ -504,10 +491,10 @@ Colour SDLRaytracer::CalculateColour(Fragment &_fragment, Vector &_rayVector)
 
         bool occluded = false;
         // check against all objects including lights
-        for(unsigned int j=0; j<m_numObjects+NUM_LIGHTS;j++)
+        for(unsigned int j=0; j<m_objects.size()+NUM_LIGHTS;j++)
         {
             // don't check against this light as it will always intersect
-            if(j != m_numObjects + l)
+            if(j != m_objects.size() + l)
             {
 
                 float lightDistance = lightVector.SquareLength();

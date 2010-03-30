@@ -18,18 +18,14 @@ class SDLRaytracer
 public:
     SDLRaytracer();
 
-    static int RayTrace(std::string _materialsFile, std::string _ribFile);
+    // generates the objects from input file and calls appropriate functions
+    static int InitScene(std::string _materialsFile, std::string _ribFile);
 
-
+    // init SDL
     static bool SDLInit(SDL_Surface*& _backBuffer, const unsigned int _width, const unsigned int _height, const unsigned int _bpp);
 
-
-    static Vector CameraInit();
-
-    static void SceneObjectsInit(std::vector<Material> _materials);
-
-
-    static void RenderScene(SDL_Surface*& _backBuffer, Scene& scene); //const unsigned int _width, const unsigned int _height);
+    // utility function which calls Raytracescene with approrriate stuff
+    static void RenderScene(SDL_Surface*& _backBuffer, Scene& scene);
 
     static void RaytraceScene(SDL_Surface*& _backBuffer, const unsigned int _width, const unsigned int _height, Vector& _camera);
 

@@ -195,7 +195,7 @@ void RIBParser::ParseWorld(std::ifstream &_ribFileStream, Scene& _scene)
             {
                 float radius = ParseFloat(*tokenIterator++);
                 //Sphere sphere = Sphere(translate, radius, material);
-                std::cout << colour.GetDebugInformation() << std::endl;
+                //std::cout << colour.GetDebugInformation() << std::endl;
                 _scene.AddObject(new Sphere(translate, radius, colour, GetMaterialByName(materialName)));
                 //_scene.AddObject(new Sphere(translate, radius, Material("plastic", colour, colour, 10, 20, 0.5)));
                 //objects.push_back(new Sphere(translate, radius, material));
