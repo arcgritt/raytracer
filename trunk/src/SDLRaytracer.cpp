@@ -278,8 +278,6 @@ void SDLRaytracer::RaytraceScene(SDL_Surface *&_backBuffer, const unsigned int _
         printf("Y Axis Division Size: %f\n", c_divisionSize);
     }
 
-#ifdef FULL_SCENE_ANTI_ALIASING_LEVEL
-
     // number of samples in an orthagonal direction
     const unsigned int fsaaAxisSamples = pow(2, FULL_SCENE_ANTI_ALIASING_LEVEL); // * 2;
     //std::cout << fsaaAxisSamples << std::endl;
@@ -296,8 +294,6 @@ void SDLRaytracer::RaytraceScene(SDL_Surface *&_backBuffer, const unsigned int _
     // calculate offset so we can use a clean loop for calculing sample positions
     const float offsetPosition = halfDivisionSize - halfFSAADivisionSize;
 
-#endif // FULL_SCENE_ANTI_ALIASING_LEVEL
-
     // Draw the scene
     for(unsigned int y=0; y<_height; y++)
     {
@@ -306,19 +302,9 @@ void SDLRaytracer::RaytraceScene(SDL_Surface *&_backBuffer, const unsigned int _
             float xPos = x*c_divisionSize-c_halfWidth;
             float yPos = y*c_divisionSize-0.5;            
             
-#ifdef FULL_SCENE_ANTI_ALIASING_LEVEL
-
             xPos -= offsetPosition;
             yPos -= offsetPosition;
             Colour pixelColour = SDLRaytracer::FSAARaytracePixel(_camera, xPos, yPos, fsaaSamples, fsaaAxisSamples, fsaaDivisionSize);
-
-#endif // #ifdef FULL_SCENE_ANTI_ALIASING_LEVEL
-
-#ifndef FULL_SCENE_ANTI_ALIASING_LEVEL
-
-            Colour pixelColour = SDLRaytracer::RaytracePixel(_camera, xPos, yPos);
-
-#endif // #ifndef FULL_SCENE_ANTI_ALIASING_LEVEL
 
             unsigned int pixelColours[4];
             pixelColour.GetColour256(&pixelColours[0]);
@@ -327,20 +313,6 @@ void SDLRaytracer::RaytraceScene(SDL_Surface *&_backBuffer, const unsigned int _
         }
         SDL_Flip(_backBuffer);
     }
-}
-
-
-Colour SDLRaytracer::RaytracePixel(Vector &_camera, float _xPos, float _yPos)
-{
-    Vector currDirection = Vector(_xPos,
-                                  _yPos,
-                                  1) - _camera;
-    currDirection.Normalise();
-
-    // Ray from camera to somewhere, rather than from an object to somewhere
-    Ray cameraRay = Ray(currDirection);
-
-    return RaytraceRay(_camera, cameraRay, 0);
 }
 
 Colour SDLRaytracer::FSAARaytracePixel(Vector &_camera,
@@ -370,12 +342,21 @@ Colour SDLRaytracer::FSAARaytracePixel(Vector &_camera,
         }
     }
 
+
     // TODO: static function in colour class, which takes an array of colours and averages them
 
     // loop which multiplies samples back together to create average.
     // from a design point of view, you could do _fsaaSamples minus 1 # of float adds, plus a float division
     // OR _fsaaSamples minus 1 (e.g. 8+4+2+1) # of multiplications
     // this loop uses the multiplication method, which also uses less memory
+
+    /*for(unsigned int i = 1; i < _fsaaSamples; i++)
+    {
+
+        pixelColours[0] += pixelColours[i];
+    }
+
+    pixelColours[0] /= _fsaaSamples;*/
 
     // _fsaaSamples is divided by 2 every loop iteration,
     // leading to 8, then 4, then 2, then 1 multiplications - if you had 16 samples
@@ -628,8 +609,6 @@ Colour SDLRaytracer::CalculateColour(Fragment &_fragment, Vector &_rayVector)
     specular_multiplier *= 100;
     Colour specular = mat.GetSpecularColour(); //Colour(1,1,1); //_fragment.GetMaterial()->GetSpecularColour();//_fragment.GetMaterial()->GetSpecularColour();
     specular *= specular_multiplier * light_intensity;
-    specular.Ceil();
-    specular.Floor();
 
     //ambient += diffuse;// += specular;
     //ambient += specular;

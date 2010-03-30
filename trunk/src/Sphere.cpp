@@ -1,19 +1,13 @@
 #include "Sphere.h"
 
 
-#include "cmath"
+#include <cmath>
 
-#include "cstdio"
+#include <cstdio>
 
 Sphere::Sphere()
 {
 
-}
-
-Sphere::Sphere(Vector _center, float _radius)
-{
-    SetPosition(_center);
-    m_radius = _radius;
 }
 
 Sphere::Sphere(Vector _center, float _radius, Colour _colour, Material _material)
