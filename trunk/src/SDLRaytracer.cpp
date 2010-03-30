@@ -625,8 +625,9 @@ Colour SDLRaytracer::CalculateColour(Fragment &_fragment, Vector &_rayVector)
     //diffuse /= (diffuse_multiplier * light_intensity);
     //diffuse.Ceil();
 
+    specular_multiplier *= 100;
     Colour specular = mat.GetSpecularColour(); //Colour(1,1,1); //_fragment.GetMaterial()->GetSpecularColour();//_fragment.GetMaterial()->GetSpecularColour();
-    specular *= specular_multiplier * light_intensity * 100;
+    specular *= specular_multiplier * light_intensity;
     specular.Ceil();
     specular.Floor();
 
@@ -655,9 +656,9 @@ Colour SDLRaytracer::CalculateColour(Fragment &_fragment, Vector &_rayVector)
     //*/
 
     ///* Lambert
-    light_intensity = 1/light_intensity;
+    //light_intensity = 1/light_intensity;
 
-    float pixelColours[4];
+    /*float pixelColours[4];
     //_material.GetDiffuseColour().GetColour(&pixelColours[0]);
     _fragment.GetColour().GetColour(&pixelColours[0]);
     float r_base = pixelColours[0];

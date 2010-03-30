@@ -7,6 +7,7 @@
 class Ray
 {
 public:
+    /// \brief the default constructor
     Ray();
 
     Ray(Vector& _direction);

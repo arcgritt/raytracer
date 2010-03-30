@@ -6,41 +6,86 @@
 class Vector
 {
 public:
+    /// \brief the default constructor
     Vector();
 
+    /// \brief constructs a new vector with the specified x, y, z components
+    /// @param[in] _x the x component of the vector
+    /// @param[in] _y the y component
+    /// @param[in] _z the z component
     Vector(float _x, float _y, float _z);
 
+    /// \brief constructs a new vector with the specified x, y, z, w components
+    /// @param[in] _x the x component of the vector
+    /// @param[in] _y the y component
+    /// @param[in] _z the z component
+    /// @param[in] _w the w component, determining whether the vector is a point or direction
     Vector(float _x, float _y, float _z, float _w);
 
+    /// \brief normalises the vector, setting it's length to 1
     void Normalise();
 
+    /// \brief
+    /// \returns the length of the vector
     float Length();
 
+    /// \brief returns the length of the vector squared, for use when only relative distance is required, or where the output would need to be squared again later (cheaper calculation)
+    /// \returns the length of the vector squared
     float SquareLength();
 
+    /// \brief adds the input vector to this vector
+    /// @param[in] _v the vector to be added to this one
     void operator+=(const Vector& _v);
 
+    /// \brief returns a new vector which is the sum of this vector and the input vector
+    /// @param[in] _v the vector to be added to this one
+    /// \returns a new vector which is the sum of this vector and the input vector
     Vector operator+(const Vector& _v);
 
+    /// \brief returns a new vector in which the sign of each of the components has been reversed
+    /// \returns a new vector in which the sign of each of the components has been reversed
     Vector operator-();
 
+    /// \brief subtracts the input vector from this vector
+    /// @param[in] _v the vector to be subtracted from this one
     void operator-=(const Vector& _v);
 
+    /// \brief returns a new vector which is equal to this vector minus the input vector
+    /// @param[in] _v the vector to be subtracted from this one
+    /// \returns a new vector which is equal to this vector minus the input vector
     Vector operator-(const Vector& _v);
 
+    /// \brief returns a new vector which is equal to this vector multiplied by a floating point value
+    /// @param[in] _multiplier the value to multiply this vector by
+    /// \returns a new vector which is equal to this vector multiplied by a floating point value
     Vector operator*(float _multiplier);
 
+    /// \brief returns the cross product of the two input vectors
+    /// @param[in] _v1 the first vector
+    /// @param[in] _v2 the second vector
+    /// \returns the cross product of the two input vectors
     static Vector Cross(const Vector& _v1, const Vector& _v2);
 
+    /// \brief returns the dot product of the two input vectors
+    /// @param[in] _v1 the first vector
+    /// @param[in] _v2 the second vector
+    /// \returns the dot product of the two input vectors
     static float Dot(const Vector & _v1, const Vector& _v2);
 
+    /// \brief returns the x component of the vector
+    /// \returns the x component of the vector
     float GetX() const { return m_x; }
 
+    /// \brief returns the y component of the vector
+    /// \returns the y component of the vector
     float GetY() const { return m_y; }
 
+    /// \brief returns the z component of the vector
+    /// \returns the z component of the vector
     float GetZ() const { return m_z; }
 
     /// \brief Returns a string containing debug information about this object
+    /// \returns a string containing debug information about this object
     std::string GetDebugInformation();
 private:
     union
@@ -58,12 +103,6 @@ private:
             float m_w;
         };
         #pragma pack(pop)
-        /// \brief array of four floats mapped to the x,y,z,w components of the vector useful for openGL fv data types
-        /// this is mapped as a union to the following \n
-        /// m_x == m_openGL[0] \n
-        /// m_y == m_openGL[1] \n
-        /// m_z == m_openGL[2] \n
-        /// m_w == m_openGL[3] \n
 
         float m_vector[4];
     };

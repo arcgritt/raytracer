@@ -11,6 +11,7 @@
 class Scene
 {
 public:
+    /// \brief the default constructor
     Scene();
 
     Scene(unsigned int _displayWidth, unsigned int _displayHeight, float _pixelAspectRatio, float _fieldOfView);

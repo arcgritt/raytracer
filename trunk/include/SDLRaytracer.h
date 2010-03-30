@@ -16,6 +16,7 @@
 class SDLRaytracer
 {
 public:
+    /// \brief the default constructor
     SDLRaytracer();
 
     // generates the objects from input file and calls appropriate functions

@@ -8,6 +8,7 @@
 class Sphere: public RenderableObject
 {
 public:
+    /// \brief the default constructor
     Sphere();
 
     Sphere(Vector _center, float _radius);

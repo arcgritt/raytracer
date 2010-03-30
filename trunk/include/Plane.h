@@ -8,6 +8,8 @@
 class Plane : public RenderableObject
 {
 public:
+    /// \brief the default constructor
+
     Plane();
     /*
     Plane(Vector _position, float _x, float _y);

@@ -9,6 +9,7 @@
 class RenderableObject
 {
 public:
+    /// \brief the default constructor
     RenderableObject();
 
     Vector GetPosition() const { return m_position; }

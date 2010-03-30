@@ -16,6 +16,7 @@ typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
 class RIBParser : public Parser
 {
 public:
+    /// \brief the default constructor
     RIBParser();
 
     static Scene ParseFile(std::string _fileName, std::vector<Material>& _materials);

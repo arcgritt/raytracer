@@ -37,7 +37,7 @@ WorldBegin
   Translate rand*-10 rand*-10 30
   Sphere rand*4 -1 1 360
 
-  Surface "goldanodisedaluminium"
+  Surface "glass"
   Color rand rand rand
   Translate rand*-10 rand*-10 30
   Sphere rand*4 -1 1 360

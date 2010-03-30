@@ -6,6 +6,7 @@
 class Material
 {
 public:
+    /// \brief the default constructor
     Material();
     Material(const Colour& _colour, const float _reflectivity);
     Material(std::string _materialName, const Colour& _diffuseColour, const Colour& _specularColour, const float _specularIntensity, const float _specularExponent, const float _reflectivity);

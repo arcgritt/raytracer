@@ -10,36 +10,39 @@
 class Colour
 {
 public:
-    /// \brief default constructor
+    /// \brief the default constructor
     Colour();
 
-    /// \brief
+    /// \brief constructs a Colour with the specifed RGB values (from 0.0f to 1.0f) and 1.0f alpha
     /// @param[in] _r   red, from 0.0f to 1.0f if you want to use GetColour256
     /// @param[in] _g   green, as above
     /// @param[in] _b   blue, as above
     Colour(float _r, float _g, float _b);
 
-    /// \brief
+    /// \brief constructs a Colour with the specified RGBA values (from 0.0f to 1.0f)
     /// @param[in] _r   red, from 0.0f to 1.0f if you want to use GetColour256
     /// @param[in] _g   green, as above
     /// @param[in] _b   blue, as above
     /// @param[in] _a   alpha, as above
     Colour(float _r, float _g, float _b, float _a);
 
-    /// \brief
+    /// \brief fills the input array with this colour's information
     /// @param[in] _colour  float[4] to return colour information in
     void GetColour(float* _colour);
 
+    /// \brief floors the colour's attributes to a minimum of 0.0f;
     void Floor();
 
+    /// \brief ceils the colour's attributes to a maximum of 1.0f;
     void Ceil();
 
-    /// \brief
+    /// \brief fills the input array with this colour's information in 8-bit integer format (0-255)
     /// @param[in] _colour  unsigned int[4] to return colour information in
     void GetColour256(unsigned int* _colour);
 
-    //void operator+(Colour& _colour);
-
+    /// \brief operator overload for adding colours
+    /// @param[in] _colour the colour to add to this one
+    /// \returns a new colour equal to the sum of this colour plus the input colour
     Colour operator+(Colour& _colour);
 
     /// \brief Adds this colour and the input colour
@@ -50,12 +53,12 @@ public:
     /// @param[in] _colour  colour to be multiplied
     void operator*=(Colour& _colour);
 
-
     /// \brief Multiplies this colour by a float value
     /// @param[in] _multiplier  amount to multiply this colour by
     void operator*=(float _multiplier);
 
-
+    /// \brief Divides this colour by a float value
+    /// @param[in] _multiplier the amount fo divide this colour by
     void operator/=(float _multiplier);
 
     /// \brief Determines the average of two colours. Input order is irrelevant
@@ -67,13 +70,18 @@ public:
     /// @param[in] _colour the colour to average this colour with
     void operator&=(Colour& _colour);
 
-    /// \brief Returns a string containing debug information about this object
+    /// \brief Retrieves debug information about this object
+    /// \returns A string containing debug information about this object, formatted on one line
     std::string GetDebugInformation();
 
 private:
+    /// red component of the colour
     float m_r;
+    /// green component of the colour
     float m_g;
+    /// blue component of the colour
     float m_b;
+    /// alpha component of the colour
     float m_a;
 };
 

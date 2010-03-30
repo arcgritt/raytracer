@@ -92,17 +92,10 @@ Fragment Sphere::GetFragment(Vector &_rayOrigin, Vector &_ray, float _distance)
 {
     // point of intersection in world space
     Vector point = _ray * _distance + _rayOrigin;
-    //point.printDebug();
-
-
 
     // normal = point - center
     Vector normal = point - GetPosition();
-    Vector reverseNormal = GetPosition() - point;
-    //normal.printDebug();
-    //Vector normal = position - point;
-
     normal.Normalise();
 
-    return Fragment(point, normal, reverseNormal, GetColour(), GetMaterial());
+    return Fragment(point, normal, GetColour(), GetMaterial());
 }

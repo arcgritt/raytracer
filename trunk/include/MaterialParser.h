@@ -9,16 +9,10 @@
 class MaterialParser: public Parser
 {
 public:
+    /// \brief the default constructor
     MaterialParser();
 
-    //MaterialParser(std::string _filename);
-
     static std::vector<Material> ParseFile(std::string _fileName);
-
-    //void ParseFile(std::string _filename);
-
-    //std::vector<Material> GetMaterials() const { return materials; }
-
 private:
 
 };
