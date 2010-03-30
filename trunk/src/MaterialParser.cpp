@@ -34,6 +34,7 @@ std::vector<Material> MaterialParser::ParseFile(std::string _filename)
 
     if (materialsFile.is_open())
     {
+        std::cout << "### START: Parsing materials" << std::endl;
         std::string line;
         Material material;
 
@@ -59,7 +60,6 @@ std::vector<Material> MaterialParser::ParseFile(std::string _filename)
                     if(materialsCount != 0)
                     {
                         material = Material(materialName, diffuseColour, specularColour, specularIntensity, specularExponent, materialReflectivity);
-                        //std::cout << "New Material set: " << materialName << std::endl << material.GetDebugInformation() << std::endl;
                         materials.push_back(material);
                     }
 
@@ -69,27 +69,22 @@ std::vector<Material> MaterialParser::ParseFile(std::string _filename)
                 else if(typeName == "DiffuseColour")
                 {
                     diffuseColour = MaterialParser::ParseColour(tokenIterator);
-                    // std::cout << "Diffuse Colour: " << diffuseColour.GetDebugInformation() << std::endl;
                 }
                 else if(typeName == "SpecularColour")
                 {
                     specularColour = MaterialParser::ParseColour(tokenIterator);
-                    // std::cout << "Specular Colour: " << specularColour.GetDebugInformation() << std::endl;
                 }
                 else if(typeName == "SpecularIntensity")
                 {
                     specularIntensity = MaterialParser::ParseFloat(*tokenIterator);
-                    //std::cout << "Specular Intensity: " << specularIntensity << std::endl;
                 }
                 else if(typeName == "SpecularExponent")
                 {
                     specularExponent = MaterialParser::ParseFloat(*tokenIterator);
-                    // std::cout << "SpecularExponent: " << specularExponent << std::endl;
                 }
                 else if(typeName == "Reflectivity")
                 {
                     materialReflectivity = MaterialParser::ParseFloat(*tokenIterator);
-                    // std::cout << "Reflectivity: " << materialReflectivity << std::endl;
                 }
                 else if(typeName == "#")
                 {
@@ -104,12 +99,12 @@ std::vector<Material> MaterialParser::ParseFile(std::string _filename)
 
         // add the last material
         material = Material(materialName, diffuseColour, specularColour, specularIntensity, specularExponent, materialReflectivity);
-        //std::cout << "New Material set: " << materialName << std::endl << material.GetDebugInformation() << std::endl;
         materials.push_back(material);
 
         // close the file
         materialsFile.close();
-        std::cout << std::endl << "End of materials file (" << _filename << ")" << std::endl << materials.size() << " materials parsed";
+        std::cout << "### " << materials.size() << " materials parsed" << std::endl;
+        std::cout << "### FINISH: Parsing materials" << std::endl;
     } // if (file is open) loop
     else
     {

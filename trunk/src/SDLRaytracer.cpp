@@ -120,6 +120,8 @@ int SDLRaytracer::InitScene(std::string _materialsFile, std::string _ribFile)
     MaterialParser materialParser;
     std::vector<Material> materials = materialParser.ParseFile(_materialsFile);
 
+    std::cout << std::endl;
+
     RIBParser ribParser;
     Scene scene = ribParser.ParseFile(_ribFile, materials);
 

@@ -30,7 +30,7 @@ Material& RIBParser::GetMaterialByName(std::string _materialName)
 
         if(material.GetName() == _materialName)
         {
-           return material;
+            return material;
         }
     }
 
@@ -78,8 +78,6 @@ Scene RIBParser::ParseFile(std::string _fileName, std::vector<Material> &_materi
     {
         std::cout << "Failed to read materials file" << std::endl;
     }
-    RenderableObject* sphere = scene.GetObjects()[0];
-    std::cout << sphere->GetPosition().GetDebugInformation() << std::endl;
 
     return scene;
 }
@@ -130,13 +128,12 @@ Scene RIBParser::ParseHeader(std::ifstream &_ribFileStream)
                     fieldOfView = ParseFloat(StripBrackets(*tokenIterator++));
                 }
 
-                //std::cout << cameraType;
                 // projection vs ortho
             }
             else if(typeName == "#")
             {
-                std::cout << line << std::endl;
                 // is a comment
+                // std::cout << line << std::endl;
             }
             else if(typeName == "WorldBegin")
             {
@@ -194,16 +191,12 @@ void RIBParser::ParseWorld(std::ifstream &_ribFileStream, Scene& _scene)
             else if(typeName == "Sphere")
             {
                 float radius = ParseFloat(*tokenIterator++);
-                //Sphere sphere = Sphere(translate, radius, material);
-                //std::cout << colour.GetDebugInformation() << std::endl;
                 _scene.AddObject(new Sphere(translate, radius, colour, GetMaterialByName(materialName)));
-                //_scene.AddObject(new Sphere(translate, radius, Material("plastic", colour, colour, 10, 20, 0.5)));
-                //objects.push_back(new Sphere(translate, radius, material));
             }
             else if(typeName == "#")
             {
-                std::cout << line; // << std::endl;
                 // is a comment
+                //std::cout << line << std::endl;
             }
             else if(typeName == "WorldEnd")
             {
@@ -215,13 +208,6 @@ void RIBParser::ParseWorld(std::ifstream &_ribFileStream, Scene& _scene)
             }
         }
     } // while (not end of file) loop
-
-   // std::cout << "Num objects: " << objects.size() << std::endl;
-    //_scene.SetObjects(objects);
-   // std::cout << "Num objects(scene): " << _scene.GetObjects().size() << std::endl;
-    //RenderableObject* sphere = _scene.GetObjects()[0];
-    //std::cout << sphere->GetPosition().GetDebugInformation() << std::endl;
-
 }
 
 
