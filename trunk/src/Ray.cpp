@@ -1,7 +1,8 @@
-#include "Ray.h"
-#include "float.h"
+#include <cstdio>
+#include <float.h>
 
-#include "cstdio"
+#include "Ray.h"
+
 
 Ray::Ray()
 {

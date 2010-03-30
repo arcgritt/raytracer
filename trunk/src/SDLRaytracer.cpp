@@ -1,27 +1,24 @@
 #ifdef WINDOWS
-
-#include <ctime>
-#include <string>
-
+    #include <ctime>
+    #include <string>
 #endif // #ifdef WINDOWS
 
 // Boost
 #include "boost/random.hpp"
-//#include "boost/thread.hpp"
 
 // SDL
 #include "SDL/SDL.h"
 
 // Project
-#include "SDLRaytracer.h"
-#include "MaterialParser.h"
-#include "RIBParser.h"
 #include "Light.h"
+#include "MaterialParser.h"
 #include "RenderableObject.h"
+#include "RIBParser.h"
+#include "SDLRaytracer.h"
 
 #ifdef WINDOWS
-// something weird with SDL causes this to screw up on Windows unless you have this line
-#undef main
+    // something weird with SDL causes this to screw up on Windows unless you have this line
+    #undef main
 #endif // #ifdef WINDOWS
 
 
@@ -409,7 +406,7 @@ Colour SDLRaytracer::RaytraceRay(Vector &_rayOrigin, Ray &_ray, unsigned int _tr
         // If it's partially reflective, we need to multiply the colour of this object by its reflectants
 
         // calculate the reflection bounce ray
-        Vector rayVector = _ray.GetVector();
+        Vector& rayVector = _ray.GetVector();
         Vector normal = pixel_fragment.GetNormal();
         const float dotRay_Normal = Vector::Dot(rayVector, normal);
         Vector reflectionVector = rayVector - (normal*2*dotRay_Normal);
@@ -553,7 +550,6 @@ Colour SDLRaytracer::CalculateColour(Fragment &_fragment, Vector &_rayVector)
     Colour ambient = mat.GetDiffuseColour();
     ambient *= ambient_multiplier;
 
-
     Colour diffuse = mat.GetDiffuseColour();
     diffuse *= diffuse_multiplier * light_intensity;
 
@@ -562,7 +558,6 @@ Colour SDLRaytracer::CalculateColour(Fragment &_fragment, Vector &_rayVector)
 
     Colour finalColour = ambient + diffuse + specular;
     finalColour.Ceil();
-    finalColour.Floor();
 
     return finalColour;
 }

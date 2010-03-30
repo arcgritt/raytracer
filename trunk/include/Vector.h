@@ -25,7 +25,7 @@ public:
     /// \brief normalises the vector, setting it's length to 1
     void Normalise();
 
-    /// \brief
+    /// \brief returns the length of the vector
     /// \returns the length of the vector
     float Length();
 

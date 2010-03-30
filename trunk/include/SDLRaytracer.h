@@ -7,9 +7,9 @@
 #include <vector>
 
 #include "Colour.h"
+#include "Ray.h"
 #include "Scene.h"
 #include "Vector.h"
-#include "Ray.h"
 
 
 class SDLRaytracer

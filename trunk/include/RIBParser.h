@@ -1,14 +1,14 @@
 #ifndef RIBPARSER_H
 #define RIBPARSER_H
 
+#include <fstream>
 #include <string>
 #include <vector>
-#include <fstream>
 
 #include "boost/tokenizer.hpp"
 
-#include "Parser.h"
 #include "Material.h"
+#include "Parser.h"
 #include "Scene.h"
 
 typedef boost::tokenizer<boost::char_separator<char> > tokenizer;

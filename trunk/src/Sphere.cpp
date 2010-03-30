@@ -1,8 +1,6 @@
 #include "Sphere.h"
 
-
 #include <cmath>
-
 #include <cstdio>
 
 Sphere::Sphere()

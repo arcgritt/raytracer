@@ -1,24 +1,18 @@
-#include "RIBParser.h"
-
-
 #include <iostream>
 
 // Boost
 #include "boost/random.hpp"
 #include "boost/lexical_cast.hpp"
-#include "RenderableObject.h"
 
-/*boost::char_separator<char> sep(" \t\r\n");
-boost::mt19937 Generator;
-boost::uniform_real<float> distributionPos(0.0f, 1.0f);
-boost::variate_generator<boost::mt19937&, boost::uniform_real<float> > RandPosFloat(Generator, distributionPos);
-boost::uniform_real<float> distribution(-1.0f, 1.0f);
-boost::variate_generator<boost::mt19937&, boost::uniform_real<float> > RandFloat(Generator, distribution);*/
+
+#include "RIBParser.h"
+#include "RenderableObject.h"
 
 std::vector<Material> RIBParser::m_materials;
 
 RIBParser::RIBParser()
 {
+
 }
 
 Material& RIBParser::GetMaterialByName(const std::string &_materialName)
@@ -26,11 +20,9 @@ Material& RIBParser::GetMaterialByName(const std::string &_materialName)
     for(unsigned int i = 0; i < m_materials.size(); i++)
     {
         Material& material = m_materials[i];//.GetDebugInformation;
-        //std::cout << material.GetDebugInformation() << std::endl;
 
         if(!material.GetName().compare(_materialName))
         {
-            //std::cout << material.GetDebugInformation();
             return material;
         }
     }
@@ -43,23 +35,8 @@ Scene RIBParser::ParseFile(const std::string &_fileName, const std::vector<Mater
 {
     m_materials  = _materials;
 
-
-
     std::ifstream ribFileStream;
-    //(_filename.data(), std::ifstream::in);
     ribFileStream.open(_fileName.data());
-
-    //std::ifstream ribFileStream = new std::ifstream(_filename.data());
-    //ribFileStream.open(_filename.data());
-
-    /*unsigned int materialsCount = 0;
-    std::string materialName;
-    Colour diffuseColour;
-    Colour specularColour;
-    float specularIntensity;
-    float specularExponent;
-    float materialReflectivity;*/
-
 
     Scene scene;
     if (ribFileStream.is_open())

@@ -5,8 +5,8 @@
 
 #include "Vector.h"
 
-#include "RenderableObject.h"
 #include "Light.h"
+#include "RenderableObject.h"
 
 class Scene
 {

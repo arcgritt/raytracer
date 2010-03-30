@@ -1,9 +1,9 @@
 #ifndef SPHERE_H
 #define SPHERE_H
 
-#include "Vector.h"
 #include "Colour.h"
 #include "RenderableObject.h"
+#include "Vector.h"
 
 class Sphere: public RenderableObject
 {

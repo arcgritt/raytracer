@@ -1,8 +1,8 @@
 #ifndef RAY_H
 #define RAY_H
 
-#include "Vector.h"
 #include "RenderableObject.h"
+#include "Vector.h"
 
 class Ray
 {

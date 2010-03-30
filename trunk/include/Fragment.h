@@ -1,8 +1,9 @@
 #ifndef FRAGMENT_H
 #define FRAGMENT_H
 
+#include "Colour.h"
+#include "Material.h"
 #include "Vector.h"
-#include "Material.h" // also includes Colour.h
 
 class Fragment
 {

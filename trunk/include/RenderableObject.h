@@ -1,10 +1,10 @@
 #ifndef RENDERABLEOBJECT_H
 #define RENDERABLEOBJECT_H
 
-#include "Vector.h"
 #include "Colour.h"
-#include "Material.h"
 #include "Fragment.h"
+#include "Material.h"
+#include "Vector.h"
 
 class RenderableObject
 {

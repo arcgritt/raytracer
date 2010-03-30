@@ -1,9 +1,9 @@
 #ifndef MATERIALPARSER_H
 #define MATERIALPARSER_H
 
-#include "Parser.h"
-#include "Material.h"
 #include "Colour.h"
+#include "Material.h"
+#include "Parser.h"
 
 
 class MaterialParser: public Parser

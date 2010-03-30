@@ -1,8 +1,8 @@
-#include "Parser.h"
-
 // Boost
 #include "boost/random.hpp"
 #include "boost/lexical_cast.hpp"
+
+#include "Parser.h"
 
 boost::char_separator<char> sep(" \t\r\n");
 

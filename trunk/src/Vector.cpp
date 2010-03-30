@@ -58,10 +58,6 @@ Vector Vector::operator+(const Vector &_v)
 {
     // source Jon Macey
     return Vector(m_x+_v.m_x, m_y+_v.m_y, m_z+_v.m_z, 0.0f);
-    //m_x-=_v.m_x;
-   // m_y-=_v.m_y;
-   // m_z-=_v.m_z;
-    //m_w=0.0;
 }
 
 
