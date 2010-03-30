@@ -113,22 +113,13 @@ int main(int argc, char *argv[])//int argc, char *argv[])
 
 int SDLRaytracer::InitScene(std::string _materialsFile, std::string _ribFile)
 {
-    //MaterialParser materialParser = MaterialParser(_materialsFile);
-
     MaterialParser materialParser;
     std::vector<Material> materials = materialParser.ParseFile(_materialsFile);
-    //Material material = materials[0];
-    //std::cout << material.GetDebugInformation() << std::endl;
 
     RIBParser ribParser;
     Scene scene = ribParser.ParseFile(_ribFile, materials);
 
     m_objects = scene.GetObjects();
-
-   // RenderableObject* objectasd = m_objects[0];
-
-   // std::cout << objectasd->GetMaterial().GetDebugInformation() << std::endl;
-
 
     const int start_time = clock();
 
@@ -158,16 +149,12 @@ int SDLRaytracer::InitScene(std::string _materialsFile, std::string _ribFile)
                 );
     }
 
-    //SDLRaytracer::SceneObjectsInit(materials);
-
 
     const int frame_time = clock();
 
     SDLRaytracer::RenderScene(backBuffer, scene);
 
     const int finish_time = clock();
-
-
 
 #ifdef DEBUG
     printf("Render time: %3.2f seconds\n", difftime(finish_time, start_time)/CLOCKS_PER_SEC);
@@ -177,9 +164,6 @@ int SDLRaytracer::InitScene(std::string _materialsFile, std::string _ribFile)
     std::cout << "Recursive Traces: " << m_recursiveBounces << std::endl;
     std::cout << "Light Traces: " << m_lightTraces << std::endl;
 #endif // DEBUG
-
-    // Update the screen
-    //SDL_Flip(backBuffer);
 
 
     // pointer to pass to SDL_WaitEvent
@@ -401,7 +385,7 @@ Colour SDLRaytracer::RaytraceRay(Vector &_rayOrigin, Ray &_ray, unsigned int _tr
     }
 
     // if it hit something
-    Colour pixel_colour;// = Colour(0.5f, 0.5f, 0.5f);
+    Colour pixel_colour;
     if(hit)
     {
         // object that this pixel hits
@@ -445,8 +429,8 @@ Colour SDLRaytracer::RaytraceRay(Vector &_rayOrigin, Ray &_ray, unsigned int _tr
     else // if it didn't hit anything
     {
         // background colour
-        //return pixel_colour = Colour(0.1f, 0.1f, 0.1f);
-        return pixel_colour = Colour(0.2f, 0.2f, 0.2f);
+        return pixel_colour = Colour(0.1f, 0.1f, 0.1f);
+        //return pixel_colour = Colour(0.2f, 0.2f, 0.2f);
     }
 }
 
@@ -456,11 +440,11 @@ Colour SDLRaytracer::CalculateColour(Fragment &_fragment, Vector &_rayVector)
 #ifdef DEBUG
     m_lightTraces++;
 #endif // #ifdef DEBUG
-    //const Material* material = _fragment.GetMaterial();
+    const Material mat = _fragment.GetMaterial();
 
     float light_intensity = 0;
 
-    const float ambient_multiplier = 0.3;
+    const float ambient_multiplier = 0.15;
     float diffuse_multiplier = 0;
     float specular_multiplier = 0;
     // for each light
@@ -521,12 +505,13 @@ Colour SDLRaytracer::CalculateColour(Fragment &_fragment, Vector &_rayVector)
 
 
         if(diffuse_multiplier > 0.0f)
-        {
-            //unattenuatedIntensity += diffuse_multiplier;
+        {            
+            float exponent = mat.GetSpecularExponent();
+            float intensity = mat.GetSpecularIntensity();
 
-            //specular_multiplier = 0;
+            /* Phong */
 
-            // reflection of light, for Phong calculations
+            // reflection of lightVector over object normal
             Vector reflectionVector = -lightVector + normal * Vector::Dot(normal, lightVector) * 2;
             reflectionVector.Normalise();
 
@@ -534,16 +519,15 @@ Colour SDLRaytracer::CalculateColour(Fragment &_fragment, Vector &_rayVector)
             float phong = Vector::Dot(reflectionVector, -_rayVector);
 
 
-            float exponent = 10;
-            float intensity = 0.01;
-
             if(phong > 0.0f) // if dot product > 0 (angle less than 90)
             {
                 float phongIntensity = pow(phong, exponent) * intensity;
                 specular_multiplier += phongIntensity;
             }
 
+            /* Blinn */
 
+            // half way between ray and light vectors
             Vector halfWayVector = lightVector + _rayVector;
             halfWayVector.Normalise();
 
@@ -551,125 +535,35 @@ Colour SDLRaytracer::CalculateColour(Fragment &_fragment, Vector &_rayVector)
 
             if(blinn > 0.0f) // if dot product > 0 (angle less than 90)
             {
-
                 float blinnIntensity = pow(blinn, exponent) * intensity;
                 specular_multiplier += blinnIntensity;
             }
 
-            //std::cout << "Spec: " << specular_multiplier << std::endl;
 
             specular_multiplier *= diffuse_multiplier;
-            //unattenuatedIntensity += specular;
-
-            /*Vector halfWayVector = lightVector + _rayVector;
-            halfWayVector.Normalise();
-
-            float blinn = Vector::Dot(halfWayVector, normal);
-
-            if(blinn > 0)
-            {
-                float blinnIntensity = pow(blinn, exponent) * intensity;
-                unattenuatedIntensity += blinnIntensity;
-            }*/
         }
 
         if(diffuse_multiplier > 0)   // don't waste time with attenuation if it's got no light, ~5% speed boost
         {
-            // vector from intersection to light
-            // could be used for light falloff
-            const float light_attenuation = lightVector.SquareLength(); // Length = linear falloff... SquareLength = quadratic (real) falloff
-            //light_intensity = light_attenuation/light->GetMagnitude();
-            light_intensity += 1/light_attenuation*light->GetMagnitude()*10; ///light_attenuation;
-            //diffuse_multiplier *= light_intensity;
-            //specular_multiplier *= light_intensity;
-            //light_intensity += unattenuatedIntensity*(light->GetMagnitude()/light_attenuation);
+            // Length = linear falloff... SquareLength = quadratic (real) falloff
+            const float light_attenuation = lightVector.SquareLength();
+            light_intensity += 1/light_attenuation*light->GetMagnitude()*10;
         }
     }
 
-
-    //light_intensity = 1/light_intensity;
-
-    Material mat = _fragment.GetMaterial();
-
-    //std::cout << mat.GetDebugInformation();
-    
-
-    //Colour ambient = _fragment.GetColour(); //_fragment.GetColour();
     Colour ambient = mat.GetDiffuseColour();
     ambient *= ambient_multiplier;
-    //ambient *= (1.0f - light_intensity) * ambient_multiplier;
 
 
     Colour diffuse = mat.GetDiffuseColour();
-    //Colour diffuse = _fragment.GetColour();
     diffuse *= diffuse_multiplier * light_intensity;
-    //diffuse /= (diffuse_multiplier * light_intensity);
-    //diffuse.Ceil();
 
-    specular_multiplier *= 100;
-    Colour specular = mat.GetSpecularColour(); //Colour(1,1,1); //_fragment.GetMaterial()->GetSpecularColour();//_fragment.GetMaterial()->GetSpecularColour();
+    Colour specular = mat.GetSpecularColour();
     specular *= specular_multiplier * light_intensity;
 
-    //ambient += diffuse;// += specular;
-    //ambient += specular;
-
-    //ambient.Ceil();
-    //ambient.Floor();
-
-    Colour finalColour = ambient + diffuse + specular;// + specular;// + specular;
-    //finalColour *= light_intensity;
+    Colour finalColour = ambient + diffuse + specular;
     finalColour.Ceil();
     finalColour.Floor();
 
     return finalColour;
-
-    //return light_intensity;
-
-    // TODO: Pass fragment in so that normal pass is possible
-
-    /* Normals
-    light_intensity = 1;
-    float r_base = fabs(normal.m_x);
-    float g_base = fabs(normal.m_y);
-    float b_base = fabs(normal.m_z);
-    //*/
-
-    ///* Lambert
-    //light_intensity = 1/light_intensity;
-
-    /*float pixelColours[4];
-    //_material.GetDiffuseColour().GetColour(&pixelColours[0]);
-    _fragment.GetColour().GetColour(&pixelColours[0]);
-    float r_base = pixelColours[0];
-    float g_base = pixelColours[1];
-    float b_base = pixelColours[2];
-    
-    
-    //*/
-
-    /* // Lambert Normals
-    light_intensity = 1/light_intensity;
-    float pixelColours[4];
-    _fragment.GetColour().GetColour(&pixelColours[0]); //material_colour.getColour(&pixelColours[0]);
-    float r_base = pixelColours[0] * fabs(_fragment.GetNormal().m_x);
-    float g_base = pixelColours[1] * fabs(_fragment.GetNormal().m_y);
-    float b_base = pixelColours[2] * fabs(_fragment.GetNormal().m_z);
-    //*/
-
-    /* Normals
-    light_intensity = 1;
-    float r_base = fabs(_fragment.GetNormal().m_x);
-    float g_base = fabs(_fragment.GetNormal().m_y);
-    float b_base = fabs(_fragment.GetNormal().m_z);
-    //*/
-
-
-    /*float r = std::min(1.0f, (float)r_base/light_intensity);
-    float g = std::min(1.0f, (float)g_base/light_intensity);
-    float b = std::min(1.0f, (float)b_base/light_intensity);
-    // alpha doesn't get modified by light
-
-
-    float a = 0;
-    return Colour(r, g, b, a);*/
 }

@@ -4,8 +4,8 @@ Material cheese
 
 DiffuseColour       1 1 0
 SpecularColour      1 1 0
-SpecularIntensity   10.05
-SpecularExponent    15.51
+SpecularIntensity   .5
+SpecularExponent    30
 Reflectivity        0.5
 
 
@@ -13,16 +13,16 @@ Material plastic
 
 DiffuseColour       1 1 1
 SpecularColour      1 1 1
-SpecularIntensity   10.05
-SpecularExponent    15.51
+SpecularIntensity   1
+SpecularExponent    30
 Reflectivity        0.5
 
 Material goldanodisedaluminium
 
 DiffuseColour       1 1 0.05
 SpecularColour      0.9 0.9 0.1
-SpecularIntensity   5
-SpecularExponent    15.51
+SpecularIntensity   .8
+SpecularExponent    25
 Reflectivity        0.5
 
 Material glass
