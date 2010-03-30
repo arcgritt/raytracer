@@ -138,13 +138,12 @@ int SDLRaytracer::InitScene(std::string _materialsFile, std::string _ribFile)
 
     for(unsigned int i=0; i<NUM_LIGHTS;i++)
     {
+        Material mat = Material(Colour(), 0.0f);
+
         lights[i] = new Light(
                 Vector(-7, 0, 15),
                 0.5f,
-                Material(
-                        Colour(),
-                        0.0f
-                        ),
+                mat,
                 10.0f
                 );
     }
@@ -300,8 +299,8 @@ void SDLRaytracer::RaytraceScene(SDL_Surface *&_backBuffer, const unsigned int _
 }
 
 Colour SDLRaytracer::FSAARaytracePixel(Vector &_camera,
-                                       float _xPos,
-                                       float _yPos,
+                                       const float _xPos,
+                                       const float _yPos,
                                        unsigned int _fsaaSamples,
                                        const unsigned int _fsaaAxisSamples,
                                        const float _fsaaDivisionSize)
@@ -380,7 +379,7 @@ Colour SDLRaytracer::RaytraceRay(Vector &_rayOrigin, Ray &_ray, unsigned int _tr
         if(distance >= LAMBDA) // if there is a hit
         {
             hit = true;
-            _ray.Intersection(distance, *m_objects[j]);
+            _ray.Intersection(distance, m_objects[j]);
         }
     }
 

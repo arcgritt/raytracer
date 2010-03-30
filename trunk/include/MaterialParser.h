@@ -12,7 +12,7 @@ public:
     /// \brief the default constructor
     MaterialParser();
 
-    static std::vector<Material> ParseFile(std::string _fileName);
+    static std::vector<Material> ParseFile(const std::string& _fileName);
 private:
 
 };

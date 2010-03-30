@@ -12,7 +12,7 @@ public:
 
     Ray(Vector& _direction);
 
-    void Intersection(const float& _intersectionDistance, RenderableObject& _objectIntersected);
+    void Intersection(const float& _intersectionDistance, RenderableObject* _objectIntersected);
 
     //void PrintDebug();
 
@@ -23,7 +23,7 @@ public:
     RenderableObject* GetObjectIntersected() const { return m_objectIntersected; }
 
     /// \brief Returns a string containing debug information about this object
-    std::string GetDebugInformation();
+    const std::string GetDebugInformation();
 private:
     Vector m_direction;
     float m_closestIntersection;

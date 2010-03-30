@@ -9,11 +9,11 @@ public:
     /// \brief the default constructor
     Light();
 
-    Light(Vector _position, float _radius, Material _material, float _magnitude);
+    Light(const Vector& _position, const float _radius, Material _material, const float _magnitude);
 
     float GetMagnitude() const { return c_magnitude; }
 
-    void SetMagnitude(float &_magnitude) { c_magnitude = _magnitude; }
+    void SetMagnitude(const float &_magnitude) { c_magnitude = _magnitude; }
 
 private:
     float c_magnitude;

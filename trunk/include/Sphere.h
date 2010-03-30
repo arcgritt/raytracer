@@ -16,7 +16,7 @@ public:
     /// @param[in] _radius      the radius of the sphere
     /// @param[in] _colour      the colour of this object
     /// @param[in] _material    the material of this object
-    Sphere(Vector _center, float _radius, Colour _colour, Material _material);
+    Sphere(const Vector& _center, const float _radius, const Colour& _colour, const Material& _material);
 
     /// \brief returns the radius of the sphere
     /// \returns the radius of the sphere

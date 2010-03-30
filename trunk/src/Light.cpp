@@ -5,7 +5,7 @@ Light::Light()
 }
 
 
-Light::Light(Vector _position, float _radius, Material _material, float _magnitude)
+Light::Light(const Vector& _position, const float _radius, Material _material, const float _magnitude)
 {
     SetPosition(_position);
     SetRadius(_radius);

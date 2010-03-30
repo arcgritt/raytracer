@@ -16,21 +16,21 @@ public:
     /// \brief the default constructor
     Parser();
 protected:
-    static tokenizer::iterator GetTokenIterator(std::string _line);
+    static tokenizer::iterator GetTokenIterator(const std::string& _line);
 
 
 
-    static float ParseFloat(std::string _token);
+    static float ParseFloat(const std::string& _token);
 
 
-    static float ParseRand(std::string _token);
+    static float ParseRand(const std::string& _token);
 
 
-    static std::string StripBrackets(std::string _string);
+    static std::string StripBrackets(const std::string& _string);
 
 
 
-    static unsigned int ParseUnsignedInt(std::string _token);
+    static unsigned int ParseUnsignedInt(const std::string& _token);
 
 
 

@@ -54,8 +54,8 @@ public:
     /// @param[in] _fsaaDivisionSize    the distance between each ray along each axis
     /// \returns the final colour of the specified pixel
     static Colour FSAARaytracePixel(Vector& _camera,
-                                    float _xPos,
-                                    float _yPos,
+                                    const float _xPos,
+                                    const float _yPos,
                                     unsigned int _fsaaSamples,
                                     const unsigned int _fsaaAxisSamples,
                                     const float _fsaaDivisionSize);

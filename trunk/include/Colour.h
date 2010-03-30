@@ -17,14 +17,14 @@ public:
     /// @param[in] _r   red, from 0.0f to 1.0f if you want to use GetColour256
     /// @param[in] _g   green, as above
     /// @param[in] _b   blue, as above
-    Colour(float _r, float _g, float _b);
+    Colour(const float _r, const float _g, const float _b);
 
     /// \brief constructs a Colour with the specified RGBA values (from 0.0f to 1.0f)
     /// @param[in] _r   red, from 0.0f to 1.0f if you want to use GetColour256
     /// @param[in] _g   green, as above
     /// @param[in] _b   blue, as above
     /// @param[in] _a   alpha, as above
-    Colour(float _r, float _g, float _b, float _a);
+    Colour(const float _r, const float _g, const float _b, const float _a);
 
     /// \brief fills the input array with this colour's information
     /// @param[in] _colour  float[4] to return colour information in
@@ -43,32 +43,32 @@ public:
     /// \brief operator overload for adding colours
     /// @param[in] _colour the colour to add to this one
     /// \returns a new colour equal to the sum of this colour plus the input colour
-    Colour operator+(Colour& _colour);
+    Colour operator+(const Colour& _colour);
 
     /// \brief Adds this colour and the input colour
     /// @param[in] _colour  colour to be added
-    void operator+=(Colour& _colour);
+    void operator+=(const Colour& _colour);
 
     /// \brief Multiplies this colour and the input colour
     /// @param[in] _colour  colour to be multiplied
-    void operator*=(Colour& _colour);
+    void operator*=(const Colour& _colour);
 
     /// \brief Multiplies this colour by a float value
     /// @param[in] _multiplier  amount to multiply this colour by
-    void operator*=(float _multiplier);
+    void operator*=(const float _multiplier);
 
     /// \brief Divides this colour by a float value
     /// @param[in] _multiplier the amount fo divide this colour by
-    void operator/=(float _multiplier);
+    void operator/=(const float _multiplier);
 
     /// \brief Determines the average of two colours. Input order is irrelevant
     /// @param[in] _colour1 the first colour
     /// @param[in] _colour2 the second colour
-    static Colour Average(Colour& _colour1, Colour& _colour2);
+    static Colour Average(const Colour& _colour1, const Colour& _colour2);
 
     /// \brief Averages this colour with the input colour. Equivalent to _colour&=(this)
     /// @param[in] _colour the colour to average this colour with
-    void operator&=(Colour& _colour);
+    void operator&=(const Colour& _colour);
 
     /// \brief Retrieves debug information about this object
     /// \returns A string containing debug information about this object, formatted on one line

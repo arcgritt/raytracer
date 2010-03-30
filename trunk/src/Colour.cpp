@@ -16,7 +16,7 @@ Colour::Colour()
     m_a = 1.0f;
 }
 
-Colour::Colour(float _r, float _g, float _b)
+Colour::Colour(const float _r, const float _g, const float _b)
 {
     m_r = _r;
     m_g = _g;
@@ -24,7 +24,7 @@ Colour::Colour(float _r, float _g, float _b)
     m_a = 0.0f;
 }
 
-Colour::Colour(float _r, float _g, float _b, float _a)
+Colour::Colour(const float _r, const float _g, const float _b, const float _a)
 {
     m_r = _r;
     m_g = _g;
@@ -70,7 +70,7 @@ void Colour::GetColour256(unsigned int *_colour)
     _colour[3] = 255*m_a;
 }
 
-Colour Colour::operator+(Colour &_colour)
+Colour Colour::operator+(const Colour &_colour)
 {
     float r = m_r+_colour.m_r;
     float g = m_g+_colour.m_g;
@@ -80,7 +80,7 @@ Colour Colour::operator+(Colour &_colour)
     return Colour(r,g,b,a);
 }
 
-void Colour::operator+=(Colour &_colour)
+void Colour::operator+=(const Colour &_colour)
 {
     m_r += _colour.m_r;
     m_g += _colour.m_g;
@@ -88,7 +88,7 @@ void Colour::operator+=(Colour &_colour)
     m_a += _colour.m_a;
 }
 
-void Colour::operator*=(Colour &_colour)
+void Colour::operator*=(const Colour &_colour)
 {
     m_r *= _colour.m_r;
     m_g *= _colour.m_g;
@@ -96,7 +96,7 @@ void Colour::operator*=(Colour &_colour)
     m_a *= _colour.m_a;
 }
 
-void Colour::operator*=(float _multiplier)
+void Colour::operator*=(const float _multiplier)
 {
     m_r *= _multiplier;
     m_g *= _multiplier;
@@ -104,7 +104,7 @@ void Colour::operator*=(float _multiplier)
     m_a *= _multiplier;
 }
 
-void Colour::operator/=(float _multiplier)
+void Colour::operator/=(const float _multiplier)
 {
     m_r /= _multiplier;
     m_g /= _multiplier;
@@ -113,7 +113,7 @@ void Colour::operator/=(float _multiplier)
 }
 
 
-Colour Colour::Average(Colour &_colour1, Colour &_colour2)
+Colour Colour::Average(const Colour &_colour1, const Colour &_colour2)
 {
     float r = (_colour1.m_r+_colour2.m_r)/2;
     float g = (_colour1.m_g+_colour2.m_g)/2;
@@ -122,7 +122,7 @@ Colour Colour::Average(Colour &_colour1, Colour &_colour2)
     return Colour(r, g, b, a);
 }
 
-void Colour::operator&=(Colour &_colour)
+void Colour::operator&=(const Colour &_colour)
 {
     m_r = (m_r+_colour.m_r)/2;
     m_g = (m_g+_colour.m_g)/2;

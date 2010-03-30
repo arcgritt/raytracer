@@ -13,14 +13,14 @@ public:
     /// @param[in] _x the x component of the vector
     /// @param[in] _y the y component
     /// @param[in] _z the z component
-    Vector(float _x, float _y, float _z);
+    Vector(const float _x, const float _y, const float _z);
 
     /// \brief constructs a new vector with the specified x, y, z, w components
     /// @param[in] _x the x component of the vector
     /// @param[in] _y the y component
     /// @param[in] _z the z component
     /// @param[in] _w the w component, determining whether the vector is a point or direction
-    Vector(float _x, float _y, float _z, float _w);
+    Vector(const float _x, const float _y, const float _z, const float _w);
 
     /// \brief normalises the vector, setting it's length to 1
     void Normalise();
@@ -58,7 +58,7 @@ public:
     /// \brief returns a new vector which is equal to this vector multiplied by a floating point value
     /// @param[in] _multiplier the value to multiply this vector by
     /// \returns a new vector which is equal to this vector multiplied by a floating point value
-    Vector operator*(float _multiplier);
+    Vector operator*(const float _multiplier);
 
     /// \brief returns the cross product of the two input vectors
     /// @param[in] _v1 the first vector
@@ -86,7 +86,7 @@ public:
 
     /// \brief Returns a string containing debug information about this object
     /// \returns a string containing debug information about this object
-    std::string GetDebugInformation();
+    const std::string GetDebugInformation();
 private:
     union
     {

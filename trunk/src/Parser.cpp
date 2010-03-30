@@ -20,7 +20,7 @@ Parser::Parser()
 
 }
 
-tokenizer::iterator Parser::GetTokenIterator(std::string _line)
+tokenizer::iterator Parser::GetTokenIterator(const std::string &_line)
 {
     // now tokenize the line
     tokenizer tokens(_line, sep);
@@ -30,7 +30,7 @@ tokenizer::iterator Parser::GetTokenIterator(std::string _line)
     return tokenIterator;
 }
 
-float Parser::ParseFloat(std::string _token)
+float Parser::ParseFloat(const std::string &_token)
 {
     //Util util;
     //if()
@@ -45,7 +45,7 @@ float Parser::ParseFloat(std::string _token)
     return boost::lexical_cast<float>(_token);
 }
 
-float Parser::ParseRand(std::string _token)
+float Parser::ParseRand(const std::string &_token)
 {
     bool positive = false;
     unsigned int splitPos = _token.find("*-");
@@ -71,12 +71,12 @@ float Parser::ParseRand(std::string _token)
     }
 }
 
-std::string Parser::StripBrackets(std::string _string)
+std::string Parser::StripBrackets(const std::string &_string)
 {
     return _string.substr(1, _string.size()-2);
 }
 
-unsigned int Parser::ParseUnsignedInt(std::string _token)
+unsigned int Parser::ParseUnsignedInt(const std::string &_token)
 {
     return boost::lexical_cast<unsigned int>(_token);
 }

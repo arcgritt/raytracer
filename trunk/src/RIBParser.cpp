@@ -21,7 +21,7 @@ RIBParser::RIBParser()
 {
 }
 
-Material& RIBParser::GetMaterialByName(std::string _materialName)
+Material& RIBParser::GetMaterialByName(const std::string &_materialName)
 {
     for(unsigned int i = 0; i < m_materials.size(); i++)
     {
@@ -39,7 +39,7 @@ Material& RIBParser::GetMaterialByName(std::string _materialName)
 }
 
 
-Scene RIBParser::ParseFile(std::string _fileName, std::vector<Material> &_materials)
+Scene RIBParser::ParseFile(const std::string &_fileName, const std::vector<Material> &_materials)
 {
     m_materials  = _materials;
 

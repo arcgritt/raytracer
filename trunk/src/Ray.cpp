@@ -19,16 +19,16 @@ Vector& Ray::GetVector()
     return m_direction;
 }
 
-void Ray::Intersection(const float& _intersectionDistance, RenderableObject& _objectIntersected)
+void Ray::Intersection(const float& _intersectionDistance, RenderableObject* _objectIntersected)
 {
     if(_intersectionDistance < m_closestIntersection)
     {
         m_closestIntersection = _intersectionDistance;
-        m_objectIntersected = &_objectIntersected;
+        m_objectIntersected = _objectIntersected;
     }
 }
 
-std::string Ray::GetDebugInformation()
+const std::string Ray::GetDebugInformation()
 {
     char tmp[256];
     sprintf(tmp, "Closest Intersection: %f", m_closestIntersection);

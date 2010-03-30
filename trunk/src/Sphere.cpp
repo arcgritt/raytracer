@@ -10,7 +10,7 @@ Sphere::Sphere()
 
 }
 
-Sphere::Sphere(Vector _center, float _radius, Colour _colour, Material _material)
+Sphere::Sphere(const Vector &_center, const float _radius, const Colour &_colour, const Material &_material)
 {
     SetPosition(_center);
     m_radius = _radius;
@@ -82,7 +82,7 @@ float Sphere::DoIntersection(Vector &_rayOrigin, Vector &_ray) // SpherePrimitiv
     }
 }
 
-Fragment Sphere::GetFragment(Vector &_rayOrigin, Vector &_ray, float _distance)
+Fragment Sphere::GetFragment(Vector &_rayOrigin, Vector &_ray, const float _distance)
 {
     // point of intersection in world space
     Vector point = _ray * _distance + _rayOrigin;

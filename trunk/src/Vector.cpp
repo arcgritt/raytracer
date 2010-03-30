@@ -10,7 +10,7 @@ Vector::Vector()
     m_w = 1.0f;
 }
 
-Vector::Vector(float _x, float _y, float _z)
+Vector::Vector(const float _x, const float _y, const float _z)
 {
     m_x = _x;
     m_y = _y;
@@ -18,7 +18,7 @@ Vector::Vector(float _x, float _y, float _z)
     m_w = 1.0f;
 }
 
-Vector::Vector(float _x, float _y, float _z, float _w)
+Vector::Vector(const float _x, const float _y, const float _z, const float _w)
 {
     m_x = _x;
     m_y = _y;
@@ -110,7 +110,7 @@ float Vector::Dot(const Vector &_v1, const Vector &_v2)
     return (_v1.m_x * _v2.m_x) + (_v1.m_y * _v2.m_y) + (_v1.m_z * _v2.m_z);
 }
 
-std::string Vector::GetDebugInformation()
+const std::string Vector::GetDebugInformation()
 {
     char tmp[256];
     sprintf(tmp, "X: %f, Y: %f, Z: %f, W: %f", m_x, m_y, m_z, m_w);
