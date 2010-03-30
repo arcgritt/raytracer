@@ -8,6 +8,7 @@
 
 #include "Material.h"
 #include "Colour.h"
+#include "Scene.h"
 #include "Vector.h"
 #include "Ray.h"
 
@@ -28,7 +29,7 @@ public:
     static void SceneObjectsInit(std::vector<Material> _materials);
 
 
-    static void RenderScene(SDL_Surface*& _backBuffer, const unsigned int _width, const unsigned int _height);
+    static void RenderScene(SDL_Surface*& _backBuffer, Scene& scene); //const unsigned int _width, const unsigned int _height);
 
     static void RaytraceScene(SDL_Surface*& _backBuffer, const unsigned int _width, const unsigned int _height, Vector& _camera);
 
@@ -49,7 +50,7 @@ public:
 
     //static Colour CalculateColour(Material& _material, float _lightIntensity);
 
-    static Colour CalculateColour(Fragment& _fragment, Vector& _rayVector, Material& _material);
+    static Colour CalculateColour(Fragment& _fragment, Vector& _rayVector);
 private:
 
 };

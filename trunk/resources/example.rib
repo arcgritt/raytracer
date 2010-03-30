@@ -2,7 +2,7 @@
 #GSO 6-22-98
 Display "sphere2.tif" "file" "rgb"
 Format 720 576 1
-Projection "perspective" "fov" [45]
+Projection "perspective" "fov" [90]
 # Translate Camera (moves world origin 6 units towards +Z)
 Translate 0 0 6
 WorldBegin

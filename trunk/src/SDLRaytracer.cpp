@@ -16,41 +16,30 @@
 #include "SDLRaytracer.h"
 #include "MaterialParser.h"
 #include "RIBParser.h"
-#include "Sphere.h"
 #include "Light.h"
 #include "RenderableObject.h"
 
-// something weird with SDL causes this to screw up on Windows unless you have this line
-#undef main
+#ifdef WINDOWS
+    // something weird with SDL causes this to screw up on Windows unless you have this line
+    #undef main
+#endif // #ifdef WINDOWS
 
 
-// DEFINES
 
+/****** DEFINES ******/
 #define DEBUG true
 
-// numbers of each type of object (randomly generated)
-/*#define NUM_SPHERES 20
 
-// use this to change the resolution by a multiple (rather than mess with pixel numbers)
-/*#define RESOLUTION_MULTIPLIER 1
-#define PIXELS_WIDE 1280
-#define PIXELS_HIGH 720*/
-
-
+// TODO: Set this up in the RIB file
 #define NUM_LIGHTS 1
-
 // how many times the algorithm will recurse in order to calculate reflections
 #define MAX_TRACE_DEPTH 5
 // depth of AA - (x*2)^2 samples (1 = 4 samples, 2 = 16 samples, 3 = 64 samples)
 #define FULL_SCENE_ANTI_ALIASING_LEVEL 0
 
-// Vertical field of view of camera. Human eye is 120. Max is 180/aspect ratio
-#define FIELD_OF_VIEW 60
-
 // arbitrary number which stops the surface from intersecting itself due to float rounding errors
 // should be as SMALL as possible, until artifacts start occuring... 0.001 seems to do the trick
 #define LAMBDA 0.001
-
 
 #define PI 3.14159265358979323846264338327950288
 
@@ -181,7 +170,7 @@ int SDLRaytracer::RayTrace(std::string _materialsFile, std::string _ribFile)
 
     const int frame_time = clock();
 
-    SDLRaytracer::RenderScene(backBuffer, scene.GetWidth(), scene.GetHeight());
+    SDLRaytracer::RenderScene(backBuffer, scene);
 
     const int finish_time = clock();
 
@@ -224,12 +213,12 @@ int SDLRaytracer::RayTrace(std::string _materialsFile, std::string _ribFile)
                 case SDLK_LEFT:
                     {
                         cameraXpos-= 5;
-                        SDLRaytracer::RenderScene(backBuffer, scene.GetWidth(), scene.GetHeight());
+                        SDLRaytracer::RenderScene(backBuffer, scene);
                     }
                 case SDLK_RIGHT:
                     {
                         cameraXpos-= 5;
-                        SDLRaytracer::RenderScene(backBuffer, scene.GetWidth(), scene.GetHeight());
+                        SDLRaytracer::RenderScene(backBuffer, scene);
                     }
                 default:
                     {
@@ -278,60 +267,9 @@ bool SDLRaytracer::SDLInit(SDL_Surface *&_backBuffer, const unsigned int _width,
     return true;
 }
 
-Vector SDLRaytracer::CameraInit()
-{
-    const float c_cameraPosition = -0.5/tan((FIELD_OF_VIEW/2)*(PI/180));
-    return Vector(0, 0, c_cameraPosition);
-}
 
-/*void SDLRaytracer::SceneObjectsInit(std::vector<Material> _materials)
-{
-    m_numObjects = _materials.size();
-
-    //RenderableObject* objects = new RenderableObject* [_materials.size()];
-    objects = new RenderableObject* [_materials.size()];
-
-    //std::cout << _materials.size() << std::endl;
-    // Random number generator
-    boost::mt19937 Generator;
-
-
-    boost::uniform_real<float> distributionPos(0.0f, 1.0f);
-    boost::variate_generator<boost::mt19937&, boost::uniform_real<float> > RandPosFloat(Generator, distributionPos);
-
-    boost::uniform_real<float> distribution(-1.0f, 1.0f);
-    boost::variate_generator<boost::mt19937&, boost::uniform_real<float> > RandFloat(Generator, distribution);
-
-
-
-    for(unsigned int i=0; i<_materials.size();i++)
-    {
-        //Material material = ;
-        objects[i] = new Sphere(
-                Vector(RandFloat()*9, RandFloat()*9, RandFloat()*5+30),
-                RandPosFloat()*2+1,
-                _materials[i]
-                );
-    }
-
-    for(unsigned int i=0; i<NUM_LIGHTS;i++)
-    {
-        lights[i] = new Light(
-                Vector(cameraXpos, RandFloat(), 15),
-                0.5f,
-                Material(
-                        Colour(),
-                        0.0f
-                        ),
-                3.0f
-                );
-    }
-}*/
-
-void SDLRaytracer::RenderScene(SDL_Surface *&_backBuffer, unsigned int _width, unsigned int _height) {
-    Vector camera = SDLRaytracer::CameraInit();
-
-    RaytraceScene(_backBuffer, _width, _height, camera);
+void SDLRaytracer::RenderScene(SDL_Surface *&_backBuffer, Scene &_scene) {
+    RaytraceScene(_backBuffer, _scene.GetWidth(), _scene.GetHeight(), _scene.GetCamera());
 }
 
 void SDLRaytracer::RaytraceScene(SDL_Surface *&_backBuffer, unsigned int _width, unsigned int _height, Vector &_camera)
@@ -390,13 +328,6 @@ void SDLRaytracer::RaytraceScene(SDL_Surface *&_backBuffer, unsigned int _width,
 
 #endif // #ifndef FULL_SCENE_ANTI_ALIASING_LEVEL
 
-            /*if(FULL_SCENE_ANTI_ALIASING_LEVEL > 0) {
-                pixelColour
-            }
-            else
-            {
-
-            }*/
             unsigned int pixelColours[4];
             pixelColour.GetColour256(&pixelColours[0]);
 
@@ -512,7 +443,7 @@ Colour SDLRaytracer::RaytraceRay(Vector &_rayOrigin, Ray &_ray, unsigned int _tr
 
 
         // Get the intensity of light which is hitting this object
-        pixel_colour = CalculateColour(pixel_fragment, _ray.GetVector(), objectMaterial);
+        pixel_colour = CalculateColour(pixel_fragment, _ray.GetVector());
         //pixel_colour = CalculateColour(objectMaterial, light_intensity);
 
         if(objectReflectivity == 0.0f || _traceDepth >= MAX_TRACE_DEPTH)
@@ -550,7 +481,7 @@ Colour SDLRaytracer::RaytraceRay(Vector &_rayOrigin, Ray &_ray, unsigned int _tr
 }
 
 
-Colour SDLRaytracer::CalculateColour(Fragment &_fragment, Vector &_rayVector, Material &_material)
+Colour SDLRaytracer::CalculateColour(Fragment &_fragment, Vector &_rayVector)
 {
 #ifdef DEBUG
     m_lightTraces++;

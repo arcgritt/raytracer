@@ -15,7 +15,7 @@ public:
 
     Scene(unsigned int _displayWidth, unsigned int _displayHeight, float _pixelAspectRatio, float _fieldOfView);
 
-    Vector GetCamera() const { return m_camera; }
+    Vector& GetCamera() { return m_camera; }
 
     unsigned int GetWidth() const { return m_displayWidth; }
     unsigned int GetHeight() const { return m_displayHeight; }
