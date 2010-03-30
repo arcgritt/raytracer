@@ -52,8 +52,8 @@ HEADERS += $$HEADERS_DIR/SDLRaytracer.h \
     $$HEADERS_DIR/Raytracer.h \
     $$HEADERS_DIR/MaterialParser.h \
     $$HEADERS_DIR/Scene.h \
-    $$HEADERS_DIR/ObjectParser.h \
-    $$HEADERS_DIR/Parser.h
+    $$HEADERS_DIR/Parser.h \
+    $$HEADERS_DIR/RIBParser.h
 
 # for(file, HEADERS) {
 # HEADERS -= $$file
@@ -74,8 +74,8 @@ SOURCES += $$SOURCES_DIR/SDLRaytracer.cpp \
     $$SOURCES_DIR/Raytracer.cpp \
     $$SOURCES_DIR/MaterialParser.cpp \
     $$SOURCES_DIR/Scene.cpp \
-    $$SOURCES_DIR/ObjectParser.cpp \
-    $$SOURCES_DIR/Parser.cpp
+    $$SOURCES_DIR/Parser.cpp \
+    $$SOURCES_DIR/RIBParser.cpp
 OTHER_FILES += Doxyfile \
     $$RCC_DIR/materials \
-    $$RCC_DIR/objects
+    $$RCC_DIR/example.rib

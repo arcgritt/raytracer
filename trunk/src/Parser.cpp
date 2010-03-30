@@ -1,6 +1,5 @@
 #include "Parser.h"
 
-
 // Boost
 #include "boost/random.hpp"
 #include "boost/lexical_cast.hpp"
@@ -18,6 +17,7 @@ boost::variate_generator<boost::mt19937&, boost::uniform_real<float> > RandFloat
 
 Parser::Parser()
 {
+
 }
 
 tokenizer::iterator Parser::GetTokenIterator(std::string _line)
@@ -69,4 +69,34 @@ float Parser::ParseRand(std::string _token)
     {
         return RandFloat() * multiplier;
     }
+}
+
+std::string Parser::StripBrackets(std::string _string)
+{
+    return _string.substr(1, _string.size()-2);
+}
+
+unsigned int Parser::ParseUnsignedInt(std::string _token)
+{
+    return boost::lexical_cast<unsigned int>(_token);
+}
+
+Vector Parser::ParseVector(tokenizer::iterator &_iterator)
+{
+    // use lexical cast to convert to float then increment the itor
+    float x = ParseFloat(*_iterator++);
+    float y = ParseFloat(*_iterator++);
+    float z = ParseFloat(*_iterator++);
+
+    return Vector(x, y, z);
+}
+
+Colour Parser::ParseColour(tokenizer::iterator &_iterator)
+{
+    // use lexical cast to convert to float then increment the itor
+    float r = ParseFloat(*_iterator++);
+    float g = ParseFloat(*_iterator++);
+    float b = ParseFloat(*_iterator++);
+
+    return Colour(r, g, b);
 }

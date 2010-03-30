@@ -11,17 +11,16 @@ class MaterialParser: public Parser
 public:
     MaterialParser();
 
-    MaterialParser(std::string _filename);
+    //MaterialParser(std::string _filename);
 
-    void ParseFile(std::string _filename);
+    static std::vector<Material> ParseFile(std::string _fileName);
 
-    std::vector<Material> GetMaterials() const { return materials; }
+    //void ParseFile(std::string _filename);
+
+    //std::vector<Material> GetMaterials() const { return materials; }
 
 private:
 
-    std::vector<Material> materials;
-
-    static Colour ParseColour(tokenizer::iterator& _iterator);
 };
 
 #endif // MATERIALPARSER_H

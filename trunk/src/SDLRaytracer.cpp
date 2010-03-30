@@ -1,6 +1,7 @@
 #ifdef WINDOWS
 
 #include <ctime>
+#include <string>
 
 #endif // #ifdef WINDOWS
 
@@ -14,8 +15,10 @@
 // Project
 #include "SDLRaytracer.h"
 #include "MaterialParser.h"
+#include "RIBParser.h"
 #include "Sphere.h"
 #include "Light.h"
+#include "RenderableObject.h"
 
 // something weird with SDL causes this to screw up on Windows unless you have this line
 #undef main
@@ -26,13 +29,15 @@
 #define DEBUG true
 
 // numbers of each type of object (randomly generated)
-#define NUM_SPHERES 20
-#define NUM_LIGHTS 1
+/*#define NUM_SPHERES 20
 
 // use this to change the resolution by a multiple (rather than mess with pixel numbers)
-#define RESOLUTION_MULTIPLIER 1
+/*#define RESOLUTION_MULTIPLIER 1
 #define PIXELS_WIDE 1280
-#define PIXELS_HIGH 720
+#define PIXELS_HIGH 720*/
+
+
+#define NUM_LIGHTS 1
 
 // how many times the algorithm will recurse in order to calculate reflections
 #define MAX_TRACE_DEPTH 5
@@ -65,32 +70,118 @@ unsigned int m_numObjects;
 RenderableObject** objects;
 Light* lights[NUM_LIGHTS];
 
-int main(void)//int argc, char *argv[])
-{
-    MaterialParser materialParser = MaterialParser("../resources/materials");
+std::vector<RenderableObject*> m_objects;
 
-    std::vector<Material> materials = materialParser.GetMaterials();
+int main(int argc, char *argv[])//int argc, char *argv[])
+{
+    int argcount=1; /* argv 1 is the first parameter */
+
+    std::string materialsFile;
+    std::string ribFile;
+
+    while(argcount < argc )
+    {
+        if(strcmp(argv[argcount],"-r") == 0)
+        {
+            ribFile = argv[++argcount];
+            argcount++;
+        }
+        else if(strcmp(argv[argcount],"-m") == 0)
+        {
+            materialsFile = argv[++argcount];
+            argcount++;
+        }
+        else
+        {
+            std::cout << "unknown argument #" << argcount++ << std::endl;
+        }
+    }
+
+    bool exit = false;
+    if(materialsFile.empty())
+    {
+        exit = true;
+        std::cout << "Materials file not specified" << std::endl;
+    }
+
+    if(ribFile.empty())
+    {
+        exit = true;
+        std::cout << "RIB file not specified" << std::endl;
+    }
+
+    if(exit)
+    {
+        std::cout << "Usage: -r \"foo.rib\", -m \"bar\"" << std::endl;
+        return EXIT_FAILURE;
+    }
+
+    std::cout << "Using materials file: " << materialsFile << std::endl;
+    std::cout << "Using RIB file: " << ribFile << std::endl << std::endl;
+
+    return SDLRaytracer::RayTrace(materialsFile, ribFile);
+}
+
+
+int SDLRaytracer::RayTrace(std::string _materialsFile, std::string _ribFile)
+{
+    //MaterialParser materialParser = MaterialParser(_materialsFile);
+
+    MaterialParser materialParser;
+    std::vector<Material> materials = materialParser.ParseFile(_materialsFile);
+
+    RIBParser ribParser;
+    Scene scene = ribParser.ParseFile(_ribFile, materials);
+
+    m_objects = scene.GetObjects();
+
+    //RenderableObject* sphere = scene.GetObjects()[0];
+    //std::cout << sphere->GetPosition().GetDebugInformation() << std::endl;
+
+
+    RenderableObject* object = m_objects[0];
+    m_numObjects = m_objects.size();
+    std::cout << std::endl << "XYNXXFXD" << object->GetPosition().GetDebugInformation() << std::endl;
+    std::cout << "Colour: " << object->GetMaterial().GetDiffuseColour().GetDebugInformation() << std::endl;
+
+    //std::vector<Material> materials = materialParser.GetMaterials();
 
     const int start_time = clock();
 
-    const unsigned int c_width = PIXELS_WIDE*RESOLUTION_MULTIPLIER;
-    const unsigned int c_height = PIXELS_HIGH*RESOLUTION_MULTIPLIER;
+    //const unsigned int c_width = PIXELS_WIDE*RESOLUTION_MULTIPLIER;
+    //const unsigned int c_height = PIXELS_HIGH*RESOLUTION_MULTIPLIER;
     const unsigned int c_bpp = 32;
 
     SDL_Surface* backBuffer;
 
-    if(!SDLRaytracer::SDLInit(backBuffer, c_width, c_height, c_bpp))
+    if(!SDLRaytracer::SDLInit(backBuffer, scene.GetWidth(), scene.GetHeight(), c_bpp))
     {
         std::cerr << "SDL failed to initialise" << std::endl;
     }
 
+    std::cout << "Width: " << scene.GetWidth() << std::endl;
+    std::cout << "Height: " << scene.GetHeight() << std::endl;
 
-    SDLRaytracer::SceneObjectsInit(materials);
+
+    for(unsigned int i=0; i<NUM_LIGHTS;i++)
+    {
+        lights[i] = new Light(
+                Vector(cameraXpos, -5, 15),
+                0.5f,
+                Material(
+                        Colour(),
+                        0.0f
+                        ),
+                3.0f
+                );
+    }
+
+    //SDLRaytracer::SceneObjectsInit(materials);
 
 
     const int frame_time = clock();
 
-    SDLRaytracer::RenderScene(backBuffer, c_width, c_height);
+    SDLRaytracer::RenderScene(backBuffer, scene.GetWidth(), scene.GetHeight());
 
     const int finish_time = clock();
 
@@ -119,29 +210,28 @@ int main(void)//int argc, char *argv[])
         switch (event.type)
         {
             // all keyboard events
-            case SDL_KEYDOWN:
+        case SDL_KEYDOWN:
             {
                 //int key = event.key.keysym.sym;
                 switch (event.key.keysym.sym)
                 {
                     // escape key = quit
-                    case SDLK_ESCAPE:
+                case SDLK_ESCAPE:
                     {
                         quit = true;
-                        //break;
-                    // ALL keys
+                        continue;
                     }
-                    case SDLK_LEFT:
+                case SDLK_LEFT:
                     {
-                           cameraXpos-= 5;
-                           SDLRaytracer::RenderScene(backBuffer, c_width, c_height);
+                        cameraXpos-= 5;
+                        SDLRaytracer::RenderScene(backBuffer, scene.GetWidth(), scene.GetHeight());
                     }
-                    case SDLK_RIGHT:
+                case SDLK_RIGHT:
                     {
-                           cameraXpos-= 5;
-                           SDLRaytracer::RenderScene(backBuffer, c_width, c_height);
+                        cameraXpos-= 5;
+                        SDLRaytracer::RenderScene(backBuffer, scene.GetWidth(), scene.GetHeight());
                     }
-                    default:
+                default:
                     {
                         std::cout << "Key pressed: " << SDL_GetKeyName(event.key.keysym.sym) << std::endl;
                         break;
@@ -151,7 +241,7 @@ int main(void)//int argc, char *argv[])
             }
 
             // close button
-            case SDL_QUIT:
+        case SDL_QUIT:
             {
                 quit = true;
                 break;
@@ -194,14 +284,14 @@ Vector SDLRaytracer::CameraInit()
     return Vector(0, 0, c_cameraPosition);
 }
 
-void SDLRaytracer::SceneObjectsInit(std::vector<Material> _materials)
+/*void SDLRaytracer::SceneObjectsInit(std::vector<Material> _materials)
 {
     m_numObjects = _materials.size();
 
     //RenderableObject* objects = new RenderableObject* [_materials.size()];
     objects = new RenderableObject* [_materials.size()];
 
-     //std::cout << _materials.size() << std::endl;
+    //std::cout << _materials.size() << std::endl;
     // Random number generator
     boost::mt19937 Generator;
 
@@ -236,7 +326,7 @@ void SDLRaytracer::SceneObjectsInit(std::vector<Material> _materials)
                 3.0f
                 );
     }
-}
+}*/
 
 void SDLRaytracer::RenderScene(SDL_Surface *&_backBuffer, unsigned int _width, unsigned int _height) {
     Vector camera = SDLRaytracer::CameraInit();
@@ -395,14 +485,14 @@ Colour SDLRaytracer::RaytraceRay(Vector &_rayOrigin, Ray &_ray, unsigned int _tr
 
     // for each object in scene
     for(unsigned int j=0; j<m_numObjects;j++) {
-        float distance = objects[j]->DoIntersection(_rayOrigin, _ray.GetVector());
+        float distance = m_objects[j]->DoIntersection(_rayOrigin, _ray.GetVector());
 
         // arbitrary number which stops the surface from intersecting itself due to float rounding errors
         // should be as SMALL as possible, until artifacts start occuring... 0.001 seems to do the trick
         if(distance >= LAMBDA) // if there is a hit
         {
             hit = true;
-            _ray.Intersection(distance, *objects[j]);
+            _ray.Intersection(distance, *m_objects[j]);
         }
     }
 
@@ -491,7 +581,7 @@ Colour SDLRaytracer::CalculateColour(Fragment &_fragment, Vector &_rayVector, Ma
 
                 float lightDistance = lightVector.SquareLength();
 
-                float distance = objects[j]->DoIntersection(surfacePoint, lightVector);
+                float distance = m_objects[j]->DoIntersection(surfacePoint, lightVector);
 
                 // 'hard' shadows
                 if(distance >= LAMBDA && // if there is a hit
@@ -594,7 +684,8 @@ Colour SDLRaytracer::CalculateColour(Fragment &_fragment, Vector &_rayVector, Ma
     _lightIntensity = 1/_lightIntensity;
 
     float pixelColours[4];
-    _material.GetDiffuseColour().GetColour(&pixelColours[0]);
+    //_material.GetDiffuseColour().GetColour(&pixelColours[0]);
+    _fragment.GetColour().GetColour(&pixelColours[0]);
     float r_base = pixelColours[0];
     float g_base = pixelColours[1];
     float b_base = pixelColours[2];

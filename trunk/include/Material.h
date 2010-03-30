@@ -8,7 +8,9 @@ class Material
 public:
     Material();
     Material(const Colour& _colour, const float _reflectivity);
-    Material(const Colour& _diffuseColour, const Colour& _specularColour, const float _specularIntensity, const float _specularExponent, const float _reflectivity);
+    Material(std::string _materialName, const Colour& _diffuseColour, const Colour& _specularColour, const float _specularIntensity, const float _specularExponent, const float _reflectivity);
+
+    std::string GetName() const { return c_materialName; }
     Colour GetDiffuseColour() const { return c_diffuseColour; }
     Colour GetSpecularColour() const { return c_specularColour; }
     float GetSpecularIntensity() const { return c_specularIntensity; }
@@ -19,6 +21,7 @@ public:
 
    // void setReflectivity()
 private:
+    std::string c_materialName;
     Colour c_diffuseColour;
     Colour c_specularColour;
     float c_specularIntensity;

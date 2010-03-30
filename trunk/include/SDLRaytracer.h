@@ -17,6 +17,8 @@ class SDLRaytracer
 public:
     SDLRaytracer();
 
+    static int RayTrace(std::string _materialsFile, std::string _ribFile);
+
 
     static bool SDLInit(SDL_Surface*& _backBuffer, const unsigned int _width, const unsigned int _height, const unsigned int _bpp);
 

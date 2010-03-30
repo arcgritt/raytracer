@@ -23,8 +23,9 @@ Material::Material(const Colour& _colour, const float _reflectivity)
     c_reflectivity = _reflectivity;
 }
 
-Material::Material(const Colour &_diffuseColour, const Colour &_specularColour, float _specularIntensity, float _specularExponent, float _reflectivity)
+Material::Material(std::string _materialName, const Colour &_diffuseColour, const Colour &_specularColour, float _specularIntensity, float _specularExponent, float _reflectivity)
 {
+    c_materialName = _materialName;
     c_diffuseColour = _diffuseColour;
     c_specularColour = _specularColour;
     c_specularIntensity = _specularIntensity;

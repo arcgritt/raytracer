@@ -1,13 +1,13 @@
 # Only blank lines and comments allowed
 
 
-Material testMaterial
+Material plastic
 
-DiffuseColour       rand 0.2 0.5
+DiffuseColour       1 1 1
 SpecularColour      0.1 0.4 rand
 SpecularIntensity   rand*10
 SpecularExponent    20
-Reflectivity        rand
+Reflectivity        0.7
 
 
 Material testMaterial2

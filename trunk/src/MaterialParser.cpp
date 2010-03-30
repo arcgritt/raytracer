@@ -10,13 +10,16 @@ MaterialParser::MaterialParser()
 
 }
 
-MaterialParser::MaterialParser(std::string _fileName)
+/*
+std::vector<Material> MaterialParser::MaterialParser(std::string _filename)
 {
-    MaterialParser::ParseFile(_fileName);
+    return MaterialParser::ParseFile(_filename);
 }
-
-void MaterialParser::ParseFile(std::string _filename)
+*/
+std::vector<Material> MaterialParser::ParseFile(std::string _filename)
 {
+    std::vector<Material> materials;
+
     std::ifstream materialsFile;
     materialsFile.open(_filename.data());
 
@@ -55,8 +58,8 @@ void MaterialParser::ParseFile(std::string _filename)
                     // if not the first material being parsed, save the previous material
                     if(materialsCount != 0)
                     {
-                        material = Material(diffuseColour, specularColour, specularIntensity, specularExponent, materialReflectivity);
-                        std::cout << "New Material set: " << materialName << std::endl << material.GetDebugInformation() << std::endl;
+                        material = Material(materialName, diffuseColour, specularColour, specularIntensity, specularExponent, materialReflectivity);
+                        //std::cout << "New Material set: " << materialName << std::endl << material.GetDebugInformation() << std::endl;
                         materials.push_back(material);
                     }
 
@@ -100,8 +103,8 @@ void MaterialParser::ParseFile(std::string _filename)
         } // while (not end of file) loop
 
         // add the last material
-        material = Material(diffuseColour, specularColour, specularIntensity, specularExponent, materialReflectivity);
-        std::cout << "New Material set: " << materialName << std::endl << material.GetDebugInformation() << std::endl;
+        material = Material(materialName, diffuseColour, specularColour, specularIntensity, specularExponent, materialReflectivity);
+        //std::cout << "New Material set: " << materialName << std::endl << material.GetDebugInformation() << std::endl;
         materials.push_back(material);
 
         // close the file
@@ -112,14 +115,6 @@ void MaterialParser::ParseFile(std::string _filename)
     {
         std::cout << "Failed to read materials file" << std::endl;
     }
-}
 
-Colour MaterialParser::ParseColour(tokenizer::iterator &_iterator)
-{
-    // use lexical cast to convert to float then increment the itor
-    float r = ParseFloat(*_iterator++);
-    float g = ParseFloat(*_iterator++);
-    float b = ParseFloat(*_iterator);
-
-    return Colour(r, g, b);
+    return materials;
 }

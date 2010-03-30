@@ -16,10 +16,11 @@ Sphere::Sphere(Vector _center, float _radius)
     m_radius = _radius;
 }
 
-Sphere::Sphere(Vector _center, float _radius, Material _material)
+Sphere::Sphere(Vector _center, float _radius, Colour _colour, Material _material)
 {
     SetPosition(_center);
     m_radius = _radius;
+    SetColour(_colour);
     SetMaterial(_material);
 }
 
@@ -103,5 +104,5 @@ Fragment Sphere::GetFragment(Vector &_rayOrigin, Vector &_ray, float _distance)
 
     normal.Normalise();
 
-    return Fragment(point, normal, reverseNormal, GetMaterial());
+    return Fragment(point, normal, reverseNormal, GetColour(), GetMaterial());
 }
