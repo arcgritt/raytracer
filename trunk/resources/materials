@@ -1,37 +1,34 @@
 # Only blank lines and comments allowed
 
+Material cheese
+
+DiffuseColour       1 1 0
+SpecularColour      1 1 0
+SpecularIntensity   10.05
+SpecularExponent    15.51
+Reflectivity        0.5
+
 
 Material plastic
 
 DiffuseColour       1 1 1
-SpecularColour      0.1 0.4 rand
-SpecularIntensity   rand*10
-SpecularExponent    20
-Reflectivity        0.7
-
-
-Material testMaterial2
-
-DiffuseColour       rand rand rand
-SpecularColour      0.1 0.4 rand
-SpecularIntensity   rand*10
-SpecularExponent    rand*40
+SpecularColour      1 1 1
+SpecularIntensity   10.05
+SpecularExponent    15.51
 Reflectivity        0.5
 
+Material goldanodisedaluminium
 
-Material testMaterial2
-
-DiffuseColour       rand rand rand
-SpecularColour      0.1 0.4 rand
-SpecularIntensity   rand*10
-SpecularExponent    rand*40
+DiffuseColour       1 1 0.05
+SpecularColour      0.9 0.9 0.1
+SpecularIntensity   5
+SpecularExponent    15.51
 Reflectivity        0.5
 
+Material glass
 
-Material testMaterial2
-
-DiffuseColour       rand rand rand
-SpecularColour      0.1 0.4 rand
+DiffuseColour       0.9 0.9 0.9
+SpecularColour      0.9 0.9 0.9
 SpecularIntensity   rand*10
 SpecularExponent    rand*40
-Reflectivity        0.5
+Reflectivity        0.97

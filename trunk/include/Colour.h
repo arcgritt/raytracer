@@ -30,9 +30,17 @@ public:
     /// @param[in] _colour  float[4] to return colour information in
     void GetColour(float* _colour);
 
+    void Floor();
+
+    void Ceil();
+
     /// \brief
     /// @param[in] _colour  unsigned int[4] to return colour information in
     void GetColour256(unsigned int* _colour);
+
+    //void operator+(Colour& _colour);
+
+    Colour operator+(Colour& _colour);
 
     /// \brief Adds this colour and the input colour
     /// @param[in] _colour  colour to be added
@@ -46,6 +54,9 @@ public:
     /// \brief Multiplies this colour by a float value
     /// @param[in] _multiplier  amount to multiply this colour by
     void operator*=(float _multiplier);
+
+
+    void operator/=(float _multiplier);
 
     /// \brief Determines the average of two colours. Input order is irrelevant
     /// @param[in] _colour1 the first colour

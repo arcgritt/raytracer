@@ -40,6 +40,22 @@ void Colour::GetColour(float *_colour)
     _colour[3] = m_a;
 }
 
+void Colour::Floor()
+{
+    m_r = std::max(0.0f, m_r);
+    m_g = std::max(0.0f, m_g);
+    m_b = std::max(0.0f, m_b);
+    m_a = std::max(0.0f, m_a);
+}
+
+void Colour::Ceil()
+{
+    m_r = std::min(1.0f, m_r);
+    m_g = std::min(1.0f, m_g);
+    m_b = std::min(1.0f, m_b);
+    m_a = std::min(1.0f, m_a);
+}
+
 void Colour::GetColour256(unsigned int *_colour)
 {
     assert(
@@ -52,6 +68,16 @@ void Colour::GetColour256(unsigned int *_colour)
     _colour[1] = 255*m_g;
     _colour[2] = 255*m_b;
     _colour[3] = 255*m_a;
+}
+
+Colour Colour::operator+(Colour &_colour)
+{
+    float r = m_r+_colour.m_r;
+    float g = m_g+_colour.m_g;
+    float b = m_b+_colour.m_b;
+    float a = m_a+_colour.m_a;
+
+    return Colour(r,g,b,a);
 }
 
 void Colour::operator+=(Colour &_colour)
@@ -77,6 +103,15 @@ void Colour::operator*=(float _multiplier)
     m_b *= _multiplier;
     m_a *= _multiplier;
 }
+
+void Colour::operator/=(float _multiplier)
+{
+    m_r /= _multiplier;
+    m_g /= _multiplier;
+    m_b /= _multiplier;
+    m_a /= _multiplier;
+}
+
 
 Colour Colour::Average(Colour &_colour1, Colour &_colour2)
 {

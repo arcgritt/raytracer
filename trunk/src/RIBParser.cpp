@@ -28,8 +28,9 @@ Material& RIBParser::GetMaterialByName(std::string _materialName)
         Material& material = m_materials[i];//.GetDebugInformation;
         //std::cout << material.GetDebugInformation() << std::endl;
 
-        if(material.GetName() == _materialName)
+        if(!material.GetName().compare(_materialName))
         {
+            //std::cout << material.GetDebugInformation();
             return material;
         }
     }

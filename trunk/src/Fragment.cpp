@@ -10,5 +10,5 @@ Fragment::Fragment(const Vector& _position, const Vector& _normal, const Vector 
     c_normal = _normal;
     c_reverseNormal = _reverseNormal;
     c_colour = _colour;
-    c_material = &_material;
+    c_material = _material;
 }

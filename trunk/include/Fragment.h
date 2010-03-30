@@ -31,14 +31,14 @@ public:
 
     /// \brief
     /// \returns a pointer to the material of the object of this pixel fragment
-    const Material* GetMaterial() const { return c_material; }
+    Material GetMaterial() const { return c_material; }
 
 private:
     Vector c_position;
     Vector c_normal;
     Vector c_reverseNormal;
     Colour c_colour;
-    const Material* c_material;
+    Material c_material;
 };
 
 #endif // FRAGMENT_H

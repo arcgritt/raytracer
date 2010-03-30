@@ -1,48 +1,62 @@
 #Sphere2.rib
 #GSO 6-22-98
 Display "sphere2.tif" "file" "rgb"
-Format 720 576 1
+Format 1280 720 1
 Projection "perspective" "fov" [90]
 # Translate Camera (moves world origin 6 units towards +Z)
 Translate 0 0 6
 WorldBegin
   LightSource "ambientlight" 1 "intensity" [0.2]
   LightSource "distantlight" 2 "intensity" [1.2]"from" [0 0 -6]"to" [0 0 0]
+
 # Define a red plastic unit sphere at 0 0 0 and translate -2 along X
   Color 1.0 0.0 0.0
-  Surface "plastic"
+  Surface "testMaterial2"
   Translate -2.12345 -5 30
   Sphere 1 -1 1 360
+
 # Define a green plastic unit sphere at 0 0 0 and translate +4 along X
   Color 0.0 1.0 0.0
   Surface "plastic"
   Translate 4.0 0 30
   Sphere 1 -1 1 360
+
   Color rand rand rand
   Translate rand*-10 rand*-10 30
-  Sphere rand*2 -1 1 360
+  Sphere rand*4 -1 1 360
+
   Color rand rand rand
   Translate rand*-10 rand*-10 30
-  Sphere rand*2 -1 1 360
+  Sphere rand*4 -1 1 360
+
   Color rand rand rand
   Translate rand*-10 rand*-10 30
-  Sphere rand*2 -1 1 360
+  Sphere rand*4 -1 1 360
+
   Color rand rand rand
   Translate rand*-10 rand*-10 30
-  Sphere rand*2 -1 1 360
+  Sphere rand*4 -1 1 360
+
+  Surface "goldanodisedaluminium"
   Color rand rand rand
   Translate rand*-10 rand*-10 30
-  Sphere rand*2 -1 1 360
+  Sphere rand*4 -1 1 360
+
   Color rand rand rand
   Translate rand*-10 rand*-10 30
-  Sphere rand*2 -1 1 360
+  Sphere rand*4 -1 1 360
+
   Color rand rand rand
   Translate rand*-10 rand*-10 30
-  Sphere rand*2 -1 1 360
+  Sphere rand*4 -1 1 360
+
   Color rand rand rand
   Translate rand*-10 rand*-10 30
-  Sphere rand*2 -1 1 360
+  Sphere rand*4 -1 1 360
+
+  Surface "goldanodisedaluminium"
   Color rand rand rand
   Translate rand*-10 rand*-10 30
-  Sphere rand*2 -1 1 360
+  Sphere rand*4 -1 1 360
+
 WorldEnd

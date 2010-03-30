@@ -38,6 +38,8 @@ std::string Material::GetDebugInformation()
     char* temp = new char[32];
 
     std::string debugInfo;
+
+    debugInfo += "Material Name: " + c_materialName + "\n";
     debugInfo += "Diffuse Colour: " + c_diffuseColour.GetDebugInformation() + "\n";
     debugInfo += "Specular Colour: " + c_specularColour.GetDebugInformation() + "\n";
 
