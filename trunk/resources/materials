@@ -29,6 +29,6 @@ Material glass
 
 DiffuseColour       0.9 0.9 0.9
 SpecularColour      0.9 0.9 0.9
-SpecularIntensity   rand*10
-SpecularExponent    rand*40
-Reflectivity        0.97
+SpecularIntensity   .5
+SpecularExponent    40
+Reflectivity        0.7

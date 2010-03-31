@@ -93,6 +93,16 @@ Vector Vector::operator*(const float _multiplier)
             );
 }
 
+Vector Vector::operator/(const float _divisor)
+{
+    return Vector(
+            m_x * _divisor,
+            m_y * _divisor,
+            m_z * _divisor,
+            m_w
+            );
+}
+
 Vector Vector::Cross(const Vector &_v1, const Vector &_v2)
 {
     const float v_x = (_v1.m_y * _v2.m_z) - (_v1.m_z * _v2.m_y);

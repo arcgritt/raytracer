@@ -22,7 +22,6 @@ public:
     /// \returns the radius of the sphere
     float GetRadius() const { return m_radius; }
 
-
     /// \brief sets the radius of the sphere
     /// @param[in] _radius      the radius of the sphere
     void SetRadius(const float _radius) { m_radius = _radius; }

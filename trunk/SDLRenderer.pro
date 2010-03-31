@@ -13,7 +13,6 @@ SOURCES_DIR = $$BASE_DIR/src
 # So that you can put "Sphere.h" instead of "include/Sphere.h"
 INCLUDEPATH += $$HEADERS_DIR
 
-# VPATH += $$SOURCES_DIR
 # SDL
 LIBS += -lSDL
 LIBS += -lSDLmain
@@ -27,8 +26,6 @@ unix: {
     LIBS += -L \
         $$(HOME)/lib/SDL/lib
 }
-
-# INCLUDEPATH += $$(HOME)/lib/Boost
 win32: { 
     DEFINES += WINDOWS
     INCLUDEPATH += C:\lib\SDL-1.2.14\include
@@ -52,13 +49,8 @@ HEADERS += $$HEADERS_DIR/SDLRaytracer.h \
     $$HEADERS_DIR/MaterialParser.h \
     $$HEADERS_DIR/Scene.h \
     $$HEADERS_DIR/Parser.h \
-    $$HEADERS_DIR/RIBParser.h
-
-# for(file, HEADERS) {
-# HEADERS -= $$file
-# HEADERS += $$HEADERS_DIR/$$file
-# }
-# The headers cheat thing doesn't work with sources for some reason
+    $$HEADERS_DIR/RIBParser.h \
+    include/Triangle.h
 SOURCES += $$SOURCES_DIR/SDLRaytracer.cpp \
     $$SOURCES_DIR/Box.cpp \
     $$SOURCES_DIR/Vector.cpp \
@@ -73,7 +65,8 @@ SOURCES += $$SOURCES_DIR/SDLRaytracer.cpp \
     $$SOURCES_DIR/MaterialParser.cpp \
     $$SOURCES_DIR/Scene.cpp \
     $$SOURCES_DIR/Parser.cpp \
-    $$SOURCES_DIR/RIBParser.cpp
+    $$SOURCES_DIR/RIBParser.cpp \
+    src/Triangle.cpp
 OTHER_FILES += Doxyfile \
     $$RCC_DIR/materials \
     $$RCC_DIR/example.rib

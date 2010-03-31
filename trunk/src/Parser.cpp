@@ -14,16 +14,10 @@ boost::variate_generator<boost::mt19937&, boost::uniform_real<float> > RandPosFl
 boost::uniform_real<float> distribution(-1.0f, 1.0f);
 boost::variate_generator<boost::mt19937&, boost::uniform_real<float> > RandFloat(Generator, distribution);
 
-
-Parser::Parser()
-{
-
-}
-
-tokenizer::iterator Parser::GetTokenIterator(const std::string &_line)
+tokenizer::iterator Parser::GetTokenIterator(const std::string &_string)
 {
     // now tokenize the line
-    tokenizer tokens(_line, sep);
+    tokenizer tokens(_string, sep);
 
     // and get the first token
     tokenizer::iterator tokenIterator = tokens.begin();
@@ -49,9 +43,11 @@ float Parser::ParseRand(const std::string &_token)
 {
     bool positive = false;
     unsigned int splitPos = _token.find("*-");
+    // if it doesn't have "*-" in it
     if(splitPos == _token.npos)
     {
         splitPos = _token.find("*");
+        // if it doesn't have "*" in it
         if(splitPos == _token.npos)
         {
             return RandPosFloat();
@@ -61,10 +57,13 @@ float Parser::ParseRand(const std::string &_token)
 
     std::string substr = _token.substr(splitPos+1, _token.npos);
     float multiplier = boost::lexical_cast<float>(substr);
+
+    // must have just "*" in it
     if(positive)
     {
         return RandPosFloat() * multiplier;
     }
+    // must have "*-" in it
     else
     {
         return RandFloat() * multiplier;

@@ -55,10 +55,14 @@ public:
     /// \returns a new vector which is equal to this vector minus the input vector
     Vector operator-(const Vector& _v);
 
-    /// \brief returns a new vector which is equal to this vector multiplied by a floating point value
+    /// \brief returns a new vector which is equal to this vector multiplied by the specified floating point value
     /// @param[in] _multiplier the value to multiply this vector by
-    /// \returns a new vector which is equal to this vector multiplied by a floating point value
+    /// \returns a new vector which is equal to this vector multiplied by by the specified floating point value
     Vector operator*(const float _multiplier);
+
+    /// \brief returns a new vector which is equal to this vector divided by the specified floating point value
+    /// \returns a new vector which is equal to this vector divided by the specified floating point value
+    Vector operator/(const float _divisor);
 
     /// \brief returns the cross product of the two input vectors
     /// @param[in] _v1 the first vector
