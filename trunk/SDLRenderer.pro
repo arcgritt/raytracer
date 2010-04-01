@@ -36,7 +36,6 @@ win32: {
     CONFIG += console
 }
 HEADERS += $$HEADERS_DIR/SDLRaytracer.h \
-    $$HEADERS_DIR/Box.h \
     $$HEADERS_DIR/Vector.h \
     $$HEADERS_DIR/Colour.h \
     $$HEADERS_DIR/Sphere.h \
@@ -45,14 +44,12 @@ HEADERS += $$HEADERS_DIR/SDLRaytracer.h \
     $$HEADERS_DIR/Material.h \
     $$HEADERS_DIR/Fragment.h \
     $$HEADERS_DIR/Light.h \
-    $$HEADERS_DIR/Plane.h \
     $$HEADERS_DIR/MaterialParser.h \
     $$HEADERS_DIR/Scene.h \
     $$HEADERS_DIR/Parser.h \
     $$HEADERS_DIR/RIBParser.h \
-    include/Triangle.h
+    $$HEADERS_DIR/Triangle.h
 SOURCES += $$SOURCES_DIR/SDLRaytracer.cpp \
-    $$SOURCES_DIR/Box.cpp \
     $$SOURCES_DIR/Vector.cpp \
     $$SOURCES_DIR/Colour.cpp \
     $$SOURCES_DIR/Sphere.cpp \
@@ -61,12 +58,11 @@ SOURCES += $$SOURCES_DIR/SDLRaytracer.cpp \
     $$SOURCES_DIR/Material.cpp \
     $$SOURCES_DIR/Fragment.cpp \
     $$SOURCES_DIR/Light.cpp \
-    $$SOURCES_DIR/Plane.cpp \
     $$SOURCES_DIR/MaterialParser.cpp \
     $$SOURCES_DIR/Scene.cpp \
     $$SOURCES_DIR/Parser.cpp \
     $$SOURCES_DIR/RIBParser.cpp \
-    src/Triangle.cpp
+    $$SOURCES_DIR/Triangle.cpp
 OTHER_FILES += Doxyfile \
     $$RCC_DIR/materials \
     $$RCC_DIR/example.rib
