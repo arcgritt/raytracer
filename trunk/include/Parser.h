@@ -24,7 +24,7 @@ typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
 
 class Parser
 {
-protected:
+public:
     /// \brief Returns a token iterator positioned at the first token
     /// @param[in] _line       the string to tokenise and return as an iterator
     /// \returns a token iterator positioned at the first token

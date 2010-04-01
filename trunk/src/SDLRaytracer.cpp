@@ -8,11 +8,12 @@
 #include "SDL/SDL.h"
 
 // Project
+#include "SDLRaytracer.h"
+
 #include "Light.h"
 #include "MaterialParser.h"
 #include "RenderableObject.h"
 #include "RIBParser.h"
-#include "SDLRaytracer.h"
 #include "Triangle.h"
 
 
@@ -25,7 +26,6 @@
 /****** DEFINES ******/
 //#define DEBUG
 
-
 // how many times the algorithm will recurse in order to calculate reflections
 #define MAX_TRACE_DEPTH 5000
 // depth of AA - (x*2)^2 samples (1 = 4 samples, 2 = 16 samples, 3 = 64 samples)
@@ -37,6 +37,7 @@
 
 #define PI 3.14159265358979323846264338327950288
 
+unsigned int fsaaLevel = FULL_SCENE_ANTI_ALIASING_LEVEL;
 
 #ifdef DEBUG
 
@@ -64,6 +65,11 @@ int main(int argc, char *argv[])//int argc, char *argv[])
         else if(strcmp(argv[argcount],"-m") == 0)
         {
             materialsFile = argv[++argcount];
+            argcount++;
+        }
+        else if(strcmp(argv[argcount], "-aa") == 0)
+        {
+            fsaaLevel = Parser::ParseUnsignedInt(argv[++argcount]);
             argcount++;
         }
         else
@@ -107,31 +113,24 @@ int SDLRaytracer::InitScene(std::string _materialsFile, std::string _ribFile)
     RIBParser ribParser;
     Scene scene = ribParser.ParseFile(_ribFile, materials);
 
-   /* scene.AddLight(Light(
-            Vector(-7, 0, 15),
-            0.5f,
-            Material(),
-            10.0f
-            ));
-*/
-    /*
+    Material mat = scene.GetObjects()[0]->GetMaterial();
 
-    m_objects.push_back(new Triangle(
+    /*
+    scene.AddObject(new Triangle(
             Vector(0, 5, 30),
             Vector(-5, -10, 30),
             Vector(5, -10, 30),
-            m_objects[0]->GetColour(),
-            m_objects[0]->GetMaterial()
+            Colour(0,1,0),
+            mat
             ));
 
-    m_objects.push_back(new Triangle(
+    scene.AddObject(new Triangle(
             Vector(0, 5, 30),
             Vector(-5, -10, 30),
             Vector(-5, 5, 30),
-            m_objects[0]->GetColour(),
-            m_objects[0]->GetMaterial()
+            Colour(0,1,0),
+            mat
             ));
-
     // */
 
     /*m_objects.push_back(new Triangle(
@@ -343,7 +342,7 @@ void SDLRaytracer::RaytraceScene(SDL_Surface *&_backBuffer, Scene &_scene)
 #endif // #ifdef DEBUG
 
     // number of samples in an orthagonal direction
-    const unsigned int fsaaAxisSamples = pow(2, FULL_SCENE_ANTI_ALIASING_LEVEL); // * 2;
+    const unsigned int fsaaAxisSamples = pow(2, fsaaLevel); // * 2;
 
     // total number of samples
     unsigned int fsaaSamples = fsaaAxisSamples * fsaaAxisSamples;
