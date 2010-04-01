@@ -20,7 +20,7 @@
 /// v1.0 - Assignment submission version
 
 /// \class RIBParser
-/// \brief Parses an input RIB file and generates RenderableObject objects. Assigns the appropriate materials to these objects
+/// \brief Parses an input RIB file and generates RenderableObject objects. Assigns the appropriate materials to these objects. Inherits from Parser.
 /// \todo
 
 typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
@@ -55,6 +55,15 @@ private:
     /// @param[in] _scene           the scene to add objects and lights to
     static void ParseWorld(std::ifstream& _ribFileStream, Scene& _scene);
 
+    /// \brief Processes a the information specified along with a point light
+    /// @param[in] _iterator        the iterator containing the strings
+    /// \returns a light at the specified position and intensity
+    static Light ParsePointLight(tokenizer::iterator& _iterator);
+
+    /// \brief Processes a the information specified along with an ambient light
+    /// @param[in] _iterator        the iterator containing the strings
+    /// \returns the intensity of the ambient light source
+    static float ParseAmbientLight(tokenizer::iterator& _iterator);
 };
 
 #endif // RIBPARSER_H

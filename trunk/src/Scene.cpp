@@ -16,6 +16,7 @@ Scene::Scene(const unsigned int _displayWidth, const unsigned int _displayHeight
     SetDimensions(_displayWidth, _displayHeight);
     m_pixelAspectRatio = _pixelAspectRatio; // does nothing ATM
     SetCamera(_fieldOfView);
+    m_ambient = 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

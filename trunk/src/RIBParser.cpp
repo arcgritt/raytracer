@@ -134,8 +134,6 @@ Scene RIBParser::ParseHeader(std::ifstream &_ribFileStream)
 //----------------------------------------------------------------------------------------------------------------------
 void RIBParser::ParseWorld(std::ifstream &_ribFileStream, Scene& _scene)
 {
-    std::vector<RenderableObject*> objects;
-
     std::string materialName;
     Colour colour;
     Material material;
@@ -171,11 +169,29 @@ void RIBParser::ParseWorld(std::ifstream &_ribFileStream, Scene& _scene)
             {
                 translate = ParseVector(tokenIterator);
             }
+            /* FINAL TYPES - OBJECTS OR LIGHTS */
             else if(typeName == "Sphere")
             {
                 float radius = ParseFloat(*tokenIterator++);
                 _scene.AddObject(new Sphere(translate, radius, colour, GetMaterialByName(materialName)));
             }
+            else if(typeName == "LightSource")
+            {
+                std::string lightType = StripBrackets(*tokenIterator++);
+                if(lightType == "pointlight")
+                {
+                    _scene.AddLight(ParsePointLight(tokenIterator));
+                }
+                else if(lightType == "ambientlight")
+                {
+                    _scene.SetAmbient(ParseAmbientLight(tokenIterator));
+                }
+                else
+                {
+                    std::cout << "Error: unrecognised light type: " << lightType << std::endl;
+                }
+            }
+            /* Comments or termination string */
             else if(typeName == "#")
             {
                 // is a comment
@@ -193,4 +209,28 @@ void RIBParser::ParseWorld(std::ifstream &_ribFileStream, Scene& _scene)
     } // while (not end of file) loop
 }
 
+Light RIBParser::ParsePointLight(tokenizer::iterator &_iterator)
+{
+    const float radius = ParseFloat(*_iterator++);
 
+    _iterator++; // "intensity"
+    const unsigned int intensity = ParseUnsignedInt(*_iterator++);
+
+    _iterator++; // "from"
+    const Vector position = ParseVector(_iterator);
+
+    const Material lightMaterial = Material("pointlight", Colour(1.0f, 1.0f, 1.0f), Colour(1.0f, 1.0f, 1.0f), 50, 50, 0.0f);
+    Light light = Light(position, radius, lightMaterial, intensity);
+    std::cout << intensity << std::endl;
+    return light;
+}
+
+float RIBParser::ParseAmbientLight(tokenizer::iterator &_iterator)
+{
+    //const float radius = ParseFloat(*_iterator++);
+    _iterator++; // radius
+
+    _iterator++; // "intensity"
+    const float intensity = ParseFloat(StripBrackets(*_iterator));
+    return intensity;
+}

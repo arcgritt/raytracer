@@ -69,6 +69,14 @@ public:
     /// \brief Returns an std::vector containing the scene's objects
     /// \returns an std::vector containing the scene's objects
     std::vector<RenderableObject*>& GetObjects() { return m_objects; }
+
+    /// \brief Sets the ambient value to the input value
+    /// @param[in] _ambient     the value to set the ambient to
+    void SetAmbient(const float _ambient) { m_ambient = _ambient; }
+
+    /// \brief Returns the intensity of ambient light in the scene
+    /// \returns the intensity of ambient light in the scene
+    float GetAmbient() const { return m_ambient; }
 private:
     /// Width of the scene, in pixels
     unsigned int m_displayWidth;
@@ -90,6 +98,9 @@ private:
 
     /// Lights in the scene
     std::vector<Light> m_lights;
+
+    /// Ambient lighting multiplier in the scene
+    float m_ambient;
 
 private:
     /// \brief sets the position of the scene's camera based on the input field of view

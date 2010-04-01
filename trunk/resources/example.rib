@@ -6,8 +6,11 @@ Projection "perspective" "fov" [90]
 # Translate Camera (moves world origin 6 units towards +Z)
 Translate 0 0 6
 WorldBegin
-  LightSource "ambientlight" 1 "intensity" [0.2]
-  LightSource "distantlight" 2 "intensity" [1.2]"from" [0 0 -6]"to" [0 0 0]
+  LightSource "ambientlight" 1 "intensity" [0.3]
+  LightSource "pointlight" 0.1 "intensity" 1 "from" -15 0 30
+  #LightSource "pointlight" 0.1 "intensity" 3 "from" 50 0 30
+ # LightSource "pointlight" 0.1 "intensity" 1 "from" 0 -40 0
+
 
 # Define a red plastic unit sphere at 0 0 0 and translate -2 along X
   Color 1.0 0.0 0.0

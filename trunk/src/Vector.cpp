@@ -1,6 +1,8 @@
 #include "Vector.h"
+
 #include <stdio.h>
 #include <cmath>
+#include <assert.h>
 
 //----------------------------------------------------------------------------------------------------------------------
 Vector::Vector()
@@ -125,6 +127,12 @@ Vector Vector::Cross(const Vector &_v1, const Vector &_v2)
 //----------------------------------------------------------------------------------------------------------------------
 float Vector::Dot(const Vector &_v1, const Vector &_v2)
 {
+    /*const float _v1Length = _v1.m_x*_v1.m_x + _v1.m_y*_v1.m_y + _v1.m_z*_v1.m_z;
+    const float _v2Length = _v2.m_x*_v2.m_x + _v2.m_y*_v2.m_y + _v2.m_z*_v2.m_z;
+
+    assert(_v1Length > 0.99 && _v1Length < 1.01 &&
+           _v2Length > 0.99 && _v2Length < 1.01
+           );*/
     return (_v1.m_x * _v2.m_x) + (_v1.m_y * _v2.m_y) + (_v1.m_z * _v2.m_z);
 }
 

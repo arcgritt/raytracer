@@ -14,7 +14,7 @@
 /// v1.0 - Assignment submission version
 
 /// \class MaterialParser
-/// \brief Parses a materials file and generates Material objects
+/// \brief Parses a materials file and generates Material objects. Inherits from Parser.
 /// \todo
 
 class MaterialParser: public Parser

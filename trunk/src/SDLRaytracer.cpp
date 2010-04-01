@@ -27,7 +27,7 @@
 
 
 // how many times the algorithm will recurse in order to calculate reflections
-#define MAX_TRACE_DEPTH 5
+#define MAX_TRACE_DEPTH 5000
 // depth of AA - (x*2)^2 samples (1 = 4 samples, 2 = 16 samples, 3 = 64 samples)
 #define FULL_SCENE_ANTI_ALIASING_LEVEL 0
 
@@ -107,13 +107,13 @@ int SDLRaytracer::InitScene(std::string _materialsFile, std::string _ribFile)
     RIBParser ribParser;
     Scene scene = ribParser.ParseFile(_ribFile, materials);
 
-    scene.AddLight(Light(
+   /* scene.AddLight(Light(
             Vector(-7, 0, 15),
             0.5f,
             Material(),
             10.0f
             ));
-
+*/
     /*
 
     m_objects.push_back(new Triangle(
@@ -241,8 +241,8 @@ int SDLRaytracer::InitScene(std::string _materialsFile, std::string _ribFile)
     const int finish_time = clock();
 
 
-    printf("Render time: %3.2f seconds\n", difftime(finish_time, start_time)/CLOCKS_PER_SEC);
-    printf("Draw time: %3.2f seconds\n", difftime(finish_time, frame_time)/CLOCKS_PER_SEC);
+    printf("Total time: %3.2f seconds\n", difftime(finish_time, start_time)/CLOCKS_PER_SEC);
+    printf("Render time: %3.2f seconds\n", difftime(finish_time, frame_time)/CLOCKS_PER_SEC);
 
 #ifdef DEBUG
     std::cout << "Ray Traces: " << m_rayIntersections << std::endl;
@@ -404,7 +404,7 @@ Colour SDLRaytracer::FSAARaytracePixel(
             // save it to Ray object
             Ray cameraRay = Ray(currDirection);
             // trace it, with 0 trace depth because it is the camera/eye ray
-            pixelColours[x*_fsaaAxisSamples + y] = RaytraceRay(_scene.GetObjects(), _scene.GetLights(), _scene.GetCamera(), cameraRay, 0);
+            pixelColours[x*_fsaaAxisSamples + y] = RaytraceRay(_scene.GetAmbient(), _scene.GetObjects(), _scene.GetLights(), _scene.GetCamera(), cameraRay, 0);
         }
     }
 
@@ -447,7 +447,7 @@ Colour SDLRaytracer::FSAARaytracePixel(
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-Colour SDLRaytracer::RaytraceRay(std::vector<RenderableObject*>& _objects, std::vector<Light>& _lights, Vector &_rayOrigin, Ray &_ray, unsigned int _traceDepth)
+Colour SDLRaytracer::RaytraceRay(float _ambient, std::vector<RenderableObject*>& _objects, std::vector<Light>& _lights, Vector &_rayOrigin, Ray &_ray, unsigned int _traceDepth)
 {
 #ifdef DEBUG
     m_rayIntersections++;
@@ -483,7 +483,7 @@ Colour SDLRaytracer::RaytraceRay(std::vector<RenderableObject*>& _objects, std::
         float objectReflectivity = objectMaterial.GetReflectivity();
 
         // Get the intensity of light which is hitting this object
-        pixel_colour = CalculateColour(_objects, _lights, pixel_fragment, _ray.GetVector());
+        pixel_colour = CalculateColour(_ambient, _objects, _lights, pixel_fragment, _ray.GetVector());
 
         if(objectReflectivity == 0.0f || _traceDepth >= MAX_TRACE_DEPTH)
         {
@@ -504,7 +504,7 @@ Colour SDLRaytracer::RaytraceRay(std::vector<RenderableObject*>& _objects, std::
         Vector origin = pixel_fragment.GetPosition();
 
 
-        Colour reflection_colour = RaytraceRay(_objects, _lights, origin, reflectionray, _traceDepth+1);
+        Colour reflection_colour = RaytraceRay(_ambient, _objects, _lights, origin, reflectionray, _traceDepth+1);
         reflection_colour *= objectReflectivity;
         pixel_colour *= (1.0f-objectReflectivity);
         pixel_colour += reflection_colour;
@@ -513,29 +513,30 @@ Colour SDLRaytracer::RaytraceRay(std::vector<RenderableObject*>& _objects, std::
     else // if it didn't hit anything
     {
         // background colour
-        return pixel_colour = Colour(0.1f, 0.1f, 0.1f);
+        //return pixel_colour = Colour(0.1f, 0.1f, 0.1f);
         //return pixel_colour = Colour(0.2f, 0.2f, 0.2f);
+
+        // SDL doesn't actually support alpha anyway...
+        return pixel_colour = Colour(0.0f, 0.0f, 0.0f, 0.0f);
     }
 }
 
 
 //----------------------------------------------------------------------------------------------------------------------
-Colour SDLRaytracer::CalculateColour(std::vector<RenderableObject*>& _objects, std::vector<Light>& _lights, Fragment &_fragment, Vector &_rayVector)
+Colour SDLRaytracer::CalculateColour(float _ambient, std::vector<RenderableObject*>& _objects, std::vector<Light>& _lights, Fragment &_fragment, Vector &_rayVector)
 {
 #ifdef DEBUG
     m_lightTraces++;
 #endif // #ifdef DEBUG
     const Material mat = _fragment.GetMaterial();
 
-    float light_intensity = 0;
-
-    const float ambient_multiplier = 0.15;
     float diffuse_multiplier = 0;
     float specular_multiplier = 0;
+
     // for each light
     for(unsigned int l=0; l<_lights.size();l++)
     {
-        Light& light = _lights[0];
+        Light& light = _lights[l];
 
         // point on object surface
         Vector surfacePoint = _fragment.GetPosition();
@@ -547,14 +548,14 @@ Colour SDLRaytracer::CalculateColour(std::vector<RenderableObject*>& _objects, s
         Vector lightVector = lightPoint-surfacePoint;
 
         bool occluded = false;
-        // SHADOWS: check against all objects including lights
+        // SHADOWS: check against all objects
         for(unsigned int j=0; j<_objects.size(); j++)
         {
             float lightDistance = lightVector.SquareLength();
 
+            lightVector.Normalise();
             float distance = _objects[j]->DoIntersection(surfacePoint, lightVector);
 
-            // 'hard' shadows
             if(distance >= LAMBDA && // if there is a hit
                distance < lightDistance) // if the object is between the light and the fragment
             {
@@ -563,24 +564,21 @@ Colour SDLRaytracer::CalculateColour(std::vector<RenderableObject*>& _objects, s
                 // don't bother checking aganist other objects as there is already one in the way
                 // if we were doing refraction it would not be this simple
                 break;
-                //hit = true;
-                //_ray.Intersection(distance, *objects[j]);
             }
         }
 
-        if(occluded) break; // if there is a single object in the way, the light is occluded
+        if(occluded) continue; // if there is a single object in the way, the light is occluded
 
         // Fragment normal
         Vector normal = _fragment.GetNormal();
 
-        Vector lightVectorNormalised = lightVector;
-        lightVectorNormalised.Normalise();
+        float diffuse = Vector::Dot(lightVector, normal);
 
-        diffuse_multiplier = std::max(0.0f, Vector::Dot(lightVectorNormalised, normal));
-
-
-        if(diffuse_multiplier > 0.0f)
+        if(diffuse > 0.0f)
         {            
+            //diffuse_multiplier += diffuse;
+
+            float specular = 0;
             float exponent = mat.GetSpecularExponent();
             float intensity = mat.GetSpecularIntensity();
 
@@ -593,11 +591,10 @@ Colour SDLRaytracer::CalculateColour(std::vector<RenderableObject*>& _objects, s
             // dot product of light reflection and ray, for Phong calculations
             float phong = Vector::Dot(reflectionVector, -_rayVector);
 
-
             if(phong > 0.0f) // if dot product > 0 (angle less than 90)
             {
                 float phongIntensity = pow(phong, exponent) * intensity;
-                specular_multiplier += phongIntensity;
+                specular += phongIntensity;
             }
 
             /* Blinn */
@@ -611,32 +608,29 @@ Colour SDLRaytracer::CalculateColour(std::vector<RenderableObject*>& _objects, s
             if(blinn > 0.0f) // if dot product > 0 (angle less than 90)
             {
                 float blinnIntensity = pow(blinn, exponent) * intensity;
-                specular_multiplier += blinnIntensity;
+                specular += blinnIntensity;
             }
 
-
-            specular_multiplier *= diffuse_multiplier;
-        }
-
-        if(diffuse_multiplier > 0)   // don't waste time with attenuation if it's got no light, ~5% speed boost
-        {
             // Length = linear falloff... SquareLength = quadratic (real) falloff
             const float light_attenuation = lightVector.SquareLength();
-            light_intensity += 1/light_attenuation*light.GetMagnitude()*10;
+            float light_intensity = light.GetMagnitude()/light_attenuation;
+
+            specular *= diffuse;
+            specular_multiplier += specular*light_intensity;
+            diffuse_multiplier += diffuse*light_intensity;
         }
     }
 
     Colour ambient = _fragment.GetColour(); //mat.GetDiffuseColour();
-    ambient *= ambient_multiplier;
+    ambient *= _ambient;
 
     Colour diffuse = _fragment.GetColour(); //mat.GetDiffuseColour();
-    diffuse *= diffuse_multiplier * light_intensity;
+    diffuse *= diffuse_multiplier;// * light_intensity;
 
     Colour specular = mat.GetSpecularColour();
-    specular *= specular_multiplier * light_intensity;
+    specular *= specular_multiplier;// * light_intensity;
 
     Colour finalColour = ambient + diffuse + specular;
     finalColour.Ceil();
-
     return finalColour;
 }

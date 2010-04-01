@@ -26,6 +26,9 @@ float Sphere::DoIntersection(Vector &_rayOrigin, Vector &_ray) // SpherePrimitiv
 
     Vector dst = _rayOrigin-GetPosition();
 
+    //Vector dstNormalised = dst;
+    //dstNormalised.Normalise();
+
     //Compute A, B and C coefficients
     float a = Vector::Dot(_ray, _ray); //_ray.dot(_ray);
     float b = 2 * Vector::Dot(_ray, dst); //_ray.dot(dst);

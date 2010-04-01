@@ -34,10 +34,6 @@ public:
     /// \returns the radius of the sphere
     float GetRadius() const { return m_radius; }
 
-    /// \brief sets the radius of the sphere
-    /// @param[in] _radius      the radius of the sphere
-    void SetRadius(const float _radius) { m_radius = _radius; }
-
     /// \brief tests whether the input ray intersects with this sphere
     /// @param[in] _rayOrigin   the point of origin of the ray
     /// @param[in] _ray         the direction of the ray
@@ -56,6 +52,10 @@ private:
 
     /// Squared radius of the sphere. Used in intersection algorithm, so precalculation saves computation
     float m_squareRadius;
+protected:
+    /// \brief sets the radius of the sphere
+    /// @param[in] _radius      the radius of the sphere
+    void SetRadius(const float _radius) { m_radius = _radius; }
 };
 
 #endif // SPHERE_H

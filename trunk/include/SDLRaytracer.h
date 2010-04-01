@@ -70,13 +70,13 @@ public:
     /// @param[in] _ray                 the (normalised) direction of the ray
     /// @param[in] _traceDepth          the maximum level of recursion for reflections
     /// \returns the colour of the sample
-    static Colour RaytraceRay(std::vector<RenderableObject*>& _objects, std::vector<Light>& _lights, Vector &_rayOrigin, Ray &_ray, unsigned int _traceDepth);
+    static Colour RaytraceRay(float _ambient, std::vector<RenderableObject*>& _objects, std::vector<Light>& _lights, Vector &_rayOrigin, Ray &_ray, unsigned int _traceDepth);
 
     /// \brief Calculates the colour of a sample, based upon the object which was intersected and the ray vector
     /// @param[in] _fragment            a container object, holding the material, colour, surface normal and point at which the object was intersected
     /// @param[in] _rayVector
     /// \returns the colour of the fragment
-    static Colour CalculateColour(std::vector<RenderableObject*>& _objects, std::vector<Light>& _lights, Fragment& _fragment, Vector& _rayVector);
+    static Colour CalculateColour(float _ambient, std::vector<RenderableObject*>& _objects, std::vector<Light>& _lights, Fragment& _fragment, Vector& _rayVector);
 
 };
 

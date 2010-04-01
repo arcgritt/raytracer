@@ -12,7 +12,7 @@
 /// v1.0 - Assignment submission version
 
 /// \class Light
-/// \brief Light object which is used to calculate lighting information
+/// \brief Light object which is used to calculate lighting information. Inherits from Sphere.
 /// \todo
 
 class Light : public Sphere
