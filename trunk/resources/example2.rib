@@ -3,27 +3,16 @@ Projection "perspective" "fov" [90]
 # Translate Camera (moves world origin 6 units towards +Z)
 Translate 0 0 6
 WorldBegin
-  LightSource "ambientlight" 1 "intensity" [0.15]
-  LightSource "pointlight" 0.1 "intensity" 100 "from" -15 0 30
+  LightSource "ambientlight" 1 "intensity" [0.2]
+  LightSource "pointlight" 0.1 "intensity" 15 "from" -7 0 30
+  LightSource "pointlight" 0.1 "intensity" 30 "from" 50 0 30
   LightSource "pointlight" 0.1 "intensity" 1000 "from" -15 0 50
-  LightSource "pointlight" 0.1 "intensity" 200 "from" 50 0 30
-  LightSource "pointlight" 0.1 "intensity" 20 "from" 0 0 0
-  LightSource "pointlight" 0.1 "intensity" 100 "from" 0 -40 0
+  LightSource "pointlight" 0.1 "intensity" 2000 "from" 0 -40 0
+  LightSource "pointlight" 0.1 "intensity" 20 "from" 0 0 15
 
-
-### BLACKPLASTIC
-  Surface "lambert"
-
-  Color 1 1 rand
-  Translate rand*-10 rand*-10 rand*30
-  Sphere rand*3 -1 1 360
-
-  Color rand rand rand
-  Translate rand*-10 rand*-10 rand*30
-  Sphere rand*3 -1 1 360
 
 ### PLASTIC
-  Surface "plastic"
+  Surface "lambertPlusReflection"
 
   Color rand rand rand
   Translate rand*-10 rand*-10 rand*30
@@ -45,10 +34,7 @@ WorldBegin
   Translate rand*-10 rand*-10 rand*30
   Sphere rand*3 -1 1 360
 
-### GLASS
-  Surface "goldspecular"
-
-  Color rand 1 rand
+  Color rand rand rand
   Translate rand*-10 rand*-10 rand*30
   Sphere rand*3 -1 1 360
 
@@ -56,7 +42,7 @@ WorldBegin
   Translate rand*-10 rand*-10 rand*30
   Sphere rand*3 -1 1 360
 
-  Color rand rand 1
+  Color rand rand rand
   Translate rand*-10 rand*-10 rand*30
   Sphere rand*3 -1 1 360
 
@@ -64,15 +50,17 @@ WorldBegin
   Translate rand*-10 rand*-10 rand*30
   Sphere rand*3 -1 1 360
 
-### GOLDANODISEDALUMINIUM
-  Surface "glass"
+  Color rand rand rand
+  Translate rand*-10 rand*-10 rand*30
+  Sphere rand*3 -1 1 360
 
   Color rand rand rand
   Translate rand*-10 rand*-10 rand*30
   Sphere rand*3 -1 1 360
 
-### SHINY
-  Surface "shiny"
+  Color rand rand rand
+  Translate rand*-10 rand*-10 rand*30
+  Sphere rand*3 -1 1 360
 
   Color rand rand rand
   Translate rand*-10 rand*-10 rand*30

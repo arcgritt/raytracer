@@ -24,7 +24,7 @@
 
 
 /****** DEFINES ******/
-//#define DEBUG
+#define DEBUG
 
 // how many times the algorithm will recurse in order to calculate reflections
 #define MAX_TRACE_DEPTH 5000
@@ -546,6 +546,9 @@ Colour SDLRaytracer::CalculateColour(float _ambient, std::vector<RenderableObjec
         // vector from point on surface to light
         Vector lightVector = lightPoint-surfacePoint;
 
+        // save for attenuation because we will normalise it
+        float lightSquareLength = lightVector.SquareLength();
+
         bool occluded = false;
         // SHADOWS: check against all objects
         for(unsigned int j=0; j<_objects.size(); j++)
@@ -611,7 +614,7 @@ Colour SDLRaytracer::CalculateColour(float _ambient, std::vector<RenderableObjec
             }
 
             // Length = linear falloff... SquareLength = quadratic (real) falloff
-            const float light_attenuation = lightVector.SquareLength();
+            const float light_attenuation = lightSquareLength;
             float light_intensity = light.GetMagnitude()/light_attenuation;
 
             specular *= diffuse;

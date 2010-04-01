@@ -123,7 +123,7 @@ Scene RIBParser::ParseHeader(std::ifstream &_ribFileStream)
             }
             else
             {
-                std::cerr << "Unkown Token " << typeName << std::endl;
+                std::cerr << "Unknown Token " << typeName << std::endl;
             }
         }
     } // while (not end of file) loop
@@ -214,15 +214,13 @@ Light RIBParser::ParsePointLight(tokenizer::iterator &_iterator)
     const float radius = ParseFloat(*_iterator++);
 
     _iterator++; // "intensity"
-    const unsigned int intensity = ParseUnsignedInt(*_iterator++);
+    const unsigned int intensity = ParseFloat(*_iterator++);
 
     _iterator++; // "from"
     const Vector position = ParseVector(_iterator);
 
     const Material lightMaterial = Material("pointlight", Colour(1.0f, 1.0f, 1.0f), Colour(1.0f, 1.0f, 1.0f), 50, 50, 0.0f);
-    Light light = Light(position, radius, lightMaterial, intensity);
-    std::cout << intensity << std::endl;
-    return light;
+    return Light(position, radius, lightMaterial, intensity);
 }
 
 float RIBParser::ParseAmbientLight(tokenizer::iterator &_iterator)

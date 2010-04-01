@@ -3,29 +3,24 @@ Projection "perspective" "fov" [90]
 # Translate Camera (moves world origin 6 units towards +Z)
 Translate 0 0 6
 WorldBegin
-  LightSource "ambientlight" 1 "intensity" [0.15]
+  LightSource "ambientlight" 1 "intensity" [0.3]
   LightSource "pointlight" 0.1 "intensity" 100 "from" -15 0 30
   LightSource "pointlight" 0.1 "intensity" 1000 "from" -15 0 50
   LightSource "pointlight" 0.1 "intensity" 200 "from" 50 0 30
-  LightSource "pointlight" 0.1 "intensity" 20 "from" 0 0 0
+  #camera
+  LightSource "pointlight" 0.1 "intensity" 1000 "from" 0 0 0
+  # above scene
   LightSource "pointlight" 0.1 "intensity" 100 "from" 0 -40 0
 
 
 ### BLACKPLASTIC
-  Surface "lambert"
+  Surface "plastic"
 
   Color 1 1 rand
   Translate rand*-10 rand*-10 rand*30
   Sphere rand*3 -1 1 360
 
-  Color rand rand rand
-  Translate rand*-10 rand*-10 rand*30
-  Sphere rand*3 -1 1 360
-
-### PLASTIC
-  Surface "plastic"
-
-  Color rand rand rand
+  Color rand 0 rand
   Translate rand*-10 rand*-10 rand*30
   Sphere rand*3 -1 1 360
 
@@ -45,34 +40,17 @@ WorldBegin
   Translate rand*-10 rand*-10 rand*30
   Sphere rand*3 -1 1 360
 
-### GLASS
-  Surface "goldspecular"
-
-  Color rand 1 rand
-  Translate rand*-10 rand*-10 rand*30
-  Sphere rand*3 -1 1 360
-
   Color rand rand rand
   Translate rand*-10 rand*-10 rand*30
   Sphere rand*3 -1 1 360
 
-  Color rand rand 1
+  Color 0 0 rand
   Translate rand*-10 rand*-10 rand*30
   Sphere rand*3 -1 1 360
 
-  Color rand rand rand
+  Color 0 0 rand
   Translate rand*-10 rand*-10 rand*30
   Sphere rand*3 -1 1 360
-
-### GOLDANODISEDALUMINIUM
-  Surface "glass"
-
-  Color rand rand rand
-  Translate rand*-10 rand*-10 rand*30
-  Sphere rand*3 -1 1 360
-
-### SHINY
-  Surface "shiny"
 
   Color rand rand rand
   Translate rand*-10 rand*-10 rand*30
@@ -90,4 +68,39 @@ WorldBegin
   Translate rand*-10 rand*-10 rand*30
   Sphere rand*3 -1 1 360
 
+  Color rand rand rand
+  Translate rand*-10 rand*-10 rand*30
+  Sphere rand*3 -1 1 360
+
+  Color rand rand rand
+  Translate rand*-10 rand*-10 rand*30
+  Sphere rand*3 -1 1 360
+
+  Color rand rand rand
+  Translate rand*-10 rand*-10 rand*30
+  Sphere rand*3 -1 1 360
+
+  Color rand rand rand
+  Translate rand*-10 rand*-10 rand*30
+  Sphere rand*3 -1 1 360
+
+  Color rand rand rand
+  Translate rand*-10 rand*-10 rand*30
+  Sphere rand*3 -1 1 360
+
+  Color rand rand rand
+  Translate rand*-10 rand*-10 rand*30
+  Sphere rand*3 -1 1 360
+
+  Color rand rand rand
+  Translate rand*-10 rand*-10 rand*30
+  Sphere rand*3 -1 1 360
+
+  Color rand rand rand
+  Translate rand*-10 rand*-10 rand*30
+  Sphere rand*3 -1 1 360
+
+  Color rand rand rand
+  Translate rand*-10 rand*-10 rand*30
+  Sphere rand*3 -1 1 360
 WorldEnd

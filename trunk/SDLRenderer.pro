@@ -65,4 +65,11 @@ SOURCES += $$SOURCES_DIR/SDLRaytracer.cpp \
     $$SOURCES_DIR/Triangle.cpp
 OTHER_FILES += Doxyfile \
     $$RCC_DIR/materials \
-    $$RCC_DIR/example.rib
+    $$RCC_DIR/example.rib \
+    resources/example2.rib \
+    resources/example3.rib \
+    resources/example4.rib \
+    resources/example5.rib \
+    resources/example6.rib \
+    resources/example0.rib \
+    resources/example1.rib

@@ -1,12 +1,29 @@
 # Only blank lines and comments allowed
 
-Material cheese
+Material lambert
+
+DiffuseColour       1 1 1
+SpecularColour      0 0 0
+SpecularIntensity   0
+SpecularExponent    0
+Reflectivity        0
+
+Material lambertPlusReflection
+
+DiffuseColour       1 1 1
+SpecularColour      0 0 0
+SpecularIntensity   0
+SpecularExponent    0
+Reflectivity        0.5
+
+
+Material sponge
 
 DiffuseColour       1 1 0
 SpecularColour      1 1 0
-SpecularIntensity   .5
+SpecularIntensity   .1
 SpecularExponent    30
-Reflectivity        0.5
+Reflectivity        0
 
 
 Material plastic
@@ -17,7 +34,7 @@ SpecularIntensity   1
 SpecularExponent    30
 Reflectivity        0.5
 
-Material goldanodisedaluminium
+Material goldspecular
 
 DiffuseColour       1 1 0.05
 SpecularColour      0.9 0.9 0.1
@@ -31,4 +48,28 @@ DiffuseColour       0.9 0.9 0.9
 SpecularColour      0.9 0.9 0.9
 SpecularIntensity   .5
 SpecularExponent    40
-Reflectivity        0.7
+Reflectivity        0.9
+
+Material shiny
+
+DiffuseColour       0.9 0.9 0.9
+SpecularColour      1 1 1
+SpecularIntensity   2
+SpecularExponent    40
+Reflectivity        0.9
+
+Material slightlyreflective
+
+DiffuseColour       0.9 0.9 0.9
+SpecularColour      1 1 1
+SpecularIntensity   1
+SpecularExponent    20
+Reflectivity        0.2
+
+Material justreflection
+
+DiffuseColour       0.9 0.9 0.9
+SpecularColour      1 1 1
+SpecularIntensity   1
+SpecularExponent    20
+Reflectivity        1
