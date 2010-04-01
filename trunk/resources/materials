@@ -34,6 +34,15 @@ SpecularIntensity   1
 SpecularExponent    30
 Reflectivity        0.5
 
+
+Material plasticNoReflection
+
+DiffuseColour       1 1 1
+SpecularColour      1 1 1
+SpecularIntensity   0.5
+SpecularExponent    20
+Reflectivity        0
+
 Material goldspecular
 
 DiffuseColour       1 1 0.05

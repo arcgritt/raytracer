@@ -115,8 +115,7 @@ int SDLRaytracer::InitScene(std::string _materialsFile, std::string _ribFile)
 
     Material mat = scene.GetObjects()[0]->GetMaterial();
 
-    /*
-    scene.AddObject(new Triangle(
+    /*scene.AddObject(new Triangle(
             Vector(0, 5, 30),
             Vector(-5, -10, 30),
             Vector(5, -10, 30),
@@ -131,94 +130,7 @@ int SDLRaytracer::InitScene(std::string _materialsFile, std::string _ribFile)
             Colour(0,1,0),
             mat
             ));
-    // */
-
-    /*m_objects.push_back(new Triangle(
-    Vector(-3.138077, 3.0033234, 30.500000),
-    Vector(3.0138077, 3.0033234, 30.500000),
-    Vector(-3.138077, 3.0258940, 30.500000),
-    m_objects[0]->GetColour(),
-    m_objects[0]->GetMaterial()
-    ));
-    m_objects.push_back(new Triangle(
-    Vector(3.0138077, 3.0258940, 30.500000),
-    Vector(-3.235051, 3.0094750, 29.632966),
-    Vector(3.0235051, 3.0094750, 29.632966),
-    m_objects[0]->GetColour(),
-    m_objects[0]->GetMaterial()
-    ));
-    m_objects.push_back(new Triangle(
-    Vector(-3.235051, -3.014618, 29.540964),
-    Vector(3.0235051, -3.014618, 29.540964),
-    Vector(3.0235051, 3.0142066, 30.224758),
-    m_objects[0]->GetColour(),
-    m_objects[0]->GetMaterial()
-    ));
-    m_objects.push_back(new Triangle(
-    Vector(-3.235051, 3.0142066, 30.224758),
-    Vector(-3.235051, -3.142066, 30.224758),
-    Vector(3.0235051, -3.142066, 30.224758),
-    m_objects[0]->GetColour(),
-    m_objects[0]->GetMaterial()
-    ));
-    m_objects.push_back(new Triangle(
-    Vector(3.0235051, 3.0142066, 29.269301),
-    Vector(-3.235051, 3.0142066, 29.269301),
-    Vector(-3.235051, -3.142066, 29.269301),
-    m_objects[0]->GetColour(),
-    m_objects[0]->GetMaterial()
-    ));
-    m_objects.push_back(new Triangle(
-    Vector(3.0235051, -3.142066, 29.269301),
-    Vector(-3.909752, -3.049049, 29.269301),
-    Vector(-3.909752, -3.049049, 30.224758),
-    m_objects[0]->GetColour(),
-    m_objects[0]->GetMaterial()
-    ));
-    m_objects.push_back(new Triangle(
-    Vector(-3.909752, 3.0049049, 30.224758),
-    Vector(-3.909752, 3.0049049, 29.269301),
-    Vector(3.0909752, -3.049049, 30.224758),
-    m_objects[0]->GetColour(),
-    m_objects[0]->GetMaterial()
-    ));
-    m_objects.push_back(new Triangle(
-    Vector(3.0909752, 3.0049049, 30.224758),
-    Vector(3.0909752, -3.049049, 29.269301),
-    Vector(3.0909752, 3.0049049, 29.269301),
-    m_objects[0]->GetColour(),
-    m_objects[0]->GetMaterial()
-    ));
-    m_objects.push_back(new Triangle(
-    Vector(-3.138077, 3.0033234, 30.691325),
-    Vector(3.0138077, 3.0033234, 30.691325),
-    Vector(3.0138077, 3.0258940, 30.627762),
-    m_objects[0]->GetColour(),
-    m_objects[0]->GetMaterial()
-    ));
-    m_objects.push_back(new Triangle(
-    Vector(-3.138077, 3.0258940, 30.627762),
-    Vector(-3.138077, 3.0033392, 30.691325),
-    Vector(3.0138077, 3.0033392, 30.691325),
-    m_objects[0]->GetColour(),
-    m_objects[0]->GetMaterial()
-    ));
-    m_objects.push_back(new Triangle(
-    Vector(3.0138077, 3.0163321, 30.691325),
-    Vector(-3.138077, 3.0163321, 30.691325),
-    Vector(-3.047109, 3.0070303, 30.787608),
-    m_objects[0]->GetColour(),
-    m_objects[0]->GetMaterial()
-    ));
-    m_objects.push_back(new Triangle(
-    Vector(3.0047109, 3.0070303, 30.787608),
-    Vector(3.0047109, 3.0126410, 30.787608),
-    Vector(-3.047109, 3.0126410, 30.787608),
-    m_objects[0]->GetColour(),
-    m_objects[0]->GetMaterial()
-    ));*/
-
-
+    //*/
 
     const int start_time = clock();
 
