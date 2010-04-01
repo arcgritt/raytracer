@@ -8,77 +8,90 @@
 #include "Light.h"
 #include "RenderableObject.h"
 
+/// \file Scene.h
+/// \author Adam Gritt
+/// \version 1.0
+/// \date 2010-04-01 \n
+
+/// Revision History : \n
+/// v1.0 - Assignment submission version
+
+/// \class Scene
+/// \brief Encapsulates the objects which can be contained in a scene
+/// \todo
+
 class Scene
 {
+
 public:
-    /// \brief the default constructor
+    /// \brief The default constructor
     Scene();
 
-    /// \brief constructs a new scene and calculates the camera position
+    /// \brief Constructs a new scene and calculates the camera position
     /// @param[in] _displayWidth        the width of the scene, in pixels
     /// @param[in] _displayHeight       the height of the scene, in pixels
     /// @param[in] _pixelAspectRatio    the pixel aspect ratio of the scene
     /// @param[in] _fieldOfView         the vertical field of view of the scene
     Scene(const unsigned int _displayWidth, const unsigned int _displayHeight, const float _pixelAspectRatio, const float _fieldOfView);
 
-    /// \brief
-    /// \returns
+    /// \brief Returns the scene's camera
+    /// \returns the scene's camera
     Vector& GetCamera() { return m_camera; }
 
-    /// \brief returns the width, in pixels, of the scene to be rendered
+    /// \brief Returns the width, in pixels, of the scene to be rendered
     /// \returns the width, in pixels, of the scene to be rendered
     unsigned int GetWidth() const { return m_displayWidth; }
 
-    /// \brief returns the height, in pixels, of the scene to be rendered
+    /// \brief Returns the height, in pixels, of the scene to be rendered
     /// \returns the height, in pixels, of the scene to be rendered
     unsigned int GetHeight() const { return m_displayHeight; }
 
-    /// \brief adds a light to the scene
+    /// \brief Adds a light to the scene
     /// @param[in] _light       the light to be added
     void AddLight(const Light& _light) { m_lights.push_back(_light); }
 
-    /// \brief sets the std::vector containg the scene's lights to the input value
+    /// \brief Sets the std::vector containg the scene's lights to the input value
     /// @param[in] _lights the std::vector containg the scene's lights
     void SetLights(const std::vector<Light> _lights) { m_lights = _lights; }
 
-    /// \brief returns an std::vector containing the scene's lights
+    /// \brief Returns an std::vector containing the scene's lights
     /// \returns an std::vector containing the scene's lights
     std::vector<Light>& GetLights() { return m_lights; }
 
-    /// \brief adds an object to the scene
+    /// \brief Adds an object to the scene
     /// @param[in] _object      the object to be added
     void AddObject(RenderableObject* _object) { m_objects.push_back(_object); }
 
-    /// \brief sets the std::vector containg the scene's objects to the input value
+    /// \brief Sets the std::vector containg the scene's objects to the input value
     /// @param[in] _objects the std::vector containg the scene's objects
     void SetObjects(const std::vector<RenderableObject*> _objects) { m_objects = _objects; }
 
-    /// \brief returns an std::vector containing the scene's objects
+    /// \brief Returns an std::vector containing the scene's objects
     /// \returns an std::vector containing the scene's objects
     std::vector<RenderableObject*>& GetObjects() { return m_objects; }
-
 private:
-    /// the width of the scene, in pixels
+    /// Width of the scene, in pixels
     unsigned int m_displayWidth;
 
-    /// the height of the scene, in pixels
+    /// Height of the scene, in pixels
     unsigned int m_displayHeight;
 
-    /// the pixel aspect ratio of the scene
+    /// Pixel aspect ratio of the scene
     float m_pixelAspectRatio;
 
-    /// the camera's vertical field of view
+    /// Camera's vertical field of view
     float m_fieldOfView;
 
-    /// the camera
+    /// Camera position
     Vector m_camera;
 
-    /// the scene's objects
+    /// Objects in the scene
     std::vector<RenderableObject*> m_objects;
 
-    /// the scene's lights
+    /// Lights in the scene
     std::vector<Light> m_lights;
 
+private:
     /// \brief sets the position of the scene's camera based on the input field of view
     /// @param[in] _fieldOfView     the vertical field of view of the camera
     void SetCamera(const float _fieldOfView);

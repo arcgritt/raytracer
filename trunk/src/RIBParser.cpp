@@ -10,11 +10,13 @@
 
 std::vector<Material> RIBParser::m_materials;
 
+//----------------------------------------------------------------------------------------------------------------------
 RIBParser::RIBParser()
 {
 
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 Material& RIBParser::GetMaterialByName(const std::string &_materialName)
 {
     for(unsigned int i = 0; i < m_materials.size(); i++)
@@ -31,6 +33,7 @@ Material& RIBParser::GetMaterialByName(const std::string &_materialName)
 }
 
 
+//----------------------------------------------------------------------------------------------------------------------
 Scene RIBParser::ParseFile(const std::string &_fileName, const std::vector<Material> &_materials)
 {
     m_materials  = _materials;
@@ -60,6 +63,7 @@ Scene RIBParser::ParseFile(const std::string &_fileName, const std::vector<Mater
     return scene;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 Scene RIBParser::ParseHeader(std::ifstream &_ribFileStream)
 {
     unsigned int displayWidth;
@@ -127,6 +131,7 @@ Scene RIBParser::ParseHeader(std::ifstream &_ribFileStream)
     return Scene(displayWidth, displayHeight, pixelAspectRatio, fieldOfView);
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void RIBParser::ParseWorld(std::ifstream &_ribFileStream, Scene& _scene)
 {
     std::vector<RenderableObject*> objects;

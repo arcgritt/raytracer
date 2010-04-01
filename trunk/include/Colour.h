@@ -1,46 +1,55 @@
-/// \file Colour.h
-/// \brief encapsulates an RGBA colour object
-/// \author Adam Gritt
-
 #ifndef COLOUR_H
 #define COLOUR_H
 
 #include <string>
 
+/// \file Colour.h
+/// \author Adam Gritt
+/// \version 1.0
+/// \date 2010-04-01 \n
+
+/// Revision History : \n
+/// v1.0 - Assignment submission version
+
+/// \class Colour
+/// \brief encapsulates an RGBA colour object
+/// \todo static function which takes an array of colours and averages them
+
+
 class Colour
 {
 public:
-    /// \brief the default constructor
+    /// \brief The default constructor
     Colour();
 
-    /// \brief constructs a Colour with the specifed RGB values (from 0.0f to 1.0f) and 1.0f alpha
+    /// \brief Constructs a Colour with the specifed RGB values (from 0.0f to 1.0f) and 1.0f alpha
     /// @param[in] _r   red, from 0.0f to 1.0f if you want to use GetColour256
     /// @param[in] _g   green, as above
     /// @param[in] _b   blue, as above
     Colour(const float _r, const float _g, const float _b);
 
-    /// \brief constructs a Colour with the specified RGBA values (from 0.0f to 1.0f)
+    /// \brief Constructs a Colour with the specified RGBA values (from 0.0f to 1.0f)
     /// @param[in] _r   red, from 0.0f to 1.0f if you want to use GetColour256
     /// @param[in] _g   green, as above
     /// @param[in] _b   blue, as above
     /// @param[in] _a   alpha, as above
     Colour(const float _r, const float _g, const float _b, const float _a);
 
-    /// \brief fills the input array with this colour's information
+    /// \brief Fills the input array with this colour's information
     /// @param[in] _colour  float[4] to return colour information in
     void GetColour(float* _colour);
 
-    /// \brief floors the colour's attributes to a minimum of 0.0f;
+    /// \brief Floors the colour's attributes to a minimum of 0.0f;
     void Floor();
 
-    /// \brief ceils the colour's attributes to a maximum of 1.0f;
+    /// \brief Ceils the colour's attributes to a maximum of 1.0f;
     void Ceil();
 
-    /// \brief fills the input array with this colour's information in 8-bit integer format (0-255)
+    /// \brief Fills the input array with this colour's information in 8-bit integer format (0-255)
     /// @param[in] _colour  unsigned int[4] to return colour information in
     void GetColour256(unsigned int* _colour);
 
-    /// \brief operator overload for adding colours
+    /// \brief Adds this coluor and the input colour as a new object and returns it
     /// @param[in] _colour the colour to add to this one
     /// \returns a new colour equal to the sum of this colour plus the input colour
     Colour operator+(const Colour& _colour);
@@ -75,13 +84,16 @@ public:
     std::string GetDebugInformation();
 
 private:
-    /// red component of the colour
+    /// Red component of the colour
     float m_r;
-    /// green component of the colour
+
+    /// Green component of the colour
     float m_g;
-    /// blue component of the colour
+
+    /// Blue component of the colour
     float m_b;
-    /// alpha component of the colour
+
+    /// Alpha component of the colour
     float m_a;
 };
 

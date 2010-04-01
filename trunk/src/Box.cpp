@@ -1,5 +1,6 @@
 #include "Box.h"
 
+//----------------------------------------------------------------------------------------------------------------------
 Box::Box(Vector &_center, float _size)
 {
     m_center = _center;
@@ -8,6 +9,7 @@ Box::Box(Vector &_center, float _size)
     m_zSize = _size;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 Box::Box(Vector &_center, float _xSize, float _ySize, float _zSize)
 {
     m_center = _center;

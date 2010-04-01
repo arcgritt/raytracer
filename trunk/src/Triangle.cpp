@@ -2,11 +2,13 @@
 
 #include <cstdlib>
 
+//----------------------------------------------------------------------------------------------------------------------
 Triangle::Triangle()
 {
 
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 Triangle::Triangle(const Vector &_v0, const Vector &_v1, const Vector &_v2, const Colour &_colour, const Material &_material) {
     m_v0 = _v0;
     m_v1 = _v1;
@@ -94,6 +96,7 @@ Triangle::Triangle(const Vector &_v0, const Vector &_v1, const Vector &_v2, cons
     return r;                      // I is in T
 }*/
 
+//----------------------------------------------------------------------------------------------------------------------
 float Triangle::DoIntersection(Vector &_rayOrigin, Vector &_ray)
 {
     // Calculate the ray direction
@@ -171,6 +174,7 @@ float Triangle::DoIntersection(Vector &_rayOrigin, Vector &_ray)
     return distance;*/
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 Fragment Triangle::GetFragment(Vector &_rayOrigin, Vector &_ray, float _distance)
 {
     Vector point = _ray * _distance + _rayOrigin;

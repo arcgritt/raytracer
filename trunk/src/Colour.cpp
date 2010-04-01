@@ -8,6 +8,7 @@
 
 #include "Colour.h"
 
+//----------------------------------------------------------------------------------------------------------------------
 Colour::Colour()
 {
     m_r = 0.0f;
@@ -16,6 +17,7 @@ Colour::Colour()
     m_a = 1.0f;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 Colour::Colour(const float _r, const float _g, const float _b)
 {
     m_r = _r;
@@ -24,6 +26,7 @@ Colour::Colour(const float _r, const float _g, const float _b)
     m_a = 0.0f;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 Colour::Colour(const float _r, const float _g, const float _b, const float _a)
 {
     m_r = _r;
@@ -32,6 +35,7 @@ Colour::Colour(const float _r, const float _g, const float _b, const float _a)
     m_a = _a;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void Colour::GetColour(float *_colour)
 {
     _colour[0] = m_r;
@@ -40,6 +44,7 @@ void Colour::GetColour(float *_colour)
     _colour[3] = m_a;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void Colour::Floor()
 {
     m_r = std::max(0.0f, m_r);
@@ -48,6 +53,7 @@ void Colour::Floor()
     m_a = std::max(0.0f, m_a);
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void Colour::Ceil()
 {
     m_r = std::min(1.0f, m_r);
@@ -56,6 +62,7 @@ void Colour::Ceil()
     m_a = std::min(1.0f, m_a);
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void Colour::GetColour256(unsigned int *_colour)
 {
     assert(
@@ -70,6 +77,7 @@ void Colour::GetColour256(unsigned int *_colour)
     _colour[3] = 255*m_a;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 Colour Colour::operator+(const Colour &_colour)
 {
     float r = m_r+_colour.m_r;
@@ -80,6 +88,7 @@ Colour Colour::operator+(const Colour &_colour)
     return Colour(r,g,b,a);
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void Colour::operator+=(const Colour &_colour)
 {
     m_r += _colour.m_r;
@@ -88,6 +97,7 @@ void Colour::operator+=(const Colour &_colour)
     m_a += _colour.m_a;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void Colour::operator*=(const Colour &_colour)
 {
     m_r *= _colour.m_r;
@@ -96,6 +106,7 @@ void Colour::operator*=(const Colour &_colour)
     m_a *= _colour.m_a;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void Colour::operator*=(const float _multiplier)
 {
     m_r *= _multiplier;
@@ -104,6 +115,7 @@ void Colour::operator*=(const float _multiplier)
     m_a *= _multiplier;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void Colour::operator/=(const float _multiplier)
 {
     m_r /= _multiplier;
@@ -113,6 +125,7 @@ void Colour::operator/=(const float _multiplier)
 }
 
 
+//----------------------------------------------------------------------------------------------------------------------
 Colour Colour::Average(const Colour &_colour1, const Colour &_colour2)
 {
     float r = (_colour1.m_r+_colour2.m_r)/2;
@@ -122,6 +135,7 @@ Colour Colour::Average(const Colour &_colour1, const Colour &_colour2)
     return Colour(r, g, b, a);
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 void Colour::operator&=(const Colour &_colour)
 {
     m_r = (m_r+_colour.m_r)/2;
@@ -130,6 +144,7 @@ void Colour::operator&=(const Colour &_colour)
     m_a = (m_a+_colour.m_a)/2;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 std::string Colour::GetDebugInformation()
 {
     char tmp[256];

@@ -1,7 +1,5 @@
-#ifdef WINDOWS
-    #include <ctime>
-    #include <string>
-#endif // #ifdef WINDOWS
+#include <ctime>
+#include <string>
 
 // Boost
 #include "boost/random.hpp"
@@ -15,8 +13,8 @@
 #include "RenderableObject.h"
 #include "RIBParser.h"
 #include "SDLRaytracer.h"
-
 #include "Triangle.h"
+
 
 #ifdef WINDOWS
     // something weird with SDL causes this to screw up on Windows unless you have this line
@@ -24,13 +22,10 @@
 #endif // #ifdef WINDOWS
 
 
-
 /****** DEFINES ******/
-#define DEBUG true
+//#define DEBUG
 
 
-// TODO: Set this up in the RIB file
-#define NUM_LIGHTS 1
 // how many times the algorithm will recurse in order to calculate reflections
 #define MAX_TRACE_DEPTH 5
 // depth of AA - (x*2)^2 samples (1 = 4 samples, 2 = 16 samples, 3 = 64 samples)
@@ -51,14 +46,7 @@ unsigned int m_lightTraces = 0;
 
 #endif // #ifdef DEBUG
 
-
-
-
-
-// TODO: Make a Scene class which contains all these
-Light* lights[NUM_LIGHTS];
-std::vector<RenderableObject*> m_objects;
-
+//----------------------------------------------------------------------------------------------------------------------
 int main(int argc, char *argv[])//int argc, char *argv[])
 {
     int argcount=1; /* argv 1 is the first parameter */
@@ -110,6 +98,7 @@ int main(int argc, char *argv[])//int argc, char *argv[])
 }
 
 
+//----------------------------------------------------------------------------------------------------------------------
 int SDLRaytracer::InitScene(std::string _materialsFile, std::string _ribFile)
 {
     MaterialParser materialParser;
@@ -118,7 +107,12 @@ int SDLRaytracer::InitScene(std::string _materialsFile, std::string _ribFile)
     RIBParser ribParser;
     Scene scene = ribParser.ParseFile(_ribFile, materials);
 
-    m_objects = scene.GetObjects();
+    scene.AddLight(Light(
+            Vector(-7, 0, 15),
+            0.5f,
+            Material(),
+            10.0f
+            ));
 
     /*
 
@@ -238,33 +232,19 @@ int SDLRaytracer::InitScene(std::string _materialsFile, std::string _ribFile)
         std::cerr << "SDL failed to initialise" << std::endl;
     }
 
-    std::cout << "Width: " << scene.GetWidth() << std::endl;
-    std::cout << "Height: " << scene.GetHeight() << std::endl;
-
-
-    for(unsigned int i=0; i<NUM_LIGHTS;i++)
-    {
-        Material mat = Material(Colour(), 0.0f);
-
-        lights[i] = new Light(
-                Vector(-7, 0, 15),
-                0.5f,
-                mat,
-                10.0f
-                );
-    }
-
+    std::cout << "Dimensions: " << scene.GetWidth() << "x" << scene.GetHeight() << std::endl;
 
     const int frame_time = clock();
 
-    SDLRaytracer::RenderScene(backBuffer, scene);
+    SDLRaytracer::RaytraceScene(backBuffer, scene);
 
     const int finish_time = clock();
 
-#ifdef DEBUG
+
     printf("Render time: %3.2f seconds\n", difftime(finish_time, start_time)/CLOCKS_PER_SEC);
     printf("Draw time: %3.2f seconds\n", difftime(finish_time, frame_time)/CLOCKS_PER_SEC);
 
+#ifdef DEBUG
     std::cout << "Ray Traces: " << m_rayIntersections << std::endl;
     std::cout << "Recursive Traces: " << m_recursiveBounces << std::endl;
     std::cout << "Light Traces: " << m_lightTraces << std::endl;
@@ -294,11 +274,11 @@ int SDLRaytracer::InitScene(std::string _materialsFile, std::string _ribFile)
                     }
                 case SDLK_LEFT:
                     {
-                        SDLRaytracer::RenderScene(backBuffer, scene);
+                        SDLRaytracer::RaytraceScene(backBuffer, scene);
                     }
                 case SDLK_RIGHT:
                     {
-                        SDLRaytracer::RenderScene(backBuffer, scene);
+                        SDLRaytracer::RaytraceScene(backBuffer, scene);
                     }
                 default:
                     {
@@ -324,6 +304,7 @@ int SDLRaytracer::InitScene(std::string _materialsFile, std::string _ribFile)
 
 
 
+//----------------------------------------------------------------------------------------------------------------------
 bool SDLRaytracer::SDLInit(SDL_Surface *&_backBuffer, const unsigned int _width, const unsigned int _height, const unsigned int _bpp)
 {
     //We must first initialize the SDL video component, and check for success
@@ -347,29 +328,23 @@ bool SDLRaytracer::SDLInit(SDL_Surface *&_backBuffer, const unsigned int _width,
     return true;
 }
 
-
-void SDLRaytracer::RenderScene(SDL_Surface *&_backBuffer, Scene &_scene) {
-    // utility function which takes 2 variables instead of 4
-    RaytraceScene(_backBuffer, _scene.GetWidth(), _scene.GetHeight(), _scene.GetCamera());
-}
-
-void SDLRaytracer::RaytraceScene(SDL_Surface *&_backBuffer, const unsigned int _width, const unsigned int _height, Vector &_camera)
+//----------------------------------------------------------------------------------------------------------------------
+void SDLRaytracer::RaytraceScene(SDL_Surface *&_backBuffer, Scene &_scene)
 {
     Uint32 *_pixelBuffer = (Uint32 *)_backBuffer->pixels;
 
-    const float c_aspectRatio = (float)_width/(float)_height;
+    const float c_aspectRatio = (float)_scene.GetWidth()/(float)_scene.GetHeight();
     const float c_halfWidth = c_aspectRatio*0.5;
-    const float c_divisionSize = 1.0f/(float)_height;
+    const float c_divisionSize = 1.0f/(float)_scene.GetHeight();
 
-    if(DEBUG) {
-        //printf("Camera position: %f\n", c_cameraPosition);
-        printf("Aspect ratio: %f\n", c_aspectRatio);
-        printf("Y Axis Division Size: %f\n", c_divisionSize);
-    }
+#ifdef DEBUG
+    printf("Aspect ratio: %f\n", c_aspectRatio);
+    printf("Y Axis Division Size: %f\n", c_divisionSize);
+#endif // #ifdef DEBUG
 
     // number of samples in an orthagonal direction
     const unsigned int fsaaAxisSamples = pow(2, FULL_SCENE_ANTI_ALIASING_LEVEL); // * 2;
-    //std::cout << fsaaAxisSamples << std::endl;
+
     // total number of samples
     unsigned int fsaaSamples = fsaaAxisSamples * fsaaAxisSamples;
 
@@ -384,27 +359,29 @@ void SDLRaytracer::RaytraceScene(SDL_Surface *&_backBuffer, const unsigned int _
     const float offsetPosition = halfDivisionSize - halfFSAADivisionSize;
 
     // Draw the scene
-    for(unsigned int y=0; y<_height; y++)
+    for(unsigned int y=0; y<_scene.GetHeight(); y++)
     {
-        for(unsigned int x=0; x<_width; x++)
+        for(unsigned int x=0; x<_scene.GetWidth(); x++)
         {
             float xPos = x*c_divisionSize-c_halfWidth;
             float yPos = y*c_divisionSize-0.5;            
             
             xPos -= offsetPosition;
             yPos -= offsetPosition;
-            Colour pixelColour = SDLRaytracer::FSAARaytracePixel(_camera, xPos, yPos, fsaaSamples, fsaaAxisSamples, fsaaDivisionSize);
+            Colour pixelColour = SDLRaytracer::FSAARaytracePixel(_scene, xPos, yPos, fsaaSamples, fsaaAxisSamples, fsaaDivisionSize);
 
             unsigned int pixelColours[4];
             pixelColour.GetColour256(&pixelColours[0]);
 
-            _pixelBuffer[x+y*_width] = SDL_MapRGB(_backBuffer->format, (Uint8)pixelColours[0], (Uint8)pixelColours[1], (Uint8)pixelColours[2]);
+            _pixelBuffer[x+y*_scene.GetWidth()] = SDL_MapRGB(_backBuffer->format, (Uint8)pixelColours[0], (Uint8)pixelColours[1], (Uint8)pixelColours[2]);
         }
         SDL_Flip(_backBuffer);
     }
 }
 
-Colour SDLRaytracer::FSAARaytracePixel(Vector &_camera,
+//----------------------------------------------------------------------------------------------------------------------
+Colour SDLRaytracer::FSAARaytracePixel(
+                                       Scene &_scene,
                                        const float _xPos,
                                        const float _yPos,
                                        unsigned int _fsaaSamples,
@@ -421,31 +398,32 @@ Colour SDLRaytracer::FSAARaytracePixel(Vector &_camera,
             // slightly modified vector
             Vector currDirection = Vector(_xPos + (x*_fsaaDivisionSize),
                                           _yPos + (y*_fsaaDivisionSize),
-                                          1) - _camera;
+                                          1) - _scene.GetCamera();
             // normalise it
             currDirection.Normalise();
             // save it to Ray object
             Ray cameraRay = Ray(currDirection);
-            // trace it
-            pixelColours[x*_fsaaAxisSamples + y] = RaytraceRay(_camera, cameraRay, 0);
+            // trace it, with 0 trace depth because it is the camera/eye ray
+            pixelColours[x*_fsaaAxisSamples + y] = RaytraceRay(_scene.GetObjects(), _scene.GetLights(), _scene.GetCamera(), cameraRay, 0);
         }
     }
 
 
-    // TODO: static function in colour class, which takes an array of colours and averages them
+    /*
 
-    // loop which multiplies samples back together to create average.
-    // from a design point of view, you could do _fsaaSamples minus 1 # of float adds, plus a float division
-    // OR _fsaaSamples minus 1 (e.g. 8+4+2+1) # of multiplications
-    // this loop uses the multiplication method, which also uses less memory
+    loop which multiplies samples back together to create average.
+    from a design point of view, you could do _fsaaSamples minus 1 # of float adds, plus a float division
 
-    /*for(unsigned int i = 1; i < _fsaaSamples; i++)
+    for(unsigned int i = 1; i < _fsaaSamples; i++)
     {
-
         pixelColours[0] += pixelColours[i];
     }
+    pixelColours[0] /= _fsaaSamples;
 
-    pixelColours[0] /= _fsaaSamples;*/
+    OR _fsaaSamples minus 1 (e.g. 8+4+2+1) # of multiplications
+    this loop uses the multiplication method, which also uses less memory
+
+    */
 
     // _fsaaSamples is divided by 2 every loop iteration,
     // leading to 8, then 4, then 2, then 1 multiplications - if you had 16 samples
@@ -468,7 +446,8 @@ Colour SDLRaytracer::FSAARaytracePixel(Vector &_camera,
     return pixelColours[0];
 }
 
-Colour SDLRaytracer::RaytraceRay(Vector &_rayOrigin, Ray &_ray, unsigned int _traceDepth)
+//----------------------------------------------------------------------------------------------------------------------
+Colour SDLRaytracer::RaytraceRay(std::vector<RenderableObject*>& _objects, std::vector<Light>& _lights, Vector &_rayOrigin, Ray &_ray, unsigned int _traceDepth)
 {
 #ifdef DEBUG
     m_rayIntersections++;
@@ -477,15 +456,15 @@ Colour SDLRaytracer::RaytraceRay(Vector &_rayOrigin, Ray &_ray, unsigned int _tr
     bool hit = false;
 
     // for each object in scene
-    for(unsigned int j=0; j<m_objects.size();j++) {
-        float distance = m_objects[j]->DoIntersection(_rayOrigin, _ray.GetVector());
+    for(unsigned int j=0; j<_objects.size();j++) {
+        float distance = _objects[j]->DoIntersection(_rayOrigin, _ray.GetVector());
 
         // arbitrary number which stops the surface from intersecting itself due to float rounding errors
         // should be as SMALL as possible, until artifacts start occuring... 0.001 seems to do the trick
         if(distance >= LAMBDA) // if there is a hit
         {
             hit = true;
-            _ray.Intersection(distance, m_objects[j]);
+            _ray.Intersection(distance, _objects[j]);
         }
     }
 
@@ -504,7 +483,7 @@ Colour SDLRaytracer::RaytraceRay(Vector &_rayOrigin, Ray &_ray, unsigned int _tr
         float objectReflectivity = objectMaterial.GetReflectivity();
 
         // Get the intensity of light which is hitting this object
-        pixel_colour = CalculateColour(pixel_fragment, _ray.GetVector());
+        pixel_colour = CalculateColour(_objects, _lights, pixel_fragment, _ray.GetVector());
 
         if(objectReflectivity == 0.0f || _traceDepth >= MAX_TRACE_DEPTH)
         {
@@ -525,7 +504,7 @@ Colour SDLRaytracer::RaytraceRay(Vector &_rayOrigin, Ray &_ray, unsigned int _tr
         Vector origin = pixel_fragment.GetPosition();
 
 
-        Colour reflection_colour = RaytraceRay(origin, reflectionray, _traceDepth+1);
+        Colour reflection_colour = RaytraceRay(_objects, _lights, origin, reflectionray, _traceDepth+1);
         reflection_colour *= objectReflectivity;
         pixel_colour *= (1.0f-objectReflectivity);
         pixel_colour += reflection_colour;
@@ -540,7 +519,8 @@ Colour SDLRaytracer::RaytraceRay(Vector &_rayOrigin, Ray &_ray, unsigned int _tr
 }
 
 
-Colour SDLRaytracer::CalculateColour(Fragment &_fragment, Vector &_rayVector)
+//----------------------------------------------------------------------------------------------------------------------
+Colour SDLRaytracer::CalculateColour(std::vector<RenderableObject*>& _objects, std::vector<Light>& _lights, Fragment &_fragment, Vector &_rayVector)
 {
 #ifdef DEBUG
     m_lightTraces++;
@@ -553,55 +533,45 @@ Colour SDLRaytracer::CalculateColour(Fragment &_fragment, Vector &_rayVector)
     float diffuse_multiplier = 0;
     float specular_multiplier = 0;
     // for each light
-    for(unsigned int l=0; l<NUM_LIGHTS;l++)
+    for(unsigned int l=0; l<_lights.size();l++)
     {
-        Light* light = lights[l];
+        Light& light = _lights[0];
 
         // point on object surface
         Vector surfacePoint = _fragment.GetPosition();
 
         // light center
-        Vector lightPoint = light->GetPosition();
+        Vector lightPoint = light.GetPosition();
 
         // vector from point on surface to light
         Vector lightVector = lightPoint-surfacePoint;
 
         bool occluded = false;
-        // check against all objects including lights
-        for(unsigned int j=0; j<m_objects.size()+NUM_LIGHTS;j++)
+        // SHADOWS: check against all objects including lights
+        for(unsigned int j=0; j<_objects.size(); j++)
         {
-            // don't check against this light as it will always intersect
-            if(j != m_objects.size() + l)
+            float lightDistance = lightVector.SquareLength();
+
+            float distance = _objects[j]->DoIntersection(surfacePoint, lightVector);
+
+            // 'hard' shadows
+            if(distance >= LAMBDA && // if there is a hit
+               distance < lightDistance) // if the object is between the light and the fragment
             {
-
-                float lightDistance = lightVector.SquareLength();
-
-                float distance = m_objects[j]->DoIntersection(surfacePoint, lightVector);
-
-                // 'hard' shadows
-                if(distance >= LAMBDA && // if there is a hit
-                   distance < lightDistance) // if the object is between the light and the fragment
-                {
-                    // set this external variable so we can skip light calculations
-                    occluded = true;
-                    // don't bother checking aganist other objects as there is already one in the way
-                    // if we were doing refraction it would not be this simple
-                    break;
-                    //hit = true;
-                    //_ray.Intersection(distance, *objects[j]);
-                }
+                // set this external variable so we can skip light calculations
+                occluded = true;
+                // don't bother checking aganist other objects as there is already one in the way
+                // if we were doing refraction it would not be this simple
+                break;
+                //hit = true;
+                //_ray.Intersection(distance, *objects[j]);
             }
         }
 
         if(occluded) break; // if there is a single object in the way, the light is occluded
 
-
-        //float unattenuatedIntensity = 0;
-
         // Fragment normal
         Vector normal = _fragment.GetNormal();
-
-
 
         Vector lightVectorNormalised = lightVector;
         lightVectorNormalised.Normalise();
@@ -652,7 +622,7 @@ Colour SDLRaytracer::CalculateColour(Fragment &_fragment, Vector &_rayVector)
         {
             // Length = linear falloff... SquareLength = quadratic (real) falloff
             const float light_attenuation = lightVector.SquareLength();
-            light_intensity += 1/light_attenuation*light->GetMagnitude()*10;
+            light_intensity += 1/light_attenuation*light.GetMagnitude()*10;
         }
     }
 

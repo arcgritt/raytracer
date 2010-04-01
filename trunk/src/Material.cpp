@@ -6,17 +6,20 @@
 #include "Colour.h"
 
 
+//----------------------------------------------------------------------------------------------------------------------
 Material::Material()
 {
 
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 Material::Material(const Colour& _colour, const float _reflectivity)
 {
     c_diffuseColour = _colour;
     c_reflectivity = _reflectivity;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 Material::Material(const std::string &_materialName, const Colour &_diffuseColour, const Colour &_specularColour, const float _specularIntensity, const float _specularExponent, const float _reflectivity)
 {
     c_materialName = _materialName;
@@ -27,6 +30,7 @@ Material::Material(const std::string &_materialName, const Colour &_diffuseColou
     c_reflectivity = _reflectivity;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 const std::string Material::GetDebugInformation()
 {
     char* temp = new char[32];

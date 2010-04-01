@@ -5,17 +5,13 @@
 #include "MaterialParser.h"
 
 
+//----------------------------------------------------------------------------------------------------------------------
 MaterialParser::MaterialParser()
 {
 
 }
 
-/*
-std::vector<Material> MaterialParser::MaterialParser(std::string _filename)
-{
-    return MaterialParser::ParseFile(_filename);
-}
-*/
+//----------------------------------------------------------------------------------------------------------------------
 std::vector<Material> MaterialParser::ParseFile(const std::string &_filename)
 {
     std::vector<Material> materials;

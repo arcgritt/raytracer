@@ -5,6 +5,18 @@
 #include "RenderableObject.h"
 #include "Vector.h"
 
+/// \file Sphere.h
+/// \author Adam Gritt
+/// \version 1.0
+/// \date 2010-04-01 \n
+
+/// Revision History : \n
+/// v1.0 - Assignment submission version
+
+/// \class Sphere
+/// \brief Renderable sphere object which contains the algorithmic code for detecting an intersection and holds the radius of the sphere. Inherits from RenderableObject.
+/// \todo
+
 class Sphere: public RenderableObject
 {
 public:
@@ -38,9 +50,12 @@ public:
     /// @param[in] _distance    the distance between the ray's origin and the point of intersection (saves calculating it again)
     /// \returns a fragment containing the information necessary to shade this object
     Fragment GetFragment(Vector& _rayOrigin, Vector& _ray, const float _distance);
-
 private:
+    /// Radius of the sphere
     float m_radius;
+
+    /// Squared radius of the sphere. Used in intersection algorithm, so precalculation saves computation
+    float m_squareRadius;
 };
 
 #endif // SPHERE_H

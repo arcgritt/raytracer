@@ -3,19 +3,23 @@
 #include <cmath>
 #include <cstdio>
 
+//----------------------------------------------------------------------------------------------------------------------
 Sphere::Sphere()
 {
 
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 Sphere::Sphere(const Vector &_center, const float _radius, const Colour &_colour, const Material &_material)
 {
     SetPosition(_center);
     m_radius = _radius;
+    m_squareRadius = _radius * _radius;
     SetColour(_colour);
     SetMaterial(_material);
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 float Sphere::DoIntersection(Vector &_rayOrigin, Vector &_ray) // SpherePrimitive::intersect(const Ray& ray, float* t)
 {
     // source: http://wiki.cgsociety.org/index.php/Ray_Sphere_Intersection
@@ -25,7 +29,7 @@ float Sphere::DoIntersection(Vector &_rayOrigin, Vector &_ray) // SpherePrimitiv
     //Compute A, B and C coefficients
     float a = Vector::Dot(_ray, _ray); //_ray.dot(_ray);
     float b = 2 * Vector::Dot(_ray, dst); //_ray.dot(dst);
-    float c = Vector::Dot(dst, dst) - (GetRadius() * GetRadius());
+    float c = Vector::Dot(dst, dst) - (m_squareRadius);
     //float c = dst.dot(dst) - (getRadius() * getRadius());
 
     //Find discriminant
@@ -80,6 +84,7 @@ float Sphere::DoIntersection(Vector &_rayOrigin, Vector &_ray) // SpherePrimitiv
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 Fragment Sphere::GetFragment(Vector &_rayOrigin, Vector &_ray, const float _distance)
 {
     // point of intersection in world space
