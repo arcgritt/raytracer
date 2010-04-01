@@ -1,15 +1,16 @@
 Format 1280 720 1
 Projection "perspective" "fov" [90]
 WorldBegin
-  LightSource "ambientlight" 1 "intensity" [0.2]
-  LightSource "pointlight" 0.1 "intensity" 5000 "from" 35 -5 -20
+  LightSource "ambientlight" 1 "intensity" [1]
+ # LightSource "pointlight" 0.1 "intensity" 5000 "from" 35 -5 -20
+ # LightSource "pointlight" 0.1 "intensity" 5000 "from" 35 -50 -40
  # LightSource "pointlight" 0.1 "intensity" 30 "from" 50 0 30
  # LightSource "pointlight" 0.1 "intensity" 50 "from" 0 -40 0
  # LightSource "pointlight" 0.1 "intensity" 2000 "from" 0 0 -25
 
 
 ### PLASTIC
-  Surface "plasticNoReflection"
+  Surface "lambert"
 
   Color 0 1 0
   Translate rand*-20 rand*-20 50

@@ -82,3 +82,11 @@ SpecularColour      1 1 1
 SpecularIntensity   1
 SpecularExponent    20
 Reflectivity        1
+
+Material justHalfReflection
+
+DiffuseColour       0.9 0.9 0.9
+SpecularColour      1 1 1
+SpecularIntensity   1
+SpecularExponent    20
+Reflectivity        0.5
