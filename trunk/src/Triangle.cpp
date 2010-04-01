@@ -10,24 +10,24 @@ Triangle::Triangle()
 
 //----------------------------------------------------------------------------------------------------------------------
 Triangle::Triangle(const Vector &_v0, const Vector &_v1, const Vector &_v2, const Colour &_colour, const Material &_material) {
-    m_v0 = _v0;
-    m_v1 = _v1;
-    m_v2 = _v2;
-    SetColour(_colour);
-    SetMaterial(_material);
-    m_normal = Vector::Cross(_v0, _v1);
+  m_v0 = _v0;
+  m_v1 = _v1;
+  m_v2 = _v2;
+  SetColour(_colour);
+  SetMaterial(_material);
+  m_normal = Vector::Cross(_v0, _v1);
 
-    m_u = 0.0;
-    m_v = 0.0;
-    m_w = 0.0;
+  m_u = 0.0;
+  m_v = 0.0;
+  m_w = 0.0;
 
-    // calculate the edge
-    m_edge1 = m_v1 - m_v0;
-    m_edge2 = m_v2 - m_v0;
+  // calculate the edge
+  m_edge1 = m_v1 - m_v0;
+  m_edge2 = m_v2 - m_v0;
 
-    // the center of the tri is the 3 verts average
-    Vector m_center = (m_v0 + m_v1 + m_v2) / 3.0;
-    SetPosition(m_center);
+  // the center of the tri is the 3 verts average
+  Vector m_center = (m_v0 + m_v1 + m_v2) / 3.0;
+  SetPosition(m_center);
 }
 
 
@@ -99,72 +99,72 @@ Triangle::Triangle(const Vector &_v0, const Vector &_v1, const Vector &_v2, cons
 //----------------------------------------------------------------------------------------------------------------------
 float Triangle::DoIntersection(Vector &_rayOrigin, Vector &_ray)
 {
-    // Calculate the ray direction
-    Vector dir = _ray - _rayOrigin;
+  // Calculate the ray direction
+  Vector dir = _ray - _rayOrigin;
 
-    // get the vector of the first edge
-    Vector pvec = Vector::Cross(dir, m_edge2);
+  // get the vector of the first edge
+  Vector pvec = Vector::Cross(dir, m_edge2);
 
-    // calculate the determinant
-    float det = Vector::Dot(m_edge1, pvec);
+  // calculate the determinant
+  float det = Vector::Dot(m_edge1, pvec);
 
-    // if this is 0 no hit
-    if (det > -0.00001f && det < 0.00001)
-    {
-        return -1;
-    }
+  // if this is 0 no hit
+  if (det > -0.00001f && det < 0.00001)
+  {
+    return -1;
+  }
 
-    // get the inverse det
-    float inv_det = 1.0f / det;
+  // get the inverse det
+  float inv_det = 1.0f / det;
 
-    // calculate the 2nd vector
-    Vector tvec = _rayOrigin - m_v0;
+  // calculate the 2nd vector
+  Vector tvec = _rayOrigin - m_v0;
 
-    // get the dot product of this and inv det
-    m_u = Vector::Dot(tvec, pvec) * inv_det;
+  // get the dot product of this and inv det
+  m_u = Vector::Dot(tvec, pvec) * inv_det;
 
-    // if out of range no hit
-    if (m_u < -0.001f || m_u > 1.001f)
-    {
-        return -1;
-    }
+  // if out of range no hit
+  if (m_u < -0.001f || m_u > 1.001f)
+  {
+    return -1;
+  }
 
-    // check the 2nd vector edge
-    Vector qvec = Vector::Cross(tvec, m_edge1);
+  // check the 2nd vector edge
+  Vector qvec = Vector::Cross(tvec, m_edge1);
 
-    // get the dot product
-    m_v = Vector::Dot(dir, qvec) * inv_det;
+  // get the dot product
+  m_v = Vector::Dot(dir, qvec) * inv_det;
 
-    // if out of range no hit
-    if (m_v < -0.001f || m_u + m_v > 1.001f)
-    {
-        return -1;
-    }
+  // if out of range no hit
+  if (m_v < -0.001f || m_u + m_v > 1.001f)
+  {
+    return -1;
+  }
 
-    // check the final value
-    m_w = Vector::Dot(m_edge2, qvec) * inv_det;
+  // check the final value
+  m_w = Vector::Dot(m_edge2, qvec) * inv_det;
 
-    // if less than 0 no hit
-    if (m_w <= 0)
-    {
-        return -1;
-    }
+  // if less than 0 no hit
+  if (m_w <= 0)
+  {
+    return -1;
+  }
 
-    // otherwise we are inside the triangle
-    // so get the hit point
-    // see http://softsurfer.com/Archive/algorithm_0105/algorithm_0105.htm#intersect_RayTriangle()
-    // get intersect point of ray with triangle plane
-    // calculate the normal
+  // otherwise we are inside the triangle
+  // so get the hit point
+  // see http://softsurfer.com/Archive/algorithm_0105/algorithm_0105.htm#intersect_RayTriangle()
+  // get intersect point of ray with triangle plane
+  // calculate the normal
 
-    Vector n = Vector::Cross(m_v0, m_v2);
-    float a = Vector::Dot(-n, tvec);
-    float b = Vector::Dot(n, dir);
-    float r = a/b;
+  Vector n = Vector::Cross(m_v0, m_v2);
+  float a = Vector::Dot(-n, tvec);
+  float b = Vector::Dot(n, dir);
+  float r = a/b;
 
-    Vector vec = dir*r;
-    return vec.SquareLength();
+  Vector vec = dir*r;
+  return vec.SquareLength();
 
-    /*
+  /*
     // intersect point of ray and plane
     Vector m_hitPoint = _rayOrigin + (r * dir);
     Vector direction = m_hitPoint-_rayOrigin;
@@ -177,7 +177,7 @@ float Triangle::DoIntersection(Vector &_rayOrigin, Vector &_ray)
 //----------------------------------------------------------------------------------------------------------------------
 Fragment Triangle::GetFragment(Vector &_rayOrigin, Vector &_ray, float _distance)
 {
-    Vector point = _ray * _distance + _rayOrigin;
+  Vector point = _ray * _distance + _rayOrigin;
 
-    return Fragment(point, m_normal, GetColour(), GetMaterial());
+  return Fragment(point, m_normal, GetColour(), GetMaterial());
 }
