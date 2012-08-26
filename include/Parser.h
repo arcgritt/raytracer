@@ -28,7 +28,7 @@ public:
   /// \brief Returns a token iterator positioned at the first token
   /// @param[in] _line       the string to tokenise and return as an iterator
   /// \returns a token iterator positioned at the first token
-  static tokenizer::iterator GetTokenIterator(
+  static tokenizer::const_iterator GetTokenIterator(
       const std::string& _string
       );
 
@@ -70,14 +70,14 @@ public:
   /// @param[in] _iterator    the iterator containing the strings
   /// \returns a Vector equal to the value represented by strings stored in the token iterator
   static Vector ParseVector(
-      tokenizer::iterator& _iterator
+      tokenizer::const_iterator& _iterator
       );
 
   /// \brief Converts a sequence of strings, stored in a token iterator, to a Colour
   /// @param[in] _iterator    the iterator containing the strings
   /// \returns a Colour equal to the value represented by strings stored in the token iterator
   static Colour ParseColour(
-      tokenizer::iterator& _iterator
+      tokenizer::const_iterator& _iterator
       );
 };
 

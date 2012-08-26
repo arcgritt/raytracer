@@ -15,24 +15,22 @@ boost::uniform_real<float> distribution(-1.0f, 1.0f);
 boost::variate_generator<boost::mt19937&, boost::uniform_real<float> > RandFloat(Generator, distribution);
 
 //----------------------------------------------------------------------------------------------------------------------
-tokenizer::iterator Parser::GetTokenIterator(const std::string &_string)
+tokenizer::const_iterator Parser::GetTokenIterator(const std::string &_string)
 {
   // now tokenize the line
   tokenizer tokens(_string, sep);
 
   // and get the first token
-  tokenizer::iterator tokenIterator = tokens.begin();
+  tokenizer::const_iterator tokenIterator = tokens.begin();
   return tokenIterator;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 float Parser::ParseFloat(const std::string &_token)
 {
-  //Util util;
-  //if()
-  if(_token.find("rand") != _token.npos)
+  if(_token.find("rand") < _token.length())
   {
-    if(_token.npos == 4)
+    if(_token.length() == 4)
     {
       return RandPosFloat();
     }
@@ -47,20 +45,18 @@ float Parser::ParseRand(const std::string &_token)
   bool positive = false;
   unsigned int splitPos = _token.find("*-");
   // if it doesn't have "*-" in it
-  if(splitPos == _token.npos)
+  if(splitPos > _token.length())
   {
     splitPos = _token.find("*");
     // if it doesn't have "*" in it
-    if(splitPos == _token.npos)
+    if(splitPos > _token.length())
     {
       return RandPosFloat();
     }
     positive = true;
   }
-
-  std::string substr = _token.substr(splitPos+1, _token.npos);
+  std::string substr = _token.substr(splitPos+1, _token.length());
   float multiplier = boost::lexical_cast<float>(substr);
-
   // must have just "*" in it
   if(positive)
   {
@@ -86,7 +82,7 @@ unsigned int Parser::ParseUnsignedInt(const std::string &_token)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-Vector Parser::ParseVector(tokenizer::iterator &_iterator)
+Vector Parser::ParseVector(tokenizer::const_iterator &_iterator)
 {
   // use lexical cast to convert to float then increment the itor
   float x = ParseFloat(*_iterator++);
@@ -97,12 +93,12 @@ Vector Parser::ParseVector(tokenizer::iterator &_iterator)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-Colour Parser::ParseColour(tokenizer::iterator &_iterator)
+Colour Parser::ParseColour(tokenizer::const_iterator &_iterator)
 {
   // use lexical cast to convert to float then increment the itor
-  float r = ParseFloat(*_iterator++);
-  float g = ParseFloat(*_iterator++);
-  float b = ParseFloat(*_iterator++);
+  float r = ParseFloat(_iterator++.current_token());
+  float g = ParseFloat(_iterator++.current_token());
+  float b = ParseFloat(_iterator++.current_token());
 
   return Colour(r, g, b);
 }

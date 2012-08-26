@@ -85,7 +85,7 @@ Scene RIBParser::ParseHeader(std::ifstream &_ribFileStream)
     if(line.size() !=0)
     {
       // get a token iterator positioned at the first token
-      tokenizer::iterator tokenIterator = GetTokenIterator(line); //tokens.begin();
+      tokenizer::const_iterator tokenIterator = GetTokenIterator(line); //tokens.begin();
 
       // save the first token, and increment the iterator (so that we can pass the first useful token to methods)
       std::string typeName = *tokenIterator++;
@@ -146,15 +146,14 @@ void RIBParser::ParseWorld(std::ifstream &_ribFileStream, Scene& _scene)
   {
     // grab a line from the input
     getline(_ribFileStream, line, '\n');
-
     // make sure it's not an empty line
     if(line.size() !=0)
     {
       // get a token iterator positioned at the first token
-      tokenizer::iterator tokenIterator = GetTokenIterator(line); //tokens.begin();
+      tokenizer::const_iterator tokenIterator = GetTokenIterator(line); //tokens.begin();
 
       // save the first token, and increment the iterator (so that we can pass the first useful token to methods)
-      std::string typeName = *tokenIterator++;
+      std::string typeName = tokenIterator++.current_token();
 
       // now see if it's a valid one and call the correct function
       if(typeName == "Color")
@@ -203,13 +202,13 @@ void RIBParser::ParseWorld(std::ifstream &_ribFileStream, Scene& _scene)
       }
       else
       {
-        std::cerr << "Unkown Token " << typeName << std::endl;
+        std::cerr << "Unknown Token " << typeName << std::endl;
       }
     }
   } // while (not end of file) loop
 }
 
-Light RIBParser::ParsePointLight(tokenizer::iterator &_iterator)
+Light RIBParser::ParsePointLight(tokenizer::const_iterator &_iterator)
 {
   const float radius = ParseFloat(*_iterator++);
 
@@ -223,7 +222,7 @@ Light RIBParser::ParsePointLight(tokenizer::iterator &_iterator)
   return Light(position, radius, lightMaterial, intensity);
 }
 
-float RIBParser::ParseAmbientLight(tokenizer::iterator &_iterator)
+float RIBParser::ParseAmbientLight(tokenizer::const_iterator &_iterator)
 {
   //const float radius = ParseFloat(*_iterator++);
   _iterator++; // radius

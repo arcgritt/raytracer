@@ -1,10 +1,5 @@
-#ifdef WINDOWS
-
 #include <cstdio>
-
-#endif
-
-#include <assert.h>
+#include <cassert>
 
 #include "Colour.h"
 

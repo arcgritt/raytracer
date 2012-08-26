@@ -44,7 +44,7 @@ std::vector<Material> MaterialParser::ParseFile(const std::string &_filename)
       if(line.size() !=0)
       {
         // get a token iterator positioned at the first token
-        tokenizer::iterator tokenIterator = GetTokenIterator(line); //tokens.begin();
+        tokenizer::const_iterator tokenIterator = GetTokenIterator(line); //tokens.begin();
 
         // save the first token, and increment the iterator (so that we can pass the first useful token to methods)
         std::string typeName = *tokenIterator++;
@@ -88,7 +88,7 @@ std::vector<Material> MaterialParser::ParseFile(const std::string &_filename)
         }
         else
         {
-          std::cerr << "Unkown Token " << typeName << std::endl;
+          std::cerr << "Unknown Token " << typeName << std::endl;
         }
       }
     } // while (not end of file) loop

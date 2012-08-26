@@ -69,14 +69,14 @@ private:
   /// @param[in] _iterator        the iterator containing the strings
   /// \returns a light at the specified position and intensity
   static Light ParsePointLight(
-      tokenizer::iterator& _iterator
+      tokenizer::const_iterator& _iterator
       );
 
   /// \brief Processes a the information specified along with an ambient light
   /// @param[in] _iterator        the iterator containing the strings
   /// \returns the intensity of the ambient light source
   static float ParseAmbientLight(
-      tokenizer::iterator& _iterator
+      tokenizer::const_iterator& _iterator
       );
 };
 

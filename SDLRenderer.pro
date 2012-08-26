@@ -15,7 +15,6 @@ INCLUDEPATH += $$HEADERS_DIR
 
 # SDL
 LIBS += -lSDL
-LIBS += -lSDLmain
 
 # Qt threading library
 CONFIG += thread
@@ -73,4 +72,4 @@ OTHER_FILES += Doxyfile \
     $$RCC_DIR/example4.rib \
     $$RCC_DIR/example5.rib \
     $$RCC_DIR/example6.rib \
-    resources/example7.rib
+    $$RCC_DIR/example7.rib
