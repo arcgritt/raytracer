@@ -17,19 +17,18 @@
 /// \brief Parses a materials file and generates Material objects. Inherits from Parser.
 /// \todo
 
-class MaterialParser: public Parser
-{
-public:
-  /// \brief The default constructor
-  MaterialParser();
-
-  /// \brief Parses the input materials file and returns an std::vector storing the materials which were specified by the input file
-  /// @param[in] _fileName        the location of the file
-  /// \returns an std::vector storing the materials which were specified by the input file
-  static std::vector<Material> ParseFile(
-      const std::string& _fileName
-      );
-
+class MaterialParser: public Parser {
+    public:
+        /// \brief The default constructor
+        MaterialParser();
+        
+        /// \brief Parses the input materials file and returns an std::vector storing the materials which were specified by the input file
+        /// @param[in] _fileName        the location of the file
+        /// \returns an std::vector storing the materials which were specified by the input file
+        static std::vector<Material> ParseFile(
+            const std::string& _fileName
+        );
+        
 };
 
 #endif // MATERIALPARSER_H
