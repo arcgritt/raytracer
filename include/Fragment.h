@@ -22,7 +22,7 @@ class Fragment {
         /// \brief The default constructor
         Fragment();
         
-        /// \brief Constructs a new object containing information relevant to colour calculations for this intersection
+        /// \brief Constructs an object containing information relevant to colour calculations for this intersection
         /// @param[in] _position    the point of intersection
         /// @param[in] _normal      the surface normal of the intersected object
         /// @param[in] _colour      the colour of the intersected object

@@ -83,7 +83,7 @@ class SDLRaytracer {
         /// \returns the colour of the sample
         static Colour RaytraceRay(
             float _ambient,
-            std::vector<RenderableObject*>& _objects,
+            std::vector<boost::shared_ptr<RenderableObject> >& _objects,
             std::vector<Light>& _lights,
             Vector& _rayOrigin,
             Ray& _ray,
@@ -96,7 +96,7 @@ class SDLRaytracer {
         /// \returns the colour of the fragment
         static Colour CalculateColour(
             float _ambient,
-            std::vector<RenderableObject*>& _objects,
+            std::vector<boost::shared_ptr<RenderableObject> >& _objects,
             std::vector<Light>& _lights,
             Fragment& _fragment,
             Vector& _rayVector

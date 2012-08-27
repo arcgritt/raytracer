@@ -3,7 +3,7 @@
 // Boost
 #include "boost/random.hpp"
 #include "boost/lexical_cast.hpp"
-
+#include "boost/shared_ptr.hpp"
 
 #include "RIBParser.h"
 #include "RenderableObject.h"
@@ -141,7 +141,7 @@ void RIBParser::ParseWorld(std::ifstream& _ribFileStream, Scene& _scene) {
             /* FINAL TYPES - OBJECTS OR LIGHTS */
             else if(typeName == "Sphere") {
                 float radius = ParseFloat(*tokenIterator++);
-                _scene.AddObject(new Sphere(translate, radius, colour, GetMaterialByName(materialName)));
+                _scene.AddObject(boost::shared_ptr<RenderableObject>(new Sphere(translate, radius, colour, GetMaterialByName(materialName))));
             } else if(typeName == "LightSource") {
                 std::string lightType = StripBrackets(*tokenIterator++);
                 if(lightType == "pointlight") {

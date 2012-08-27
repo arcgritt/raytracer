@@ -31,9 +31,9 @@ class Parser {
             const std::string& _string
         );
         
-        /// \brief Returns a new string with the first and last characters removed
+        /// \brief Returns a string with the first and last characters removed
         /// @param[in] _string      the string to remove the characters from
-        /// \returns a new string with the first and last characters removed
+        /// \returns a string with the first and last characters removed
         static std::string StripBrackets(
             const std::string& _string
         );

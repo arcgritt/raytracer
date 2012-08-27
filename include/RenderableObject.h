@@ -71,7 +71,7 @@ class RenderableObject {
         Material m_material;
     protected:
         /// \brief Sets the position of this object
-        /// @param[in] _the new position of this object
+        /// @param[in] _the position of this object
         void SetPosition(const Vector& _position) {
             m_position = _position;
         }

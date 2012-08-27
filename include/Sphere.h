@@ -22,7 +22,7 @@ class Sphere: public RenderableObject {
         /// \brief the default constructor
         Sphere();
         
-        /// \brief constructs a new sphere
+        /// \brief constructs a sphere
         /// @param[in] _center      the center position of this object
         /// @param[in] _radius      the radius of the sphere
         /// @param[in] _colour      the colour of this object

@@ -8,6 +8,8 @@
 #include "Light.h"
 #include "RenderableObject.h"
 
+#include "boost/shared_ptr.hpp"
+
 /// \file Scene.h
 /// \author Adam Gritt
 /// \version 1.0
@@ -26,7 +28,7 @@ class Scene {
         /// \brief The default constructor
         Scene();
         
-        /// \brief Constructs a new scene and calculates the camera position
+        /// \brief Constructs a scene and calculates the camera position
         /// @param[in] _displayWidth        the width of the scene, in pixels
         /// @param[in] _displayHeight       the height of the scene, in pixels
         /// @param[in] _pixelAspectRatio    the pixel aspect ratio of the scene
@@ -76,19 +78,19 @@ class Scene {
         
         /// \brief Adds an object to the scene
         /// @param[in] _object      the object to be added
-        void AddObject(RenderableObject* _object) {
+        void AddObject(boost::shared_ptr<RenderableObject> _object) {
             m_objects.push_back(_object);
         }
         
         /// \brief Sets the std::vector containg the scene's objects to the input value
         /// @param[in] _objects the std::vector containg the scene's objects
-        void SetObjects(const std::vector<RenderableObject*> _objects) {
+        void SetObjects(const std::vector<boost::shared_ptr<RenderableObject> > _objects) {
             m_objects = _objects;
         }
         
         /// \brief Returns an std::vector containing the scene's objects
         /// \returns an std::vector containing the scene's objects
-        std::vector<RenderableObject*>& GetObjects() {
+        std::vector<boost::shared_ptr<RenderableObject> >& GetObjects() {
             return m_objects;
         }
         
@@ -120,7 +122,7 @@ class Scene {
         Vector m_camera;
         
         /// Objects in the scene
-        std::vector<RenderableObject*> m_objects;
+        std::vector<boost::shared_ptr<RenderableObject> > m_objects;
         
         /// Lights in the scene
         std::vector<Light> m_lights;

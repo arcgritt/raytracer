@@ -342,7 +342,7 @@ Colour SDLRaytracer::FSAARaytracePixel(
 //----------------------------------------------------------------------------------------------------------------------
 Colour SDLRaytracer::RaytraceRay(
     float _ambient,
-    std::vector<RenderableObject*>& _objects,
+    std::vector<boost::shared_ptr<RenderableObject> >& _objects,
     std::vector<Light>& _lights,
     Vector& _rayOrigin,
     Ray& _ray,
@@ -364,7 +364,7 @@ Colour SDLRaytracer::RaytraceRay(
         // should be as SMALL as possible, until artifacts start occuring... 0.001 seems to do the trick
         if(distance >= LAMBDA) { // if there is a hit
             hit = true;
-            _ray.Intersection(distance, _objects[j]);
+            _ray.Intersection(distance, _objects[j].get());
         }
     }
     
@@ -421,7 +421,7 @@ Colour SDLRaytracer::RaytraceRay(
 //----------------------------------------------------------------------------------------------------------------------
 Colour SDLRaytracer::CalculateColour(
     float _ambient,
-    std::vector<RenderableObject*>& _objects,
+    std::vector<boost::shared_ptr<RenderableObject> >& _objects,
     std::vector<Light>& _lights,
     Fragment& _fragment,
     Vector& _rayVector

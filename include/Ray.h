@@ -21,7 +21,7 @@ class Ray {
         /// \brief The default constructor
         Ray();
         
-        /// \brief Constructs a new ray object
+        /// \brief Constructs a ray object
         /// @param[in] _direction               the direction of the ray
         Ray(
             Vector& _direction

@@ -67,9 +67,9 @@ class Colour {
             const Colour& _colour2
         );
         
-        /// \brief Adds this coluor and the input colour as a new object and returns it
+        /// \brief Adds this colour and the input colour and returns the result
         /// @param[in] _colour the colour to add to this one
-        /// \returns a new colour equal to the sum of this colour plus the input colour
+        /// \returns a colour equal to the sum of this colour plus the input colour
         Colour operator+(const Colour& _colour);
         
         /// \brief Adds this colour and the input colour

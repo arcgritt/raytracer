@@ -45,5 +45,7 @@ const std::string Material::GetDebugInformation() {
     
     sprintf(temp, "Reflectivity: %f \n", c_reflectivity);
     debugInfo += temp;
+
+    delete[] temp;
     return debugInfo;
 }

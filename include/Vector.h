@@ -20,7 +20,7 @@ class Vector {
         /// \brief The default constructor
         Vector();
         
-        /// \brief Constructs a new vector with the specified x, y, z components
+        /// \brief Constructs a vector with the specified x, y, z components
         /// @param[in] _x the x component of the vector
         /// @param[in] _y the y component
         /// @param[in] _z the z component
@@ -30,7 +30,7 @@ class Vector {
             const float _z
         );
         
-        /// \brief Constructs a new vector with the specified x, y, z, w components
+        /// \brief Constructs a vector with the specified x, y, z, w components
         /// @param[in] _x the x component of the vector
         /// @param[in] _y the y component
         /// @param[in] _z the z component
@@ -57,31 +57,31 @@ class Vector {
         /// @param[in] _v the vector to be added to this one
         void operator+=(const Vector& _v);
         
-        /// \brief Returns a new vector which is the sum of this vector and the input vector
+        /// \brief Returns a vector which is the sum of this vector and the input vector
         /// @param[in] _v the vector to be added to this one
-        /// \returns a new vector which is the sum of this vector and the input vector
+        /// \returns a vector which is the sum of this vector and the input vector
         Vector operator+(const Vector& _v);
         
-        /// \brief Returns a new vector in which the sign of each of the components has been reversed
-        /// \returns a new vector in which the sign of each of the components has been reversed
+        /// \brief Returns a vector in which the sign of each of the components has been reversed
+        /// \returns a vector in which the sign of each of the components has been reversed
         Vector operator-();
         
         /// \brief Subtracts the input vector from this vector
         /// @param[in] _v the vector to be subtracted from this one
         void operator-=(const Vector& _v);
         
-        /// \brief Returns a new vector which is equal to this vector minus the input vector
+        /// \brief Returns a vector which is equal to this vector minus the input vector
         /// @param[in] _v the vector to be subtracted from this one
-        /// \returns a new vector which is equal to this vector minus the input vector
+        /// \returns a vector which is equal to this vector minus the input vector
         Vector operator-(const Vector& _v);
         
-        /// \brief Returns a new vector which is equal to this vector multiplied by the specified floating point value
+        /// \brief Returns a vector which is equal to this vector multiplied by the specified floating point value
         /// @param[in] _multiplier the value to multiply this vector by
-        /// \returns a new vector which is equal to this vector multiplied by by the specified floating point value
+        /// \returns a vector which is equal to this vector multiplied by by the specified floating point value
         Vector operator*(const float _multiplier);
         
-        /// \brief Returns a new vector which is equal to this vector divided by the specified floating point value
-        /// \returns a new vector which is equal to this vector divided by the specified floating point value
+        /// \brief Returns a vector which is equal to this vector divided by the specified floating point value
+        /// \returns a vector which is equal to this vector divided by the specified floating point value
         Vector operator/(const float _divisor);
         
         /// \brief Returns the cross product of the two input vectors

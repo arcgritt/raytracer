@@ -22,7 +22,7 @@ class Triangle : public RenderableObject {
         /// \brief the default constructor
         Triangle();
         
-        /// \brief constructs a new triangle with colour and material properties
+        /// \brief constructs a triangle with colour and material properties
         /// @param[in] _v0          the point of the first vertex which forms this triangle
         /// @param[in] _v1          the point of the second vertex which forms this triangle
         /// @param[in] _v2          the point of the third vertex which forms this triangle

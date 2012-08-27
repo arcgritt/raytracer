@@ -20,7 +20,7 @@ class Light : public Sphere {
         /// \brief The default constructor
         Light();
         
-        /// \brief Constructs a new light
+        /// \brief Constructs a light
         /// @param[in] _position    the position of the light
         /// @param[in] _radius      the radius of the light
         /// @param[in] _material    the material to render the light as
@@ -37,8 +37,8 @@ class Light : public Sphere {
             return c_magnitude;
         }
         
-        /// \brief Sets the magnitude of the light to a new value
-        /// @param[in] _magnitude   the new magnitude of the light
+        /// \brief Sets the magnitude of the light to the input value
+        /// @param[in] _magnitude   the magnitude of the light
         void SetMagnitude(const float _magnitude) {
             c_magnitude = _magnitude;
         }
